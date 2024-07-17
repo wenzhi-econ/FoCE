@@ -1,5 +1,5 @@
 ---
-title: "Course 13 and 23: Root Finding"
+title: "Course 13, 23, and 25: Root Finding Using Bisection Method and Newton Method"
 format:
     html:
         theme: cosmo
@@ -391,4 +391,225 @@ def print_iter(arg_xbar, arg_err, arg_iter, **kwargs):
 
 x_bar = newton2(g, h, x0=np.array([-1.8, -0.2]).reshape((2, 1)), callback=print_iter)
 print(x_bar)
+```
+
+# Combining Newton Method with Bisection Method
+
+In this section, we are going to solve the following equation
+
+$$
+f(x) = a \log(x) + b\log(1-x) + c = 0, ab<0.
+$$
+
+This equation arise in the models of discrete choice in IO, for example when computing a mixed strategy equilibrium in a two players game with binary actions.
+
+## Theoretical properties
+
+-   $x \in (0,1)$ are strict limits, any algorithm will break down if stepping outside
+-   there is exactly one solution for any values of parameters $a,b,c$ (where $a$ and $b$ have opposite signs, without loss of generality assume $a > 0$ and $b<0$.)
+    -   $f(x)$ is continuous in its domain $x \in (0,1)$.
+    -   $f'(x) \ge 0$ everywhere in the domain, so the function is monotonically increasing, and vise versa.
+    -   When $x \rightarrow 0$ from the right $f(x) \rightarrow -\infty$, and when $x \rightarrow 1$ from the left $f(x) \rightarrow \infty$, and vise versa.
+-   But depending on the value of $c$ the solution may be arbitrary close to $0$ or $1$!
+-   Therefore, if we compare newton with bisection:
+    -   Newton method can easily overshoot to the outside of domain.
+    -   Bisection method may take forever to converge.
+
+## Newton-bisection hybrid algorithm
+
+```{python}
+# | label: newton-bisection
+
+def newton_bounds(
+    fun,
+    grad,
+    x0=None,
+    bounds=(0, 1),
+    tol=1e-6,
+    maxiter=100,
+    callback=None,
+):
+    """
+    This function combines the newton method and the bisection method to
+    solve a root-finding problem with given lower and upper bounds.
+
+    Input arguments:
+        fun: the function of interest
+        grad: the derivate of the fun
+        x0: initial guess
+        bounds: a tuple that contains the lower and upper bounds
+        tol: tolerance
+        maxiter: maximum number of iterations
+        callback: a function that will be called in each iteration
+    """
+    a, b = bounds
+    sign_a = np.sign(fun(a))
+    sign_b = np.sign(fun(b))
+    if sign_a * sign_b > 0:
+        raise ValueError(
+            "Function has the same signs at the initial lower and upper bounds."
+        )
+
+    if x0 is None:
+        x0 = (a + b) / 2
+
+    for i in range(maxiter):
+        f0 = fun(x0)
+        newton_x1 = x0 - fun(x0) / grad(x0)
+        if newton_x1 > b or newton_x1 < a:
+            if np.sign(f0) * sign_a > 0:
+                a = x0
+            else:
+                b = x0
+            x1 = (a + b) / 2
+            step_type = "bisection"
+        else:
+            x1 = newton_x1
+            step_type = "newton"
+
+        err = fun(x1)
+
+        if callback is not None:
+            callback(
+                arg_iter=i,
+                arg_type=step_type,
+                arg_err=err,
+                arg_x0=x0,
+                arg_x1=x1,
+                arg_bounds=(a, b),
+            )
+
+        if abs(err) < tol:
+            break
+
+        x0 = x1
+    else:
+        raise RuntimeError(
+            f"Failed to converge in {maxiter} iterations."
+        )
+
+    return x1
+```
+
+Now, let's present a case where this function works pretty well. But to do this, we need to define two auxiliary functions to present iterations and have a glimpse at the function of interest.
+
+```{python}
+# | label: newton bisection auxiliary functions 
+
+def print_iter(
+    arg_iter, arg_type, arg_err, arg_x0, arg_x1, arg_bounds, **kwargs
+):
+    print(f"Iteration {arg_iter+1}: {arg_type:s}")
+    print(
+        f"x_0 = {arg_x0:<1.20f}, bounds = ({arg_bounds[0]:<1.10f}, {arg_bounds[1]:<1.10f})"
+    )
+    print(f"x_bar = {arg_x1:<1.20f}, fun(x_bar) = {arg_err:<1.20f}")
+    print("\n")
+    
+def fun_grad_list(a, b, c):
+    f = lambda x: a * np.log(x) + b * np.log(1 - x) + c
+    g = lambda x: a / x - b / (1 - x)
+    return [f, g]
+    
+def plot_fun(a, b, c):
+    fun = fun_grad_list(a, b, c)[0]
+    xd = np.linspace(0, 1, 10000)
+    plt.plot(xd, fun(xd), c='red')
+    plt.plot([0,1], [0,0], c='black')
+    plt.ion()
+    plt.show()
+```
+
+The well-functioned example has the following parameters: `a=1; b=-4; c=0.5`.
+
+```{python}
+# | label: newton-bisection test 1
+
+a = 1
+b = -4
+c = 0.5
+plot_fun(a, b, c)
+
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+)
+```
+
+Another example is as follows.
+
+```{python}
+# | label: newton-bisection test 2
+
+a, b, c = 1, -1, -5
+
+plot_fun(a, b, c)
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    x0=0.9,
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+)
+```
+
+However, if $c$ is too large, then this function cannot reach its root within a limited number of iterations.
+
+```{python}
+# | label: newton-bisection test 3
+# | error: true 
+
+np.seterr(all=None, divide='ignore', over=None, under=None, invalid='ignore')
+
+a, b, c = 2, -3, -100
+
+plot_fun(a, b, c)
+
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+)
+```
+
+Likewise, if $c$ is too small, then this function cannot reach its root within a limited number of iterations. Or in this example, we need to set a larger `maxiter` so that we can find its root (which is extremely close to 0).
+
+```{python}
+# | label: newton-bisection test 4
+# | error: true 
+
+np.seterr(all=None, divide='ignore', over=None, under=None, invalid='ignore')
+
+a, b, c = 2, -3, 100
+
+plot_fun(a, b, c)
+
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+    maxiter=50
+)
+```
+
+```{python}
+# | label: newton-bisection test 4 with a larger maxiter
+
+
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+    maxiter=100
+)
 ```

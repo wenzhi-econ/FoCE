@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Course 13 and 23: Root Finding</title>
+<title>Course 13, 23, and 25: Root Finding Using Bisection Method and Newton Method</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -118,6 +118,11 @@ window.Quarto = {
   <li><a href="#function-domain-and-differentiability" id="toc-function-domain-and-differentiability" class="nav-link" data-scroll-target="#function-domain-and-differentiability"><span class="header-section-number">3.4</span> Function domain and differentiability</a></li>
   </ul></li>
   <li><a href="#multivariate-newton-method" id="toc-multivariate-newton-method" class="nav-link" data-scroll-target="#multivariate-newton-method"><span class="header-section-number">4</span> Multivariate Newton Method</a></li>
+  <li><a href="#combining-newton-method-with-bisection-method" id="toc-combining-newton-method-with-bisection-method" class="nav-link" data-scroll-target="#combining-newton-method-with-bisection-method"><span class="header-section-number">5</span> Combining Newton Method with Bisection Method</a>
+  <ul class="collapse">
+  <li><a href="#theoretical-properties" id="toc-theoretical-properties" class="nav-link" data-scroll-target="#theoretical-properties"><span class="header-section-number">5.1</span> Theoretical properties</a></li>
+  <li><a href="#newton-bisection-hybrid-algorithm" id="toc-newton-bisection-hybrid-algorithm" class="nav-link" data-scroll-target="#newton-bisection-hybrid-algorithm"><span class="header-section-number">5.2</span> Newton-bisection hybrid algorithm</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -125,7 +130,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Course 13 and 23: Root Finding</h1>
+<h1 class="title">Course 13, 23, and 25: Root Finding Using Bisection Method and Newton Method</h1>
 </div>
 
 
@@ -556,14 +561,10 @@ x_bar =-0.00000000977954507284, function value is -0.00000000977954507284.</code
 <div class="cell-output cell-output-stdout">
 <pre><code>Failed to converge in 100 iterations.</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>C:\Users\wang\AppData\Local\Temp\ipykernel_12384\1714915964.py:1: RuntimeWarning: invalid value encountered in log
-  f = lambda x: np.log(x)</code></pre>
-</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/differentiability-output-3.png" id="differentiability" width="580" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/differentiability-output-2.png" id="differentiability" width="580" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -586,84 +587,84 @@ x_{i+1}=x_i-\left(\nabla G\left(x_i\right)\right)^{-1} G\left(x_i\right).
 \]</span></p>
 <p>First, let’s code up the newton algorithm. Notice that this function is very specific to our current example, and its arguments should stick to the rules strictly (especially that <code>x0</code> should be a column vector as a <code>numpy.ndarray</code> object.</p>
 <div id="d-newton-method" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">def</span> newton2(fun, grad, x0, tol<span class="op">=</span><span class="fl">1e-6</span>, maxiter<span class="op">=</span><span class="dv">100</span>, callback<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb27-2"><a href="#cb27-2"></a>    <span class="co">"""</span></span>
-<span id="cb27-3"><a href="#cb27-3"></a><span class="co">    This finds the root of a 2-dimensional function fun (the first</span></span>
-<span id="cb27-4"><a href="#cb27-4"></a><span class="co">    argument) using the newton method, with initial guess x0 and given</span></span>
-<span id="cb27-5"><a href="#cb27-5"></a><span class="co">    tolerance and maximum number of iterations.</span></span>
-<span id="cb27-6"><a href="#cb27-6"></a></span>
-<span id="cb27-7"><a href="#cb27-7"></a><span class="co">    Input arguments:</span></span>
-<span id="cb27-8"><a href="#cb27-8"></a><span class="co">        fun: a function that receives a 2*1 np.ndarray as input, and</span></span>
-<span id="cb27-9"><a href="#cb27-9"></a><span class="co">        returns a 2*1 np.ndarray</span></span>
-<span id="cb27-10"><a href="#cb27-10"></a><span class="co">        grad: the gradient function of func that receives a 2*1 np.ndarray as input, and returns a 2*2 np.ndarray</span></span>
-<span id="cb27-11"><a href="#cb27-11"></a><span class="co">        x0: initial guess as a 2*1 np.ndarray</span></span>
-<span id="cb27-12"><a href="#cb27-12"></a><span class="co">        tol: tolerance</span></span>
-<span id="cb27-13"><a href="#cb27-13"></a><span class="co">        maxiter: maximum number of iterations</span></span>
-<span id="cb27-14"><a href="#cb27-14"></a><span class="co">        callback: a function that will be invoked at each iteration if</span></span>
-<span id="cb27-15"><a href="#cb27-15"></a><span class="co">        given</span></span>
-<span id="cb27-16"><a href="#cb27-16"></a><span class="co">    """</span></span>
-<span id="cb27-17"><a href="#cb27-17"></a>    x, y <span class="op">=</span> x0</span>
-<span id="cb27-18"><a href="#cb27-18"></a></span>
-<span id="cb27-19"><a href="#cb27-19"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(maxiter):</span>
-<span id="cb27-20"><a href="#cb27-20"></a>        x1 <span class="op">=</span> x0 <span class="op">-</span> np.linalg.inv(grad(x0)).dot(fun(x0))</span>
-<span id="cb27-21"><a href="#cb27-21"></a>        x_bar <span class="op">=</span> (x0 <span class="op">+</span> x1) <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb27-22"><a href="#cb27-22"></a>        err <span class="op">=</span> fun(x_bar)</span>
-<span id="cb27-23"><a href="#cb27-23"></a></span>
-<span id="cb27-24"><a href="#cb27-24"></a>        <span class="cf">if</span> callback <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb27-25"><a href="#cb27-25"></a>            callback(</span>
-<span id="cb27-26"><a href="#cb27-26"></a>                arg_iter<span class="op">=</span>i,</span>
-<span id="cb27-27"><a href="#cb27-27"></a>                arg_err<span class="op">=</span>err,</span>
-<span id="cb27-28"><a href="#cb27-28"></a>                arg_xbar<span class="op">=</span>x_bar,</span>
-<span id="cb27-29"><a href="#cb27-29"></a>                arg_x0<span class="op">=</span>x0,</span>
-<span id="cb27-30"><a href="#cb27-30"></a>                arg_x1<span class="op">=</span>x1,</span>
-<span id="cb27-31"><a href="#cb27-31"></a>            )</span>
-<span id="cb27-32"><a href="#cb27-32"></a></span>
-<span id="cb27-33"><a href="#cb27-33"></a>        <span class="cf">if</span> np.sqrt(np.<span class="bu">sum</span>(err<span class="op">**</span><span class="dv">2</span>)) <span class="op">&lt;</span> tol:</span>
-<span id="cb27-34"><a href="#cb27-34"></a>            <span class="cf">break</span></span>
-<span id="cb27-35"><a href="#cb27-35"></a>        <span class="cf">else</span>:</span>
-<span id="cb27-36"><a href="#cb27-36"></a>            x0 <span class="op">=</span> x1</span>
-<span id="cb27-37"><a href="#cb27-37"></a></span>
-<span id="cb27-38"><a href="#cb27-38"></a>    <span class="cf">else</span>:</span>
-<span id="cb27-39"><a href="#cb27-39"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(</span>
-<span id="cb27-40"><a href="#cb27-40"></a>            <span class="ss">f"Failed to converge in </span><span class="sc">{</span>maxiter<span class="sc">}</span><span class="ss"> iterations."</span></span>
-<span id="cb27-41"><a href="#cb27-41"></a>        )</span>
-<span id="cb27-42"><a href="#cb27-42"></a>    <span class="cf">return</span> x_bar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">def</span> newton2(fun, grad, x0, tol<span class="op">=</span><span class="fl">1e-6</span>, maxiter<span class="op">=</span><span class="dv">100</span>, callback<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb26-2"><a href="#cb26-2"></a>    <span class="co">"""</span></span>
+<span id="cb26-3"><a href="#cb26-3"></a><span class="co">    This finds the root of a 2-dimensional function fun (the first</span></span>
+<span id="cb26-4"><a href="#cb26-4"></a><span class="co">    argument) using the newton method, with initial guess x0 and given</span></span>
+<span id="cb26-5"><a href="#cb26-5"></a><span class="co">    tolerance and maximum number of iterations.</span></span>
+<span id="cb26-6"><a href="#cb26-6"></a></span>
+<span id="cb26-7"><a href="#cb26-7"></a><span class="co">    Input arguments:</span></span>
+<span id="cb26-8"><a href="#cb26-8"></a><span class="co">        fun: a function that receives a 2*1 np.ndarray as input, and</span></span>
+<span id="cb26-9"><a href="#cb26-9"></a><span class="co">        returns a 2*1 np.ndarray</span></span>
+<span id="cb26-10"><a href="#cb26-10"></a><span class="co">        grad: the gradient function of func that receives a 2*1 np.ndarray as input, and returns a 2*2 np.ndarray</span></span>
+<span id="cb26-11"><a href="#cb26-11"></a><span class="co">        x0: initial guess as a 2*1 np.ndarray</span></span>
+<span id="cb26-12"><a href="#cb26-12"></a><span class="co">        tol: tolerance</span></span>
+<span id="cb26-13"><a href="#cb26-13"></a><span class="co">        maxiter: maximum number of iterations</span></span>
+<span id="cb26-14"><a href="#cb26-14"></a><span class="co">        callback: a function that will be invoked at each iteration if</span></span>
+<span id="cb26-15"><a href="#cb26-15"></a><span class="co">        given</span></span>
+<span id="cb26-16"><a href="#cb26-16"></a><span class="co">    """</span></span>
+<span id="cb26-17"><a href="#cb26-17"></a>    x, y <span class="op">=</span> x0</span>
+<span id="cb26-18"><a href="#cb26-18"></a></span>
+<span id="cb26-19"><a href="#cb26-19"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(maxiter):</span>
+<span id="cb26-20"><a href="#cb26-20"></a>        x1 <span class="op">=</span> x0 <span class="op">-</span> np.linalg.inv(grad(x0)).dot(fun(x0))</span>
+<span id="cb26-21"><a href="#cb26-21"></a>        x_bar <span class="op">=</span> (x0 <span class="op">+</span> x1) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb26-22"><a href="#cb26-22"></a>        err <span class="op">=</span> fun(x_bar)</span>
+<span id="cb26-23"><a href="#cb26-23"></a></span>
+<span id="cb26-24"><a href="#cb26-24"></a>        <span class="cf">if</span> callback <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb26-25"><a href="#cb26-25"></a>            callback(</span>
+<span id="cb26-26"><a href="#cb26-26"></a>                arg_iter<span class="op">=</span>i,</span>
+<span id="cb26-27"><a href="#cb26-27"></a>                arg_err<span class="op">=</span>err,</span>
+<span id="cb26-28"><a href="#cb26-28"></a>                arg_xbar<span class="op">=</span>x_bar,</span>
+<span id="cb26-29"><a href="#cb26-29"></a>                arg_x0<span class="op">=</span>x0,</span>
+<span id="cb26-30"><a href="#cb26-30"></a>                arg_x1<span class="op">=</span>x1,</span>
+<span id="cb26-31"><a href="#cb26-31"></a>            )</span>
+<span id="cb26-32"><a href="#cb26-32"></a></span>
+<span id="cb26-33"><a href="#cb26-33"></a>        <span class="cf">if</span> np.sqrt(np.<span class="bu">sum</span>(err<span class="op">**</span><span class="dv">2</span>)) <span class="op">&lt;</span> tol:</span>
+<span id="cb26-34"><a href="#cb26-34"></a>            <span class="cf">break</span></span>
+<span id="cb26-35"><a href="#cb26-35"></a>        <span class="cf">else</span>:</span>
+<span id="cb26-36"><a href="#cb26-36"></a>            x0 <span class="op">=</span> x1</span>
+<span id="cb26-37"><a href="#cb26-37"></a></span>
+<span id="cb26-38"><a href="#cb26-38"></a>    <span class="cf">else</span>:</span>
+<span id="cb26-39"><a href="#cb26-39"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(</span>
+<span id="cb26-40"><a href="#cb26-40"></a>            <span class="ss">f"Failed to converge in </span><span class="sc">{</span>maxiter<span class="sc">}</span><span class="ss"> iterations."</span></span>
+<span id="cb26-41"><a href="#cb26-41"></a>        )</span>
+<span id="cb26-42"><a href="#cb26-42"></a>    <span class="cf">return</span> x_bar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, we can test this function!</p>
 <div id="test-2-d-newton" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">def</span> g(x_array):</span>
-<span id="cb28-2"><a href="#cb28-2"></a>    x <span class="op">=</span> x_array[<span class="dv">0</span>, <span class="dv">0</span>]</span>
-<span id="cb28-3"><a href="#cb28-3"></a>    y <span class="op">=</span> x_array[<span class="dv">1</span>, <span class="dv">0</span>]</span>
-<span id="cb28-4"><a href="#cb28-4"></a>    g_1 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi) <span class="op">\</span></span>
-<span id="cb28-5"><a href="#cb28-5"></a>          <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> <span class="fl">0.575</span> <span class="op">*</span> np.sin(<span class="fl">1.25</span> <span class="op">*</span> np.pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x)</span>
-<span id="cb28-6"><a href="#cb28-6"></a>    g_2 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
-<span id="cb28-7"><a href="#cb28-7"></a>    result <span class="op">=</span> np.array([g_1, g_2]).reshape((<span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb28-8"><a href="#cb28-8"></a>    <span class="cf">return</span> result</span>
-<span id="cb28-9"><a href="#cb28-9"></a></span>
-<span id="cb28-10"><a href="#cb28-10"></a></span>
-<span id="cb28-11"><a href="#cb28-11"></a><span class="kw">def</span> h(x_array):</span>
-<span id="cb28-12"><a href="#cb28-12"></a>    x <span class="op">=</span> x_array[<span class="dv">0</span>, <span class="dv">0</span>]</span>
-<span id="cb28-13"><a href="#cb28-13"></a>    y <span class="op">=</span> x_array[<span class="dv">1</span>, <span class="dv">0</span>]</span>
-<span id="cb28-14"><a href="#cb28-14"></a>    h_11 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi) <span class="op">\</span></span>
-<span id="cb28-15"><a href="#cb28-15"></a>           <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> <span class="fl">0.575</span> <span class="op">*</span> np.sin(<span class="fl">1.25</span> <span class="op">*</span> np.pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x)</span>
-<span id="cb28-16"><a href="#cb28-16"></a>    h_12 <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
-<span id="cb28-17"><a href="#cb28-17"></a>    h_21 <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
-<span id="cb28-18"><a href="#cb28-18"></a>    h_22 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi)</span>
-<span id="cb28-19"><a href="#cb28-19"></a></span>
-<span id="cb28-20"><a href="#cb28-20"></a>    result <span class="op">=</span> np.array([[h_11, h_12], [h_21, h_22]])</span>
-<span id="cb28-21"><a href="#cb28-21"></a>    <span class="cf">return</span> result</span>
-<span id="cb28-22"><a href="#cb28-22"></a></span>
-<span id="cb28-23"><a href="#cb28-23"></a></span>
-<span id="cb28-24"><a href="#cb28-24"></a>x_bar <span class="op">=</span> newton2(g, h, x0<span class="op">=</span>np.array([<span class="op">-</span><span class="fl">1.8</span>, <span class="op">-</span><span class="fl">0.2</span>]).reshape((<span class="dv">2</span>, <span class="dv">1</span>)))</span>
-<span id="cb28-25"><a href="#cb28-25"></a><span class="bu">print</span>(x_bar)</span>
-<span id="cb28-26"><a href="#cb28-26"></a></span>
-<span id="cb28-27"><a href="#cb28-27"></a><span class="kw">def</span> print_iter(arg_xbar, arg_err, arg_iter, <span class="op">**</span>kwargs):</span>
-<span id="cb28-28"><a href="#cb28-28"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb28-29"><a href="#cb28-29"></a>    <span class="bu">print</span>(<span class="st">"x_bar ="</span>, arg_xbar.ravel())</span>
-<span id="cb28-30"><a href="#cb28-30"></a>    <span class="bu">print</span>(<span class="st">"function value at x_bar ="</span>, arg_err.ravel())</span>
-<span id="cb28-31"><a href="#cb28-31"></a></span>
-<span id="cb28-32"><a href="#cb28-32"></a>x_bar <span class="op">=</span> newton2(g, h, x0<span class="op">=</span>np.array([<span class="op">-</span><span class="fl">1.8</span>, <span class="op">-</span><span class="fl">0.2</span>]).reshape((<span class="dv">2</span>, <span class="dv">1</span>)), callback<span class="op">=</span>print_iter)</span>
-<span id="cb28-33"><a href="#cb28-33"></a><span class="bu">print</span>(x_bar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">def</span> g(x_array):</span>
+<span id="cb27-2"><a href="#cb27-2"></a>    x <span class="op">=</span> x_array[<span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb27-3"><a href="#cb27-3"></a>    y <span class="op">=</span> x_array[<span class="dv">1</span>, <span class="dv">0</span>]</span>
+<span id="cb27-4"><a href="#cb27-4"></a>    g_1 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi) <span class="op">\</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a>          <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> <span class="fl">0.575</span> <span class="op">*</span> np.sin(<span class="fl">1.25</span> <span class="op">*</span> np.pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x)</span>
+<span id="cb27-6"><a href="#cb27-6"></a>    g_2 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
+<span id="cb27-7"><a href="#cb27-7"></a>    result <span class="op">=</span> np.array([g_1, g_2]).reshape((<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb27-8"><a href="#cb27-8"></a>    <span class="cf">return</span> result</span>
+<span id="cb27-9"><a href="#cb27-9"></a></span>
+<span id="cb27-10"><a href="#cb27-10"></a></span>
+<span id="cb27-11"><a href="#cb27-11"></a><span class="kw">def</span> h(x_array):</span>
+<span id="cb27-12"><a href="#cb27-12"></a>    x <span class="op">=</span> x_array[<span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb27-13"><a href="#cb27-13"></a>    y <span class="op">=</span> x_array[<span class="dv">1</span>, <span class="dv">0</span>]</span>
+<span id="cb27-14"><a href="#cb27-14"></a>    h_11 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi) <span class="op">\</span></span>
+<span id="cb27-15"><a href="#cb27-15"></a>           <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> <span class="fl">0.575</span> <span class="op">*</span> np.sin(<span class="fl">1.25</span> <span class="op">*</span> np.pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x)</span>
+<span id="cb27-16"><a href="#cb27-16"></a>    h_12 <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
+<span id="cb27-17"><a href="#cb27-17"></a>    h_21 <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
+<span id="cb27-18"><a href="#cb27-18"></a>    h_22 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi)</span>
+<span id="cb27-19"><a href="#cb27-19"></a></span>
+<span id="cb27-20"><a href="#cb27-20"></a>    result <span class="op">=</span> np.array([[h_11, h_12], [h_21, h_22]])</span>
+<span id="cb27-21"><a href="#cb27-21"></a>    <span class="cf">return</span> result</span>
+<span id="cb27-22"><a href="#cb27-22"></a></span>
+<span id="cb27-23"><a href="#cb27-23"></a></span>
+<span id="cb27-24"><a href="#cb27-24"></a>x_bar <span class="op">=</span> newton2(g, h, x0<span class="op">=</span>np.array([<span class="op">-</span><span class="fl">1.8</span>, <span class="op">-</span><span class="fl">0.2</span>]).reshape((<span class="dv">2</span>, <span class="dv">1</span>)))</span>
+<span id="cb27-25"><a href="#cb27-25"></a><span class="bu">print</span>(x_bar)</span>
+<span id="cb27-26"><a href="#cb27-26"></a></span>
+<span id="cb27-27"><a href="#cb27-27"></a><span class="kw">def</span> print_iter(arg_xbar, arg_err, arg_iter, <span class="op">**</span>kwargs):</span>
+<span id="cb27-28"><a href="#cb27-28"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb27-29"><a href="#cb27-29"></a>    <span class="bu">print</span>(<span class="st">"x_bar ="</span>, arg_xbar.ravel())</span>
+<span id="cb27-30"><a href="#cb27-30"></a>    <span class="bu">print</span>(<span class="st">"function value at x_bar ="</span>, arg_err.ravel())</span>
+<span id="cb27-31"><a href="#cb27-31"></a></span>
+<span id="cb27-32"><a href="#cb27-32"></a>x_bar <span class="op">=</span> newton2(g, h, x0<span class="op">=</span>np.array([<span class="op">-</span><span class="fl">1.8</span>, <span class="op">-</span><span class="fl">0.2</span>]).reshape((<span class="dv">2</span>, <span class="dv">1</span>)), callback<span class="op">=</span>print_iter)</span>
+<span id="cb27-33"><a href="#cb27-33"></a><span class="bu">print</span>(x_bar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[-0.56967279]
  [-3.14159265]]
@@ -713,6 +714,1478 @@ function value at x_bar = [5.23748697e-07 0.00000000e+00]
  [-3.14159265]]</code></pre>
 </div>
 </div>
+</section>
+<section id="combining-newton-method-with-bisection-method" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Combining Newton Method with Bisection Method</h1>
+<p>In this section, we are going to solve the following equation</p>
+<p><span class="math display">\[
+f(x) = a \log(x) + b\log(1-x) + c = 0, ab&lt;0.
+\]</span></p>
+<p>This equation arise in the models of discrete choice in IO, for example when computing a mixed strategy equilibrium in a two players game with binary actions.</p>
+<section id="theoretical-properties" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="theoretical-properties"><span class="header-section-number">5.1</span> Theoretical properties</h2>
+<ul>
+<li><span class="math inline">\(x \in (0,1)\)</span> are strict limits, any algorithm will break down if stepping outside</li>
+<li>there is exactly one solution for any values of parameters <span class="math inline">\(a,b,c\)</span> (where <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> have opposite signs, without loss of generality assume <span class="math inline">\(a &gt; 0\)</span> and <span class="math inline">\(b&lt;0\)</span>.)
+<ul>
+<li><span class="math inline">\(f(x)\)</span> is continuous in its domain <span class="math inline">\(x \in (0,1)\)</span>.</li>
+<li><span class="math inline">\(f'(x) \ge 0\)</span> everywhere in the domain, so the function is monotonically increasing, and vise versa.</li>
+<li>When <span class="math inline">\(x \rightarrow 0\)</span> from the right <span class="math inline">\(f(x) \rightarrow -\infty\)</span>, and when <span class="math inline">\(x \rightarrow 1\)</span> from the left <span class="math inline">\(f(x) \rightarrow \infty\)</span>, and vise versa.</li>
+</ul></li>
+<li>But depending on the value of <span class="math inline">\(c\)</span> the solution may be arbitrary close to <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span>!</li>
+<li>Therefore, if we compare newton with bisection:
+<ul>
+<li>Newton method can easily overshoot to the outside of domain.</li>
+<li>Bisection method may take forever to converge.</li>
+</ul></li>
+</ul>
+</section>
+<section id="newton-bisection-hybrid-algorithm" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="newton-bisection-hybrid-algorithm"><span class="header-section-number">5.2</span> Newton-bisection hybrid algorithm</h2>
+<div id="newton-bisection" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">def</span> newton_bounds(</span>
+<span id="cb29-2"><a href="#cb29-2"></a>    fun,</span>
+<span id="cb29-3"><a href="#cb29-3"></a>    grad,</span>
+<span id="cb29-4"><a href="#cb29-4"></a>    x0<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb29-5"><a href="#cb29-5"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb29-6"><a href="#cb29-6"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb29-7"><a href="#cb29-7"></a>    maxiter<span class="op">=</span><span class="dv">100</span>,</span>
+<span id="cb29-8"><a href="#cb29-8"></a>    callback<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb29-9"><a href="#cb29-9"></a>):</span>
+<span id="cb29-10"><a href="#cb29-10"></a>    <span class="co">"""</span></span>
+<span id="cb29-11"><a href="#cb29-11"></a><span class="co">    This function combines the newton method and the bisection method to</span></span>
+<span id="cb29-12"><a href="#cb29-12"></a><span class="co">    solve a root-finding problem with given lower and upper bounds.</span></span>
+<span id="cb29-13"><a href="#cb29-13"></a></span>
+<span id="cb29-14"><a href="#cb29-14"></a><span class="co">    Input arguments:</span></span>
+<span id="cb29-15"><a href="#cb29-15"></a><span class="co">        fun: the function of interest</span></span>
+<span id="cb29-16"><a href="#cb29-16"></a><span class="co">        grad: the derivate of the fun</span></span>
+<span id="cb29-17"><a href="#cb29-17"></a><span class="co">        x0: initial guess</span></span>
+<span id="cb29-18"><a href="#cb29-18"></a><span class="co">        bounds: a tuple that contains the lower and upper bounds</span></span>
+<span id="cb29-19"><a href="#cb29-19"></a><span class="co">        tol: tolerance</span></span>
+<span id="cb29-20"><a href="#cb29-20"></a><span class="co">        maxiter: maximum number of iterations</span></span>
+<span id="cb29-21"><a href="#cb29-21"></a><span class="co">        callback: a function that will be called in each iteration</span></span>
+<span id="cb29-22"><a href="#cb29-22"></a><span class="co">    """</span></span>
+<span id="cb29-23"><a href="#cb29-23"></a>    a, b <span class="op">=</span> bounds</span>
+<span id="cb29-24"><a href="#cb29-24"></a>    sign_a <span class="op">=</span> np.sign(fun(a))</span>
+<span id="cb29-25"><a href="#cb29-25"></a>    sign_b <span class="op">=</span> np.sign(fun(b))</span>
+<span id="cb29-26"><a href="#cb29-26"></a>    <span class="cf">if</span> sign_a <span class="op">*</span> sign_b <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb29-27"><a href="#cb29-27"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(</span>
+<span id="cb29-28"><a href="#cb29-28"></a>            <span class="st">"Function has the same signs at the initial lower and upper bounds."</span></span>
+<span id="cb29-29"><a href="#cb29-29"></a>        )</span>
+<span id="cb29-30"><a href="#cb29-30"></a></span>
+<span id="cb29-31"><a href="#cb29-31"></a>    <span class="cf">if</span> x0 <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb29-32"><a href="#cb29-32"></a>        x0 <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb29-33"><a href="#cb29-33"></a></span>
+<span id="cb29-34"><a href="#cb29-34"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(maxiter):</span>
+<span id="cb29-35"><a href="#cb29-35"></a>        f0 <span class="op">=</span> fun(x0)</span>
+<span id="cb29-36"><a href="#cb29-36"></a>        newton_x1 <span class="op">=</span> x0 <span class="op">-</span> fun(x0) <span class="op">/</span> grad(x0)</span>
+<span id="cb29-37"><a href="#cb29-37"></a>        <span class="cf">if</span> newton_x1 <span class="op">&gt;</span> b <span class="kw">or</span> newton_x1 <span class="op">&lt;</span> a:</span>
+<span id="cb29-38"><a href="#cb29-38"></a>            <span class="cf">if</span> np.sign(f0) <span class="op">*</span> sign_a <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb29-39"><a href="#cb29-39"></a>                a <span class="op">=</span> x0</span>
+<span id="cb29-40"><a href="#cb29-40"></a>            <span class="cf">else</span>:</span>
+<span id="cb29-41"><a href="#cb29-41"></a>                b <span class="op">=</span> x0</span>
+<span id="cb29-42"><a href="#cb29-42"></a>            x1 <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb29-43"><a href="#cb29-43"></a>            step_type <span class="op">=</span> <span class="st">"bisection"</span></span>
+<span id="cb29-44"><a href="#cb29-44"></a>        <span class="cf">else</span>:</span>
+<span id="cb29-45"><a href="#cb29-45"></a>            x1 <span class="op">=</span> newton_x1</span>
+<span id="cb29-46"><a href="#cb29-46"></a>            step_type <span class="op">=</span> <span class="st">"newton"</span></span>
+<span id="cb29-47"><a href="#cb29-47"></a></span>
+<span id="cb29-48"><a href="#cb29-48"></a>        err <span class="op">=</span> fun(x1)</span>
+<span id="cb29-49"><a href="#cb29-49"></a></span>
+<span id="cb29-50"><a href="#cb29-50"></a>        <span class="cf">if</span> callback <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb29-51"><a href="#cb29-51"></a>            callback(</span>
+<span id="cb29-52"><a href="#cb29-52"></a>                arg_iter<span class="op">=</span>i,</span>
+<span id="cb29-53"><a href="#cb29-53"></a>                arg_type<span class="op">=</span>step_type,</span>
+<span id="cb29-54"><a href="#cb29-54"></a>                arg_err<span class="op">=</span>err,</span>
+<span id="cb29-55"><a href="#cb29-55"></a>                arg_x0<span class="op">=</span>x0,</span>
+<span id="cb29-56"><a href="#cb29-56"></a>                arg_x1<span class="op">=</span>x1,</span>
+<span id="cb29-57"><a href="#cb29-57"></a>                arg_bounds<span class="op">=</span>(a, b),</span>
+<span id="cb29-58"><a href="#cb29-58"></a>            )</span>
+<span id="cb29-59"><a href="#cb29-59"></a></span>
+<span id="cb29-60"><a href="#cb29-60"></a>        <span class="cf">if</span> <span class="bu">abs</span>(err) <span class="op">&lt;</span> tol:</span>
+<span id="cb29-61"><a href="#cb29-61"></a>            <span class="cf">break</span></span>
+<span id="cb29-62"><a href="#cb29-62"></a></span>
+<span id="cb29-63"><a href="#cb29-63"></a>        x0 <span class="op">=</span> x1</span>
+<span id="cb29-64"><a href="#cb29-64"></a>    <span class="cf">else</span>:</span>
+<span id="cb29-65"><a href="#cb29-65"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(</span>
+<span id="cb29-66"><a href="#cb29-66"></a>            <span class="ss">f"Failed to converge in </span><span class="sc">{</span>maxiter<span class="sc">}</span><span class="ss"> iterations."</span></span>
+<span id="cb29-67"><a href="#cb29-67"></a>        )</span>
+<span id="cb29-68"><a href="#cb29-68"></a></span>
+<span id="cb29-69"><a href="#cb29-69"></a>    <span class="cf">return</span> x1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, let’s present a case where this function works pretty well. But to do this, we need to define two auxiliary functions to present iterations and have a glimpse at the function of interest.</p>
+<div id="newton-bisection-auxiliary-functions" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">def</span> print_iter(</span>
+<span id="cb30-2"><a href="#cb30-2"></a>    arg_iter, arg_type, arg_err, arg_x0, arg_x1, arg_bounds, <span class="op">**</span>kwargs</span>
+<span id="cb30-3"><a href="#cb30-3"></a>):</span>
+<span id="cb30-4"><a href="#cb30-4"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>arg_type<span class="sc">:s}</span><span class="ss">"</span>)</span>
+<span id="cb30-5"><a href="#cb30-5"></a>    <span class="bu">print</span>(</span>
+<span id="cb30-6"><a href="#cb30-6"></a>        <span class="ss">f"x_0 = </span><span class="sc">{</span>arg_x0<span class="sc">:&lt;1.20f}</span><span class="ss">, bounds = (</span><span class="sc">{</span>arg_bounds[<span class="dv">0</span>]<span class="sc">:&lt;1.10f}</span><span class="ss">, </span><span class="sc">{</span>arg_bounds[<span class="dv">1</span>]<span class="sc">:&lt;1.10f}</span><span class="ss">)"</span></span>
+<span id="cb30-7"><a href="#cb30-7"></a>    )</span>
+<span id="cb30-8"><a href="#cb30-8"></a>    <span class="bu">print</span>(<span class="ss">f"x_bar = </span><span class="sc">{</span>arg_x1<span class="sc">:&lt;1.20f}</span><span class="ss">, fun(x_bar) = </span><span class="sc">{</span>arg_err<span class="sc">:&lt;1.20f}</span><span class="ss">"</span>)</span>
+<span id="cb30-9"><a href="#cb30-9"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb30-10"><a href="#cb30-10"></a>    </span>
+<span id="cb30-11"><a href="#cb30-11"></a><span class="kw">def</span> fun_grad_list(a, b, c):</span>
+<span id="cb30-12"><a href="#cb30-12"></a>    f <span class="op">=</span> <span class="kw">lambda</span> x: a <span class="op">*</span> np.log(x) <span class="op">+</span> b <span class="op">*</span> np.log(<span class="dv">1</span> <span class="op">-</span> x) <span class="op">+</span> c</span>
+<span id="cb30-13"><a href="#cb30-13"></a>    g <span class="op">=</span> <span class="kw">lambda</span> x: a <span class="op">/</span> x <span class="op">-</span> b <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> x)</span>
+<span id="cb30-14"><a href="#cb30-14"></a>    <span class="cf">return</span> [f, g]</span>
+<span id="cb30-15"><a href="#cb30-15"></a>    </span>
+<span id="cb30-16"><a href="#cb30-16"></a><span class="kw">def</span> plot_fun(a, b, c):</span>
+<span id="cb30-17"><a href="#cb30-17"></a>    fun <span class="op">=</span> fun_grad_list(a, b, c)[<span class="dv">0</span>]</span>
+<span id="cb30-18"><a href="#cb30-18"></a>    xd <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">10000</span>)</span>
+<span id="cb30-19"><a href="#cb30-19"></a>    plt.plot(xd, fun(xd), c<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb30-20"><a href="#cb30-20"></a>    plt.plot([<span class="dv">0</span>,<span class="dv">1</span>], [<span class="dv">0</span>,<span class="dv">0</span>], c<span class="op">=</span><span class="st">'black'</span>)</span>
+<span id="cb30-21"><a href="#cb30-21"></a>    plt.ion()</span>
+<span id="cb30-22"><a href="#cb30-22"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The well-functioned example has the following parameters: <code>a=1; b=-4; c=0.5</code>.</p>
+<div id="newton-bisection-test-1" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1"></a>a <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a>b <span class="op">=</span> <span class="op">-</span><span class="dv">4</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a>c <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb31-4"><a href="#cb31-4"></a>plot_fun(a, b, c)</span>
+<span id="cb31-5"><a href="#cb31-5"></a></span>
+<span id="cb31-6"><a href="#cb31-6"></a>newton_bounds(</span>
+<span id="cb31-7"><a href="#cb31-7"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb31-8"><a href="#cb31-8"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb31-9"><a href="#cb31-9"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb31-10"><a href="#cb31-10"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb31-11"><a href="#cb31-11"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb31-12"><a href="#cb31-12"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Course13_RootFinding1_files/figure-html/newton-bisection-test-1-output-1.png" id="newton-bisection-test-1-1" width="578" height="411" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 1: newton
+x_0 = 0.50000000000000000000, bounds = (0.0000000000, 1.0000000000)
+x_bar = 0.24205584583201644744, fun(x_bar) = 0.18999547362881319401
+
+
+Iteration 2: newton
+x_0 = 0.24205584583201644744, bounds = (0.0000000000, 1.0000000000)
+x_bar = 0.22186227635177588335, fun(x_bar) = -0.00229147527169071274
+
+
+Iteration 3: newton
+x_0 = 0.22186227635177588335, bounds = (0.0000000000, 1.0000000000)
+x_bar = 0.22209978959601761606, fun(x_bar) = -0.00000038625098985889
+
+</code></pre>
+</div>
+<div id="newton-bisection-test-1-2" class="cell-output cell-output-display" data-execution_count="103">
+<pre><code>0.22209978959601762</code></pre>
+</div>
+</div>
+<p>Another example is as follows.</p>
+<div id="newton-bisection-test-2" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1"></a>a, b, c <span class="op">=</span> <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">5</span></span>
+<span id="cb34-2"><a href="#cb34-2"></a></span>
+<span id="cb34-3"><a href="#cb34-3"></a>plot_fun(a, b, c)</span>
+<span id="cb34-4"><a href="#cb34-4"></a>newton_bounds(</span>
+<span id="cb34-5"><a href="#cb34-5"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb34-6"><a href="#cb34-6"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb34-7"><a href="#cb34-7"></a>    x0<span class="op">=</span><span class="fl">0.9</span>,</span>
+<span id="cb34-8"><a href="#cb34-8"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb34-9"><a href="#cb34-9"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb34-10"><a href="#cb34-10"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb34-11"><a href="#cb34-11"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Course13_RootFinding1_files/figure-html/newton-bisection-test-2-output-1.png" id="newton-bisection-test-2-1" width="590" height="414" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 1: bisection
+x_0 = 0.90000000000000002220, bounds = (0.9000000000, 1.0000000000)
+x_bar = 0.94999999999999995559, fun(x_bar) = -2.05556102083356062593
+
+
+Iteration 2: bisection
+x_0 = 0.94999999999999995559, bounds = (0.9500000000, 1.0000000000)
+x_bar = 0.97499999999999997780, fun(x_bar) = -1.33643835387035458950
+
+
+Iteration 3: bisection
+x_0 = 0.97499999999999997780, bounds = (0.9750000000, 1.0000000000)
+x_bar = 0.98750000000000004441, fun(x_bar) = -0.63055214753297494923
+
+
+Iteration 4: newton
+x_0 = 0.98750000000000004441, bounds = (0.9750000000, 1.0000000000)
+x_bar = 0.99528337807111022517, fun(x_bar) = 0.35193464835657994882
+
+
+Iteration 5: newton
+x_0 = 0.99528337807111022517, bounds = (0.9750000000, 1.0000000000)
+x_bar = 0.99363126471318052868, fun(x_bar) = 0.04996526900893716316
+
+
+Iteration 6: newton
+x_0 = 0.99363126471318052868, bounds = (0.9750000000, 1.0000000000)
+x_bar = 0.99331507577206912263, fun(x_bar) = 0.00119303471763121394
+
+
+Iteration 7: newton
+x_0 = 0.99331507577206912263, bounds = (0.9750000000, 1.0000000000)
+x_bar = 0.99330715373996880668, fun(x_bar) = 0.00000070159679843584
+
+</code></pre>
+</div>
+<div id="newton-bisection-test-2-2" class="cell-output cell-output-display" data-execution_count="104">
+<pre><code>0.9933071537399688</code></pre>
+</div>
+</div>
+<p>However, if <span class="math inline">\(c\)</span> is too large, then this function cannot reach its root within a limited number of iterations.</p>
+<p>::: {#cell-newton-bisection test 3 .cell execution_count=20}</p>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1"></a>np.seterr(<span class="bu">all</span><span class="op">=</span><span class="va">None</span>, divide<span class="op">=</span><span class="st">'ignore'</span>, over<span class="op">=</span><span class="va">None</span>, under<span class="op">=</span><span class="va">None</span>, invalid<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb37-2"><a href="#cb37-2"></a></span>
+<span id="cb37-3"><a href="#cb37-3"></a>a, b, c <span class="op">=</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>, <span class="op">-</span><span class="dv">100</span></span>
+<span id="cb37-4"><a href="#cb37-4"></a></span>
+<span id="cb37-5"><a href="#cb37-5"></a>plot_fun(a, b, c)</span>
+<span id="cb37-6"><a href="#cb37-6"></a></span>
+<span id="cb37-7"><a href="#cb37-7"></a>newton_bounds(</span>
+<span id="cb37-8"><a href="#cb37-8"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb37-9"><a href="#cb37-9"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb37-10"><a href="#cb37-10"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb37-11"><a href="#cb37-11"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb37-12"><a href="#cb37-12"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb37-13"><a href="#cb37-13"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Course13_RootFinding1_files/figure-html/newton-bisection-test-3-output-1.png" id="newton-bisection-test-3" width="586" height="411" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 1: bisection
+x_0 = 0.50000000000000000000, bounds = (0.5000000000, 1.0000000000)
+x_bar = 0.75000000000000000000, fun(x_bar) = -96.41648106154389097355
+
+
+Iteration 2: bisection
+x_0 = 0.75000000000000000000, bounds = (0.7500000000, 1.0000000000)
+x_bar = 0.87500000000000000000, fun(x_bar) = -94.02873816020954222950
+
+
+Iteration 3: bisection
+x_0 = 0.87500000000000000000, bounds = (0.8750000000, 1.0000000000)
+x_bar = 0.93750000000000000000, fun(x_bar) = -91.81131087555580450044
+
+
+Iteration 4: bisection
+x_0 = 0.93750000000000000000, bounds = (0.9375000000, 1.0000000000)
+x_bar = 0.96875000000000000000, fun(x_bar) = -89.66628968822998047017
+
+
+Iteration 5: bisection
+x_0 = 0.96875000000000000000, bounds = (0.9687500000, 1.0000000000)
+x_bar = 0.98437500000000000000, fun(x_bar) = -87.55484746385727135021
+
+
+Iteration 6: bisection
+x_0 = 0.98437500000000000000, bounds = (0.9843750000, 1.0000000000)
+x_bar = 0.99218750000000000000, fun(x_bar) = -85.45959556316320515634
+
+
+Iteration 7: bisection
+x_0 = 0.99218750000000000000, bounds = (0.9921875000, 1.0000000000)
+x_bar = 0.99609375000000000000, fun(x_bar) = -83.37229546520359235728
+
+
+Iteration 8: bisection
+x_0 = 0.99609375000000000000, bounds = (0.9960937500, 1.0000000000)
+x_bar = 0.99804687500000000000, fun(x_bar) = -81.28893619455308794386
+
+
+Iteration 9: bisection
+x_0 = 0.99804687500000000000, bounds = (0.9980468750, 1.0000000000)
+x_bar = 0.99902343750000000000, fun(x_bar) = -79.20753866249729924220
+
+
+Iteration 10: bisection
+x_0 = 0.99902343750000000000, bounds = (0.9990234375, 1.0000000000)
+x_bar = 0.99951171875000000000, fun(x_bar) = -77.12711984251802732615
+
+
+Iteration 11: bisection
+x_0 = 0.99951171875000000000, bounds = (0.9995117188, 1.0000000000)
+x_bar = 0.99975585937500000000, fun(x_bar) = -75.04718984070632359362
+
+
+Iteration 12: bisection
+x_0 = 0.99975585937500000000, bounds = (0.9997558594, 1.0000000000)
+x_bar = 0.99987792968750000000, fun(x_bar) = -72.96750411368950040014
+
+
+Iteration 13: bisection
+x_0 = 0.99987792968750000000, bounds = (0.9998779297, 1.0000000000)
+x_bar = 0.99993896484375000000, fun(x_bar) = -70.88794049052023638069
+
+
+Iteration 14: bisection
+x_0 = 0.99993896484375000000, bounds = (0.9999389648, 1.0000000000)
+x_bar = 0.99996948242187500000, fun(x_bar) = -68.80843791089004923833
+
+
+Iteration 15: bisection
+x_0 = 0.99996948242187500000, bounds = (0.9999694824, 1.0000000000)
+x_bar = 0.99998474121093750000, fun(x_bar) = -66.72896585093357657570
+
+
+Iteration 16: bisection
+x_0 = 0.99998474121093750000, bounds = (0.9999847412, 1.0000000000)
+x_bar = 0.99999237060546875000, fun(x_bar) = -64.64950905029006378300
+
+
+Iteration 17: bisection
+x_0 = 0.99999237060546875000, bounds = (0.9999923706, 1.0000000000)
+x_bar = 0.99999618530273437500, fun(x_bar) = -62.57005987917203526649
+
+
+Iteration 18: bisection
+x_0 = 0.99999618530273437500, bounds = (0.9999961853, 1.0000000000)
+x_bar = 0.99999809265136718750, fun(x_bar) = -60.49061452278402128968
+
+
+Iteration 19: bisection
+x_0 = 0.99999809265136718750, bounds = (0.9999980927, 1.0000000000)
+x_bar = 0.99999904632568359375, fun(x_bar) = -58.41117107375282557769
+
+
+Iteration 20: bisection
+x_0 = 0.99999904632568359375, bounds = (0.9999990463, 1.0000000000)
+x_bar = 0.99999952316284179688, fun(x_bar) = -56.33172857839798552959
+
+
+Iteration 21: bisection
+x_0 = 0.99999952316284179688, bounds = (0.9999995232, 1.0000000000)
+x_bar = 0.99999976158142089844, fun(x_bar) = -54.25228655988082238082
+
+
+Iteration 22: bisection
+x_0 = 0.99999976158142089844, bounds = (0.9999997616, 1.0000000000)
+x_bar = 0.99999988079071044922, fun(x_bar) = -52.17284477978236623130
+
+
+Iteration 23: bisection
+x_0 = 0.99999988079071044922, bounds = (0.9999998808, 1.0000000000)
+x_bar = 0.99999994039535522461, fun(x_bar) = -50.09340311889324226513
+
+
+Iteration 24: bisection
+x_0 = 0.99999994039535522461, bounds = (0.9999999404, 1.0000000000)
+x_bar = 0.99999997019767761230, fun(x_bar) = -48.01396151760874886349
+
+
+Iteration 25: bisection
+x_0 = 0.99999997019767761230, bounds = (0.9999999702, 1.0000000000)
+x_bar = 0.99999998509883880615, fun(x_bar) = -45.93451994612659206041
+
+
+Iteration 26: bisection
+x_0 = 0.99999998509883880615, bounds = (0.9999999851, 1.0000000000)
+x_bar = 0.99999999254941940308, fun(x_bar) = -43.85507838954558934574
+
+
+Iteration 27: bisection
+x_0 = 0.99999999254941940308, bounds = (0.9999999925, 1.0000000000)
+x_bar = 0.99999999627470970154, fun(x_bar) = -41.77563684041517433343
+
+
+Iteration 28: bisection
+x_0 = 0.99999999627470970154, bounds = (0.9999999963, 1.0000000000)
+x_bar = 0.99999999813735485077, fun(x_bar) = -39.69619529501004251415
+
+
+Iteration 29: bisection
+x_0 = 0.99999999813735485077, bounds = (0.9999999981, 1.0000000000)
+x_bar = 0.99999999906867742538, fun(x_bar) = -37.61675375146757005496
+
+
+Iteration 30: bisection
+x_0 = 0.99999999906867742538, bounds = (0.9999999991, 1.0000000000)
+x_bar = 0.99999999953433871269, fun(x_bar) = -35.53731220885640595952
+
+
+Iteration 31: bisection
+x_0 = 0.99999999953433871269, bounds = (0.9999999995, 1.0000000000)
+x_bar = 0.99999999976716935635, fun(x_bar) = -33.45787066671091736225
+
+
+Iteration 32: bisection
+x_0 = 0.99999999976716935635, bounds = (0.9999999998, 1.0000000000)
+x_bar = 0.99999999988358467817, fun(x_bar) = -31.37842912479824519778
+
+
+Iteration 33: bisection
+x_0 = 0.99999999988358467817, bounds = (0.9999999999, 1.0000000000)
+x_bar = 0.99999999994179233909, fun(x_bar) = -29.29898758300200256599
+
+
+Iteration 34: bisection
+x_0 = 0.99999999994179233909, bounds = (0.9999999999, 1.0000000000)
+x_bar = 0.99999999997089616954, fun(x_bar) = -27.21954604126395338426
+
+
+Iteration 35: bisection
+x_0 = 0.99999999997089616954, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999998544808477, fun(x_bar) = -25.14010449955500803298
+
+
+Iteration 36: bisection
+x_0 = 0.99999999998544808477, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999272404239, fun(x_bar) = -23.06066295786061459694
+
+
+Iteration 37: bisection
+x_0 = 0.99999999999272404239, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999636202119, fun(x_bar) = -20.98122141617351132936
+
+
+Iteration 38: bisection
+x_0 = 0.99999999999636202119, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999818101060, fun(x_bar) = -18.90177987449003182974
+
+
+Iteration 39: bisection
+x_0 = 0.99999999999818101060, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999909050530, fun(x_bar) = -16.82233833280838553037
+
+
+Iteration 40: bisection
+x_0 = 0.99999999999909050530, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999954525265, fun(x_bar) = -14.74289679112763451485
+
+
+Iteration 41: bisection
+x_0 = 0.99999999999954525265, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999977262632, fun(x_bar) = -12.66345524944733824668
+
+
+Iteration 42: bisection
+x_0 = 0.99999999999977262632, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999988631316, fun(x_bar) = -10.58401370776728356304
+
+
+Iteration 43: bisection
+x_0 = 0.99999999999988631316, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999994315658, fun(x_bar) = -8.50457216608732835539
+
+
+Iteration 44: bisection
+x_0 = 0.99999999999994315658, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999997157829, fun(x_bar) = -6.42513062440744420201
+
+
+Iteration 45: bisection
+x_0 = 0.99999999999997157829, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999998578915, fun(x_bar) = -4.34568908272757425948
+
+
+Iteration 46: bisection
+x_0 = 0.99999999999998578915, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999289457, fun(x_bar) = -2.26624754104771852781
+
+
+Iteration 47: newton
+x_0 = 0.99999999999999289457, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999822364, fun(x_bar) = 1.89263554231195030297
+
+
+Iteration 48: newton
+x_0 = 0.99999999999999822364, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999711342, fun(x_bar) = 0.43611209496685887643
+
+
+Iteration 49: newton
+x_0 = 0.99999999999999711342, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 50: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 51: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 52: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 53: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 54: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 55: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 56: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 57: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 58: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 59: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 60: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 61: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 62: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 63: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 64: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 65: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 66: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 67: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 68: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 69: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 70: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 71: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 72: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 73: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 74: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 75: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 76: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 77: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 78: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 79: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 80: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 81: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 82: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 83: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 84: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 85: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 86: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 87: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 88: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 89: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 90: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 91: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 92: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 93: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 94: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 95: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 96: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 97: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 98: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 99: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+
+Iteration 100: newton
+x_0 = 0.99999999999999666933, bounds = (1.0000000000, 1.0000000000)
+x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg ansi-bold">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg ansi-bold">RuntimeError</span>                              Traceback (most recent call last)
+Cell <span class="ansi-green-fg ansi-bold">In[105], line 7</span>
+<span class="ansi-green-fg">      3</span> a, b, c <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(98,98,98)">2</span>, <span style="color:rgb(98,98,98)">-</span><span style="color:rgb(98,98,98)">3</span>, <span style="color:rgb(98,98,98)">-</span><span style="color:rgb(98,98,98)">100</span>
+<span class="ansi-green-fg">      5</span> plot_fun(a, b, c)
+<span class="ansi-green-fg ansi-bold">----&gt; 7</span> newton_bounds(
+<span class="ansi-green-fg">      8</span>     fun_grad_list(a, b, c)[<span style="color:rgb(98,98,98)">0</span>],
+<span class="ansi-green-fg">      9</span>     fun_grad_list(a, b, c)[<span style="color:rgb(98,98,98)">1</span>],
+<span class="ansi-green-fg">     10</span>     bounds<span style="color:rgb(98,98,98)">=</span>(<span style="color:rgb(98,98,98)">0</span>, <span style="color:rgb(98,98,98)">1</span>),
+<span class="ansi-green-fg">     11</span>     callback<span style="color:rgb(98,98,98)">=</span>print_iter,
+<span class="ansi-green-fg">     12</span>     tol<span style="color:rgb(98,98,98)">=</span><span style="color:rgb(98,98,98)">1e-6</span>,
+<span class="ansi-green-fg">     13</span> )
+
+Cell <span class="ansi-green-fg ansi-bold">In[101], line 65</span>, in <span class="ansi-cyan-fg">newton_bounds</span><span class="ansi-blue-fg ansi-bold">(fun, grad, x0, bounds, tol, maxiter, callback)</span>
+<span class="ansi-green-fg">     63</span>     x0 <span style="color:rgb(98,98,98)">=</span> x1
+<span class="ansi-green-fg">     64</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg ansi-bold">---&gt; 65</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(
+<span class="ansi-green-fg">     66</span>         <span style="color:rgb(175,0,0)">f</span><span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">Failed to converge in </span><span style="font-weight:bold;color:rgb(175,95,135)">{</span>maxiter<span style="font-weight:bold;color:rgb(175,95,135)">}</span><span style="color:rgb(175,0,0)"> iterations.</span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg">     67</span>     )
+<span class="ansi-green-fg">     69</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> x1
+
+<span class="ansi-red-fg ansi-bold">RuntimeError</span>: Failed to converge in 100 iterations.</pre>
+</div>
+</div>
+<p>:::</p>
+<p>Likewise, if <span class="math inline">\(c\)</span> is too small, then this function cannot reach its root within a limited number of iterations. Or in this example, we need to set a larger <code>maxiter</code> so that we can find its root (which is extremely close to 0).</p>
+<p>::: {#cell-newton-bisection test 4 .cell execution_count=21}</p>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1"></a>np.seterr(<span class="bu">all</span><span class="op">=</span><span class="va">None</span>, divide<span class="op">=</span><span class="st">'ignore'</span>, over<span class="op">=</span><span class="va">None</span>, under<span class="op">=</span><span class="va">None</span>, invalid<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb39-2"><a href="#cb39-2"></a></span>
+<span id="cb39-3"><a href="#cb39-3"></a>a, b, c <span class="op">=</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>, <span class="dv">100</span></span>
+<span id="cb39-4"><a href="#cb39-4"></a></span>
+<span id="cb39-5"><a href="#cb39-5"></a>plot_fun(a, b, c)</span>
+<span id="cb39-6"><a href="#cb39-6"></a></span>
+<span id="cb39-7"><a href="#cb39-7"></a>newton_bounds(</span>
+<span id="cb39-8"><a href="#cb39-8"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb39-9"><a href="#cb39-9"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb39-10"><a href="#cb39-10"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb39-11"><a href="#cb39-11"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb39-12"><a href="#cb39-12"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb39-13"><a href="#cb39-13"></a>    maxiter<span class="op">=</span><span class="dv">50</span></span>
+<span id="cb39-14"><a href="#cb39-14"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Course13_RootFinding1_files/figure-html/newton-bisection-test-4-output-1.png" id="newton-bisection-test-4" width="575" height="411" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 1: bisection
+x_0 = 0.50000000000000000000, bounds = (0.0000000000, 0.5000000000)
+x_bar = 0.25000000000000000000, fun(x_bar) = 98.09045749511555811750
+
+
+Iteration 2: bisection
+x_0 = 0.25000000000000000000, bounds = (0.0000000000, 0.2500000000)
+x_bar = 0.12500000000000000000, fun(x_bar) = 96.24171109451390293543
+
+
+Iteration 3: bisection
+x_0 = 0.12500000000000000000, bounds = (0.0000000000, 0.1250000000)
+x_bar = 0.06250000000000000000, fun(x_bar) = 94.64843811893315717043
+
+
+Iteration 4: bisection
+x_0 = 0.06250000000000000000, bounds = (0.0000000000, 0.0625000000)
+x_bar = 0.03125000000000000000, fun(x_bar) = 93.16377428934428905904
+
+
+Iteration 5: bisection
+x_0 = 0.03125000000000000000, bounds = (0.0000000000, 0.0312500000)
+x_bar = 0.01562500000000000000, fun(x_bar) = 91.72947890418507199684
+
+
+Iteration 6: bisection
+x_0 = 0.01562500000000000000, bounds = (0.0000000000, 0.0156250000)
+x_bar = 0.00781250000000000000, fun(x_bar) = 90.31946900454384774548
+
+
+Iteration 7: bisection
+x_0 = 0.00781250000000000000, bounds = (0.0000000000, 0.0078125000)
+x_bar = 0.00390625000000000000, fun(x_bar) = 88.92138680900428937548
+
+
+Iteration 8: bisection
+x_0 = 0.00390625000000000000, bounds = (0.0000000000, 0.0039062500)
+x_bar = 0.00195312500000000000, fun(x_bar) = 87.52921585442840068936
+
+
+Iteration 9: bisection
+x_0 = 0.00195312500000000000, bounds = (0.0000000000, 0.0019531250)
+x_bar = 0.00097656250000000000, fun(x_bar) = 86.13998750774457846546
+
+
+Iteration 10: bisection
+x_0 = 0.00097656250000000000, bounds = (0.0000000000, 0.0009765625)
+x_bar = 0.00048828125000000000, fun(x_bar) = 84.75222722917553141997
+
+
+Iteration 11: bisection
+x_0 = 0.00048828125000000000, bounds = (0.0000000000, 0.0004882812)
+x_bar = 0.00024414062500000000, fun(x_bar) = 83.36520017785784375519
+
+
+Iteration 12: bisection
+x_0 = 0.00024414062500000000, bounds = (0.0000000000, 0.0002441406)
+x_bar = 0.00012207031250000000, fun(x_bar) = 81.97853953873249110984
+
+
+Iteration 13: bisection
+x_0 = 0.00012207031250000000, bounds = (0.0000000000, 0.0001220703)
+x_bar = 0.00006103515625000000, fun(x_bar) = 80.59206205537844880382
+
+
+Iteration 14: bisection
+x_0 = 0.00006103515625000000, bounds = (0.0000000000, 0.0000610352)
+x_bar = 0.00003051757812500000, fun(x_bar) = 79.20567613733302891887
+
+
+Iteration 15: bisection
+x_0 = 0.00003051757812500000, bounds = (0.0000000000, 0.0000305176)
+x_bar = 0.00001525878906250000, fun(x_bar) = 77.81933599879818075351
+
+
+Iteration 16: bisection
+x_0 = 0.00001525878906250000, bounds = (0.0000000000, 0.0000152588)
+x_bar = 0.00000762939453125000, fun(x_bar) = 76.43301874923275818219
+
+
+Iteration 17: bisection
+x_0 = 0.00000762939453125000, bounds = (0.0000000000, 0.0000076294)
+x_bar = 0.00000381469726562500, fun(x_bar) = 75.04671294395559755230
+
+
+Iteration 18: bisection
+x_0 = 0.00000381469726562500, bounds = (0.0000000000, 0.0000038147)
+x_bar = 0.00000190734863281250, fun(x_bar) = 73.66041286077343386296
+
+
+Iteration 19: bisection
+x_0 = 0.00000190734863281250, bounds = (0.0000000000, 0.0000019073)
+x_bar = 0.00000095367431640625, fun(x_bar) = 72.27411563862649757084
+
+
+Iteration 20: bisection
+x_0 = 0.00000095367431640625, bounds = (0.0000000000, 0.0000009537)
+x_bar = 0.00000047683715820312, fun(x_bar) = 70.88781984699411964357
+
+
+Iteration 21: bisection
+x_0 = 0.00000047683715820312, bounds = (0.0000000000, 0.0000004768)
+x_bar = 0.00000023841857910156, fun(x_bar) = 69.50152477061823219628
+
+
+Iteration 22: bisection
+x_0 = 0.00000023841857910156, bounds = (0.0000000000, 0.0000002384)
+x_bar = 0.00000011920928955078, fun(x_bar) = 68.11523005187041235331
+
+
+Iteration 23: bisection
+x_0 = 0.00000011920928955078, bounds = (0.0000000000, 0.0000001192)
+x_bar = 0.00000005960464477539, fun(x_bar) = 66.72893551193656946907
+
+
+Iteration 24: bisection
+x_0 = 0.00000005960464477539, bounds = (0.0000000000, 0.0000000596)
+x_bar = 0.00000002980232238770, fun(x_bar) = 65.34264106140969374792
+
+
+Iteration 25: bisection
+x_0 = 0.00000002980232238770, bounds = (0.0000000000, 0.0000000298)
+x_bar = 0.00000001490116119385, fun(x_bar) = 63.95634665558633003002
+
+
+Iteration 26: bisection
+x_0 = 0.00000001490116119385, bounds = (0.0000000000, 0.0000000149)
+x_bar = 0.00000000745058059692, fun(x_bar) = 62.57005227211469389204
+
+
+Iteration 27: bisection
+x_0 = 0.00000000745058059692, bounds = (0.0000000000, 0.0000000075)
+x_bar = 0.00000000372529029846, fun(x_bar) = 61.18375789981893575487
+
+
+Iteration 28: bisection
+x_0 = 0.00000000372529029846, bounds = (0.0000000000, 0.0000000037)
+x_bar = 0.00000000186264514923, fun(x_bar) = 59.79746353311110595996
+
+
+Iteration 29: bisection
+x_0 = 0.00000000186264514923, bounds = (0.0000000000, 0.0000000019)
+x_bar = 0.00000000093132257462, fun(x_bar) = 58.41116916919725099433
+
+
+Iteration 30: bisection
+x_0 = 0.00000000093132257462, bounds = (0.0000000000, 0.0000000009)
+x_bar = 0.00000000046566128731, fun(x_bar) = 57.02487480668037278519
+
+
+Iteration 31: bisection
+x_0 = 0.00000000046566128731, bounds = (0.0000000000, 0.0000000005)
+x_bar = 0.00000000023283064365, fun(x_bar) = 55.63858044486199361245
+
+
+Iteration 32: bisection
+x_0 = 0.00000000023283064365, bounds = (0.0000000000, 0.0000000002)
+x_bar = 0.00000000011641532183, fun(x_bar) = 54.25228608339285329976
+
+
+Iteration 33: bisection
+x_0 = 0.00000000011641532183, bounds = (0.0000000000, 0.0000000001)
+x_bar = 0.00000000005820766091, fun(x_bar) = 52.86599172209834307523
+
+
+Iteration 34: bisection
+x_0 = 0.00000000005820766091, bounds = (0.0000000000, 0.0000000001)
+x_bar = 0.00000000002910383046, fun(x_bar) = 51.47969736089113723665
+
+
+Iteration 35: bisection
+x_0 = 0.00000000002910383046, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000001455191523, fun(x_bar) = 50.09340299972759424918
+
+
+Iteration 36: bisection
+x_0 = 0.00000000001455191523, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000727595761, fun(x_bar) = 48.70710863858587202913
+
+
+Iteration 37: bisection
+x_0 = 0.00000000000727595761, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000363797881, fun(x_bar) = 47.32081427745507085092
+
+
+Iteration 38: bisection
+x_0 = 0.00000000000363797881, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000181898940, fun(x_bar) = 45.93451991632971953550
+
+
+Iteration 39: bisection
+x_0 = 0.00000000000181898940, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000090949470, fun(x_bar) = 44.54822555520710380961
+
+
+Iteration 40: bisection
+x_0 = 0.00000000000090949470, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000045474735, fun(x_bar) = 43.16193119408585232577
+
+
+Iteration 41: bisection
+x_0 = 0.00000000000045474735, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000022737368, fun(x_bar) = 41.77563683296527585753
+
+
+Iteration 42: bisection
+x_0 = 0.00000000000022737368, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000011368684, fun(x_bar) = 40.38934247184504755523
+
+
+Iteration 43: bisection
+x_0 = 0.00000000000011368684, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000005684342, fun(x_bar) = 39.00304811072498267777
+
+
+Iteration 44: bisection
+x_0 = 0.00000000000005684342, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000002842171, fun(x_bar) = 37.61675374960501017085
+
+
+Iteration 45: bisection
+x_0 = 0.00000000000002842171, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000001421085, fun(x_bar) = 36.23045938848507319108
+
+
+Iteration 46: bisection
+x_0 = 0.00000000000001421085, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000710543, fun(x_bar) = 34.84416502736516463301
+
+
+Iteration 47: bisection
+x_0 = 0.00000000000000710543, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000355271, fun(x_bar) = 33.45787066624527028580
+
+
+Iteration 48: bisection
+x_0 = 0.00000000000000355271, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000177636, fun(x_bar) = 32.07157630512536172773
+
+
+Iteration 49: bisection
+x_0 = 0.00000000000000177636, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000088818, fun(x_bar) = 30.68528194400546738052
+
+
+Iteration 50: bisection
+x_0 = 0.00000000000000088818, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000044409, fun(x_bar) = 29.29898758288557303331
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg ansi-bold">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg ansi-bold">RuntimeError</span>                              Traceback (most recent call last)
+Cell <span class="ansi-green-fg ansi-bold">In[106], line 7</span>
+<span class="ansi-green-fg">      3</span> a, b, c <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(98,98,98)">2</span>, <span style="color:rgb(98,98,98)">-</span><span style="color:rgb(98,98,98)">3</span>, <span style="color:rgb(98,98,98)">100</span>
+<span class="ansi-green-fg">      5</span> plot_fun(a, b, c)
+<span class="ansi-green-fg ansi-bold">----&gt; 7</span> newton_bounds(
+<span class="ansi-green-fg">      8</span>     fun_grad_list(a, b, c)[<span style="color:rgb(98,98,98)">0</span>],
+<span class="ansi-green-fg">      9</span>     fun_grad_list(a, b, c)[<span style="color:rgb(98,98,98)">1</span>],
+<span class="ansi-green-fg">     10</span>     bounds<span style="color:rgb(98,98,98)">=</span>(<span style="color:rgb(98,98,98)">0</span>, <span style="color:rgb(98,98,98)">1</span>),
+<span class="ansi-green-fg">     11</span>     callback<span style="color:rgb(98,98,98)">=</span>print_iter,
+<span class="ansi-green-fg">     12</span>     tol<span style="color:rgb(98,98,98)">=</span><span style="color:rgb(98,98,98)">1e-6</span>,
+<span class="ansi-green-fg">     13</span>     maxiter<span style="color:rgb(98,98,98)">=</span><span style="color:rgb(98,98,98)">50</span>
+<span class="ansi-green-fg">     14</span> )
+
+Cell <span class="ansi-green-fg ansi-bold">In[101], line 65</span>, in <span class="ansi-cyan-fg">newton_bounds</span><span class="ansi-blue-fg ansi-bold">(fun, grad, x0, bounds, tol, maxiter, callback)</span>
+<span class="ansi-green-fg">     63</span>     x0 <span style="color:rgb(98,98,98)">=</span> x1
+<span class="ansi-green-fg">     64</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg ansi-bold">---&gt; 65</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(
+<span class="ansi-green-fg">     66</span>         <span style="color:rgb(175,0,0)">f</span><span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">Failed to converge in </span><span style="font-weight:bold;color:rgb(175,95,135)">{</span>maxiter<span style="font-weight:bold;color:rgb(175,95,135)">}</span><span style="color:rgb(175,0,0)"> iterations.</span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg">     67</span>     )
+<span class="ansi-green-fg">     69</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> x1
+
+<span class="ansi-red-fg ansi-bold">RuntimeError</span>: Failed to converge in 50 iterations.</pre>
+</div>
+</div>
+<p>:::</p>
+<p>::: {#cell-newton-bisection test 4 with a larger maxiter .cell execution_count=22}</p>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1"></a>newton_bounds(</span>
+<span id="cb41-2"><a href="#cb41-2"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb41-3"><a href="#cb41-3"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb41-4"><a href="#cb41-4"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb41-5"><a href="#cb41-5"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb41-6"><a href="#cb41-6"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb41-7"><a href="#cb41-7"></a>    maxiter<span class="op">=</span><span class="dv">100</span></span>
+<span id="cb41-8"><a href="#cb41-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 1: bisection
+x_0 = 0.50000000000000000000, bounds = (0.0000000000, 0.5000000000)
+x_bar = 0.25000000000000000000, fun(x_bar) = 98.09045749511555811750
+
+
+Iteration 2: bisection
+x_0 = 0.25000000000000000000, bounds = (0.0000000000, 0.2500000000)
+x_bar = 0.12500000000000000000, fun(x_bar) = 96.24171109451390293543
+
+
+Iteration 3: bisection
+x_0 = 0.12500000000000000000, bounds = (0.0000000000, 0.1250000000)
+x_bar = 0.06250000000000000000, fun(x_bar) = 94.64843811893315717043
+
+
+Iteration 4: bisection
+x_0 = 0.06250000000000000000, bounds = (0.0000000000, 0.0625000000)
+x_bar = 0.03125000000000000000, fun(x_bar) = 93.16377428934428905904
+
+
+Iteration 5: bisection
+x_0 = 0.03125000000000000000, bounds = (0.0000000000, 0.0312500000)
+x_bar = 0.01562500000000000000, fun(x_bar) = 91.72947890418507199684
+
+
+Iteration 6: bisection
+x_0 = 0.01562500000000000000, bounds = (0.0000000000, 0.0156250000)
+x_bar = 0.00781250000000000000, fun(x_bar) = 90.31946900454384774548
+
+
+Iteration 7: bisection
+x_0 = 0.00781250000000000000, bounds = (0.0000000000, 0.0078125000)
+x_bar = 0.00390625000000000000, fun(x_bar) = 88.92138680900428937548
+
+
+Iteration 8: bisection
+x_0 = 0.00390625000000000000, bounds = (0.0000000000, 0.0039062500)
+x_bar = 0.00195312500000000000, fun(x_bar) = 87.52921585442840068936
+
+
+Iteration 9: bisection
+x_0 = 0.00195312500000000000, bounds = (0.0000000000, 0.0019531250)
+x_bar = 0.00097656250000000000, fun(x_bar) = 86.13998750774457846546
+
+
+Iteration 10: bisection
+x_0 = 0.00097656250000000000, bounds = (0.0000000000, 0.0009765625)
+x_bar = 0.00048828125000000000, fun(x_bar) = 84.75222722917553141997
+
+
+Iteration 11: bisection
+x_0 = 0.00048828125000000000, bounds = (0.0000000000, 0.0004882812)
+x_bar = 0.00024414062500000000, fun(x_bar) = 83.36520017785784375519
+
+
+Iteration 12: bisection
+x_0 = 0.00024414062500000000, bounds = (0.0000000000, 0.0002441406)
+x_bar = 0.00012207031250000000, fun(x_bar) = 81.97853953873249110984
+
+
+Iteration 13: bisection
+x_0 = 0.00012207031250000000, bounds = (0.0000000000, 0.0001220703)
+x_bar = 0.00006103515625000000, fun(x_bar) = 80.59206205537844880382
+
+
+Iteration 14: bisection
+x_0 = 0.00006103515625000000, bounds = (0.0000000000, 0.0000610352)
+x_bar = 0.00003051757812500000, fun(x_bar) = 79.20567613733302891887
+
+
+Iteration 15: bisection
+x_0 = 0.00003051757812500000, bounds = (0.0000000000, 0.0000305176)
+x_bar = 0.00001525878906250000, fun(x_bar) = 77.81933599879818075351
+
+
+Iteration 16: bisection
+x_0 = 0.00001525878906250000, bounds = (0.0000000000, 0.0000152588)
+x_bar = 0.00000762939453125000, fun(x_bar) = 76.43301874923275818219
+
+
+Iteration 17: bisection
+x_0 = 0.00000762939453125000, bounds = (0.0000000000, 0.0000076294)
+x_bar = 0.00000381469726562500, fun(x_bar) = 75.04671294395559755230
+
+
+Iteration 18: bisection
+x_0 = 0.00000381469726562500, bounds = (0.0000000000, 0.0000038147)
+x_bar = 0.00000190734863281250, fun(x_bar) = 73.66041286077343386296
+
+
+Iteration 19: bisection
+x_0 = 0.00000190734863281250, bounds = (0.0000000000, 0.0000019073)
+x_bar = 0.00000095367431640625, fun(x_bar) = 72.27411563862649757084
+
+
+Iteration 20: bisection
+x_0 = 0.00000095367431640625, bounds = (0.0000000000, 0.0000009537)
+x_bar = 0.00000047683715820312, fun(x_bar) = 70.88781984699411964357
+
+
+Iteration 21: bisection
+x_0 = 0.00000047683715820312, bounds = (0.0000000000, 0.0000004768)
+x_bar = 0.00000023841857910156, fun(x_bar) = 69.50152477061823219628
+
+
+Iteration 22: bisection
+x_0 = 0.00000023841857910156, bounds = (0.0000000000, 0.0000002384)
+x_bar = 0.00000011920928955078, fun(x_bar) = 68.11523005187041235331
+
+
+Iteration 23: bisection
+x_0 = 0.00000011920928955078, bounds = (0.0000000000, 0.0000001192)
+x_bar = 0.00000005960464477539, fun(x_bar) = 66.72893551193656946907
+
+
+Iteration 24: bisection
+x_0 = 0.00000005960464477539, bounds = (0.0000000000, 0.0000000596)
+x_bar = 0.00000002980232238770, fun(x_bar) = 65.34264106140969374792
+
+
+Iteration 25: bisection
+x_0 = 0.00000002980232238770, bounds = (0.0000000000, 0.0000000298)
+x_bar = 0.00000001490116119385, fun(x_bar) = 63.95634665558633003002
+
+
+Iteration 26: bisection
+x_0 = 0.00000001490116119385, bounds = (0.0000000000, 0.0000000149)
+x_bar = 0.00000000745058059692, fun(x_bar) = 62.57005227211469389204
+
+
+Iteration 27: bisection
+x_0 = 0.00000000745058059692, bounds = (0.0000000000, 0.0000000075)
+x_bar = 0.00000000372529029846, fun(x_bar) = 61.18375789981893575487
+
+
+Iteration 28: bisection
+x_0 = 0.00000000372529029846, bounds = (0.0000000000, 0.0000000037)
+x_bar = 0.00000000186264514923, fun(x_bar) = 59.79746353311110595996
+
+
+Iteration 29: bisection
+x_0 = 0.00000000186264514923, bounds = (0.0000000000, 0.0000000019)
+x_bar = 0.00000000093132257462, fun(x_bar) = 58.41116916919725099433
+
+
+Iteration 30: bisection
+x_0 = 0.00000000093132257462, bounds = (0.0000000000, 0.0000000009)
+x_bar = 0.00000000046566128731, fun(x_bar) = 57.02487480668037278519
+
+
+Iteration 31: bisection
+x_0 = 0.00000000046566128731, bounds = (0.0000000000, 0.0000000005)
+x_bar = 0.00000000023283064365, fun(x_bar) = 55.63858044486199361245
+
+
+Iteration 32: bisection
+x_0 = 0.00000000023283064365, bounds = (0.0000000000, 0.0000000002)
+x_bar = 0.00000000011641532183, fun(x_bar) = 54.25228608339285329976
+
+
+Iteration 33: bisection
+x_0 = 0.00000000011641532183, bounds = (0.0000000000, 0.0000000001)
+x_bar = 0.00000000005820766091, fun(x_bar) = 52.86599172209834307523
+
+
+Iteration 34: bisection
+x_0 = 0.00000000005820766091, bounds = (0.0000000000, 0.0000000001)
+x_bar = 0.00000000002910383046, fun(x_bar) = 51.47969736089113723665
+
+
+Iteration 35: bisection
+x_0 = 0.00000000002910383046, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000001455191523, fun(x_bar) = 50.09340299972759424918
+
+
+Iteration 36: bisection
+x_0 = 0.00000000001455191523, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000727595761, fun(x_bar) = 48.70710863858587202913
+
+
+Iteration 37: bisection
+x_0 = 0.00000000000727595761, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000363797881, fun(x_bar) = 47.32081427745507085092
+
+
+Iteration 38: bisection
+x_0 = 0.00000000000363797881, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000181898940, fun(x_bar) = 45.93451991632971953550
+
+
+Iteration 39: bisection
+x_0 = 0.00000000000181898940, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000090949470, fun(x_bar) = 44.54822555520710380961
+
+
+Iteration 40: bisection
+x_0 = 0.00000000000090949470, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000045474735, fun(x_bar) = 43.16193119408585232577
+
+
+Iteration 41: bisection
+x_0 = 0.00000000000045474735, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000022737368, fun(x_bar) = 41.77563683296527585753
+
+
+Iteration 42: bisection
+x_0 = 0.00000000000022737368, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000011368684, fun(x_bar) = 40.38934247184504755523
+
+
+Iteration 43: bisection
+x_0 = 0.00000000000011368684, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000005684342, fun(x_bar) = 39.00304811072498267777
+
+
+Iteration 44: bisection
+x_0 = 0.00000000000005684342, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000002842171, fun(x_bar) = 37.61675374960501017085
+
+
+Iteration 45: bisection
+x_0 = 0.00000000000002842171, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000001421085, fun(x_bar) = 36.23045938848507319108
+
+
+Iteration 46: bisection
+x_0 = 0.00000000000001421085, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000710543, fun(x_bar) = 34.84416502736516463301
+
+
+Iteration 47: bisection
+x_0 = 0.00000000000000710543, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000355271, fun(x_bar) = 33.45787066624527028580
+
+
+Iteration 48: bisection
+x_0 = 0.00000000000000355271, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000177636, fun(x_bar) = 32.07157630512536172773
+
+
+Iteration 49: bisection
+x_0 = 0.00000000000000177636, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000088818, fun(x_bar) = 30.68528194400546738052
+
+
+Iteration 50: bisection
+x_0 = 0.00000000000000088818, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000044409, fun(x_bar) = 29.29898758288557303331
+
+
+Iteration 51: bisection
+x_0 = 0.00000000000000044409, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000022204, fun(x_bar) = 27.91269322176569289695
+
+
+Iteration 52: bisection
+x_0 = 0.00000000000000022204, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000011102, fun(x_bar) = 26.52639886064579854974
+
+
+Iteration 53: bisection
+x_0 = 0.00000000000000011102, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000005551, fun(x_bar) = 25.14010449952590420253
+
+
+Iteration 54: bisection
+x_0 = 0.00000000000000005551, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000002776, fun(x_bar) = 23.75381013840600985532
+
+
+Iteration 55: bisection
+x_0 = 0.00000000000000002776, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000001388, fun(x_bar) = 22.36751577728612971896
+
+
+Iteration 56: bisection
+x_0 = 0.00000000000000001388, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000694, fun(x_bar) = 20.98122141616623537175
+
+
+Iteration 57: bisection
+x_0 = 0.00000000000000000694, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000347, fun(x_bar) = 19.59492705504634102454
+
+
+Iteration 58: bisection
+x_0 = 0.00000000000000000347, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000173, fun(x_bar) = 18.20863269392644667732
+
+
+Iteration 59: bisection
+x_0 = 0.00000000000000000173, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000087, fun(x_bar) = 16.82233833280656654097
+
+
+Iteration 60: bisection
+x_0 = 0.00000000000000000087, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000043, fun(x_bar) = 15.43604397168667219375
+
+
+Iteration 61: bisection
+x_0 = 0.00000000000000000043, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000022, fun(x_bar) = 14.04974961056677784654
+
+
+Iteration 62: bisection
+x_0 = 0.00000000000000000022, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000011, fun(x_bar) = 12.66345524944689771019
+
+
+Iteration 63: bisection
+x_0 = 0.00000000000000000011, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000005, fun(x_bar) = 11.27716088832700336297
+
+
+Iteration 64: bisection
+x_0 = 0.00000000000000000005, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000003, fun(x_bar) = 9.89086652720710901576
+
+
+Iteration 65: bisection
+x_0 = 0.00000000000000000003, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000001, fun(x_bar) = 8.50457216608721466855
+
+
+Iteration 66: bisection
+x_0 = 0.00000000000000000001, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000001, fun(x_bar) = 7.11827780496733453219
+
+
+Iteration 67: bisection
+x_0 = 0.00000000000000000001, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = 5.73198344384744018498
+
+
+Iteration 68: bisection
+x_0 = 0.00000000000000000000, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = 4.34568908272754583777
+
+
+Iteration 69: bisection
+x_0 = 0.00000000000000000000, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = 2.95939472160765149056
+
+
+Iteration 70: bisection
+x_0 = 0.00000000000000000000, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = 1.57310036048777135420
+
+
+Iteration 71: newton
+x_0 = 0.00000000000000000000, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = -1.51560665993210363922
+
+
+Iteration 72: newton
+x_0 = 0.00000000000000000000, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = -0.38747681685056534207
+
+
+Iteration 73: newton
+x_0 = 0.00000000000000000000, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = -0.03329701175856314421
+
+
+Iteration 74: newton
+x_0 = 0.00000000000000000000, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = -0.00027413431435263647
+
+
+Iteration 75: newton
+x_0 = 0.00000000000000000000, bounds = (0.0000000000, 0.0000000000)
+x_bar = 0.00000000000000000000, fun(x_bar) = -0.00000001878569833025
+
+</code></pre>
+</div>
+<div id="newton-bisection-test-4-with-a-larger-maxiter" class="cell-output cell-output-display" data-execution_count="107">
+<pre><code>1.928749829847467e-22</code></pre>
+</div>
+<p>:::</p>
+</section>
 </section>
 
 </main>

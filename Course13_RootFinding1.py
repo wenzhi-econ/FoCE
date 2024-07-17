@@ -348,3 +348,162 @@ print(x_bar)
 
 # x_bar = newton2(g, h, x0=np.array([-1.8, -0.2]).reshape((2, 1)), callback=plot_step)
 # print(x_bar)
+
+
+# ??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??
+# ?? section 5. newton with bounds
+# ??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??#??
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def newton_bounds(
+    fun,
+    grad,
+    x0=None,
+    bounds=(0, 1),
+    tol=1e-6,
+    maxiter=100,
+    callback=None,
+):
+    """
+    This function combines the newton method and the bisection method to
+    solve a root-finding problem with given lower and upper bounds.
+
+    Input arguments:
+        fun: the function of interest
+        grad: the derivate of the fun
+        x0: initial guess
+        bounds: a tuple that contains the lower and upper bounds
+        tol: tolerance
+        maxiter: maximum number of iterations
+        callback: a function that will be called in each iteration
+    """
+    a, b = bounds
+    sign_a = np.sign(fun(a))
+    sign_b = np.sign(fun(b))
+    if sign_a * sign_b > 0:
+        raise ValueError(
+            "Function has the same signs at the initial lower and upper bounds."
+        )
+
+    if x0 is None:
+        x0 = (a + b) / 2
+
+    for i in range(maxiter):
+        f0 = fun(x0)
+        newton_x1 = x0 - fun(x0) / grad(x0)
+        if newton_x1 > b or newton_x1 < a:
+            if np.sign(f0) * sign_a > 0:
+                a = x0
+            else:
+                b = x0
+            x1 = (a + b) / 2
+            step_type = "bisection"
+        else:
+            x1 = newton_x1
+            step_type = "newton"
+
+        err = fun(x1)
+
+        if callback is not None:
+            callback(
+                arg_iter=i,
+                arg_type=step_type,
+                arg_err=err,
+                arg_x0=x0,
+                arg_x1=x1,
+                arg_bounds=(a, b),
+            )
+
+        if abs(err) < tol:
+            break
+
+        x0 = x1
+    else:
+        raise RuntimeError(
+            f"Failed to converge in {maxiter} iterations."
+        )
+
+    return x1
+
+
+def print_iter(
+    arg_iter, arg_type, arg_err, arg_x0, arg_x1, arg_bounds, **kwargs
+):
+    print(f"Iteration {arg_iter+1}: {arg_type:s}")
+    print(
+        f"x_0 = {arg_x0:<1.20f}, bounds = ({arg_bounds[0]:<1.10f}, {arg_bounds[1]:<1.10f})"
+    )
+    print(f"x_bar = {arg_x1:<1.20f}, fun(x_bar) = {arg_err:<1.20f}")
+    print("\n")
+
+
+def fun_grad_list(a, b, c):
+    f = lambda x: a * np.log(x) + b * np.log(1 - x) + c
+    g = lambda x: a / x - b / (1 - x)
+    return [f, g]
+
+def plot_fun(a, b, c):
+    fun = fun_grad_list(a, b, c)[0]
+    xd = np.linspace(0, 1, 10000)
+    plt.plot(xd, fun(xd), c='red')
+    plt.plot([0,1], [0,0], c='black')
+    plt.ion()
+    plt.show()
+
+a = 1
+b = -4
+c = 0.5
+plot_fun(a, b, c)
+
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+)
+
+a, b, c = 1, -1, -5
+
+plot_fun(a, b, c)
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    x0=0.9,
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+)
+
+a, b, c = 2, -1, -100
+
+plot_fun(a, b, c)
+
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+)
+
+a, b, c = 2, -3, 100
+
+plot_fun(a, b, c)
+
+newton_bounds(
+    fun_grad_list(a, b, c)[0],
+    fun_grad_list(a, b, c)[1],
+    bounds=(0, 1),
+    callback=print_iter,
+    tol=1e-6,
+)
+
+
+
+
+
+
