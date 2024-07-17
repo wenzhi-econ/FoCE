@@ -1,0 +1,74 @@
+---
+title: "Course 17 and 18: Linear Progamming and its Application in Ecnomics"
+format:
+    html:
+        theme: cosmo
+        code-fold: false 
+        code-line-numbers: true
+        code-copy: true
+        highlight-style: github
+        number-sections: true
+        toc: true
+jupyter: python3
+execute: 
+    eval: true
+    echo: true
+---
+
+# The first example: Optimal production portfolio
+
+Let $x$ and $y$ denote production of goods $A$ and $B$ by some firm. The production technology is restricted in the following two inequalities:
+
+$$
+\left\{\begin{array}{l}-x + y \leq 4 \\2 x-y \leq 8\end{array}\right.
+$$
+
+In addition, there is a resource constraint given by
+
+$$
+x + 2 y \leq 14.
+$$
+
+And the objective function (profit) is given by
+
+$$
+\pi (x, y) = 2x + y.
+$$
+
+Adding the natural non-negativity constraints, we can write this linear programming in the matrix form:
+
+$$
+\begin{aligned}
+& \max \left(c^T x\right) \text{   subject to   } A x \leq b \\
+& c=\left(\begin{array}{ll}2 & 1\end{array}\right), A=\left(\begin{array}{cc}-1 & 1 \\2 & -1 \\1 & 2 \\-1 & 0 \\0 & -1\end{array}\right), \quad b=\left(\begin{array}{c}4 \\8 \\14 \\0 \\0\end{array}\right) .
+\end{aligned}
+$$
+
+To solve this simple example, we will use the `scipy.optimize.linprog` function provided by the SciPy package (for more information about this function, read its [document here](https://docs.scipy.org/doc/scipy-1.10.0/reference/generated/scipy.optimize.linprog.html#scipy.optimize.linprog).
+
+```{python}
+# | label: linprog example
+# | echo: true 
+# | eval: true 
+
+import sys
+import numpy as np 
+from scipy.optimize import linprog
+
+# ?? version information
+print(sys.version)
+print(np.__version__)
+
+# we need to transform it into a minimization problem
+c = np.array([-2, -1])
+A = np.array([[-1, 1], [2, -1], [1, 2], [-1, 0], [0, -1]])
+b = np.array([4, 8, 14, 0, 0])
+
+
+def outf(arg):
+    print(f"iteration {arg.nit}, current solution {arg.x}")
+
+linprog(c=c, A_ub=A, b_ub=b, method="simplex", callback=outf)
+```
+
+# An economic application: Measuring illegal trade
