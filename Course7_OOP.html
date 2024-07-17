@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.53">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Course 7 and 8: Objective-Oriented Progamming</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Course7_OOP_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Course7_OOP_files/libs/quarto-html/quarto.js"></script>
+<script src="Course7_OOP_files/libs/quarto-html/popper.min.js"></script>
+<script src="Course7_OOP_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Course7_OOP_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Course7_OOP_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Course7_OOP_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Course7_OOP_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Course7_OOP_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Course7_OOP_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#a-function-to-explore-the-classobject-structure" id="toc-a-function-to-explore-the-classobject-structure" class="nav-link active" data-scroll-target="#a-function-to-explore-the-classobject-structure"><span class="header-section-number">1</span> A function to explore the class/object structure</a></li>
+  <li><a href="#create-a-firm-class" id="toc-create-a-firm-class" class="nav-link" data-scroll-target="#create-a-firm-class"><span class="header-section-number">2</span> Create a <code>Firm</code> class</a></li>
+  <li><a href="#an-example-bundelgood-class-that-overrides-some-operators." id="toc-an-example-bundelgood-class-that-overrides-some-operators." class="nav-link" data-scroll-target="#an-example-bundelgood-class-that-overrides-some-operators."><span class="header-section-number">3</span> An example: <code>BundelGood</code> class that overrides some operators.</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Course 7 and 8: Objective-Oriented Progamming</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Python Version:</p>
+<div id="a8e42d3b" class="cell" data-code-block="true" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> sys </span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="bu">print</span>(sys.version)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3.11.9 | packaged by Anaconda, Inc. | (main, Apr 19 2024, 16:40:41) [MSC v.1916 64 bit (AMD64)]</code></pre>
+</div>
+</div>
+<section id="a-function-to-explore-the-classobject-structure" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> A function to explore the class/object structure</h1>
+<div id="obj_explore" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">def</span> obj_explore(obj, what<span class="op">=</span><span class="st">'all'</span>):</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="co">'''</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">    This function lists attributes and methods of a class. </span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">    </span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">    Input arguments: </span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">        obj = variable to explore, </span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">        what = string with any combination of all, public, private</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="co">        methods, properties </span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co">    '''</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="im">import</span> sys </span>
+<span id="cb3-11"><a href="#cb3-11"></a>    trstr <span class="op">=</span> <span class="kw">lambda</span> s: s[:<span class="dv">30</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(s, <span class="bu">str</span>) <span class="cf">else</span> s </span>
+<span id="cb3-12"><a href="#cb3-12"></a>    <span class="bu">print</span>(obj)</span>
+<span id="cb3-13"><a href="#cb3-13"></a>    <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span><span class="st">"*"</span> <span class="op">*</span> <span class="dv">60</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">Object report on object = </span><span class="sc">{</span>obj<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-14"><a href="#cb3-14"></a>    cl <span class="op">=</span> <span class="bu">type</span>(obj)</span>
+<span id="cb3-15"><a href="#cb3-15"></a>    <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span><span class="st">"Object class"</span><span class="sc">:&lt;20s}</span><span class="ss">: </span><span class="sc">{</span>cl<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-16"><a href="#cb3-16"></a>    <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span><span class="st">"Parent classes"</span><span class="sc">:&lt;20s}</span><span class="ss">: </span><span class="sc">{</span>cl<span class="sc">.</span>__bases__<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-17"><a href="#cb3-17"></a>    <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span><span class="st">"Occupied memory"</span><span class="sc">:&lt;20s}</span><span class="ss">: </span><span class="sc">{</span>sys<span class="sc">.</span>getsizeof(obj)<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-18"><a href="#cb3-18"></a></span>
+<span id="cb3-19"><a href="#cb3-19"></a>    <span class="cf">if</span> what <span class="kw">in</span> <span class="st">'all public properties'</span>:</span>
+<span id="cb3-20"><a href="#cb3-20"></a>        <span class="bu">print</span>(<span class="st">"PUBLIC PROPERTIES"</span>)</span>
+<span id="cb3-21"><a href="#cb3-21"></a>        data <span class="op">=</span> [(name, <span class="bu">getattr</span>(obj, name)) </span>
+<span id="cb3-22"><a href="#cb3-22"></a>                <span class="cf">for</span> name <span class="kw">in</span> <span class="bu">dir</span>(obj) </span>
+<span id="cb3-23"><a href="#cb3-23"></a>                <span class="cf">if</span> <span class="kw">not</span> <span class="bu">callable</span>(<span class="bu">getattr</span>(obj, name)) <span class="kw">and</span> name[<span class="dv">0</span>:<span class="dv">2</span>]<span class="op">!=</span><span class="st">'__'</span>]</span>
+<span id="cb3-24"><a href="#cb3-24"></a>        <span class="cf">for</span> item <span class="kw">in</span> data:</span>
+<span id="cb3-25"><a href="#cb3-25"></a>            <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>item[<span class="dv">0</span>]<span class="sc">!s:&lt;20s}</span><span class="ss">= </span><span class="sc">{</span>trstr(item[<span class="dv">1</span>])<span class="sc">!s:&lt;5s}</span><span class="ss"> </span><span class="sc">{</span><span class="bu">type</span>(item[<span class="dv">1</span>])<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-26"><a href="#cb3-26"></a>        <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb3-27"><a href="#cb3-27"></a>    <span class="cf">if</span> what <span class="kw">in</span> <span class="st">'all private properties'</span>:</span>
+<span id="cb3-28"><a href="#cb3-28"></a>        <span class="bu">print</span>(<span class="st">'PRIVATE PROPERTIES'</span>)</span>
+<span id="cb3-29"><a href="#cb3-29"></a>        data <span class="op">=</span> [(name, <span class="bu">getattr</span>(obj,name)) </span>
+<span id="cb3-30"><a href="#cb3-30"></a>                <span class="cf">for</span> name <span class="kw">in</span> <span class="bu">dir</span>(obj) </span>
+<span id="cb3-31"><a href="#cb3-31"></a>                <span class="cf">if</span> <span class="kw">not</span> <span class="bu">callable</span>(<span class="bu">getattr</span>(obj, name)) <span class="kw">and</span> name[<span class="dv">0</span>:<span class="dv">2</span>]<span class="op">==</span><span class="st">'__'</span>]</span>
+<span id="cb3-32"><a href="#cb3-32"></a>        <span class="cf">for</span> item <span class="kw">in</span> data:</span>
+<span id="cb3-33"><a href="#cb3-33"></a>            <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>item[<span class="dv">0</span>]<span class="sc">!s:&lt;20s}</span><span class="ss">= </span><span class="sc">{</span>trstr(item[<span class="dv">1</span>])<span class="sc">!r:&lt;10s}</span><span class="ss"> </span><span class="sc">{</span><span class="bu">type</span>(item[<span class="dv">1</span>])<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-34"><a href="#cb3-34"></a>        <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb3-35"><a href="#cb3-35"></a>    <span class="cf">if</span> what <span class="kw">in</span> <span class="st">'all public methods'</span>:</span>
+<span id="cb3-36"><a href="#cb3-36"></a>        <span class="bu">print</span>(<span class="st">'PUBLIC METHODS'</span>)</span>
+<span id="cb3-37"><a href="#cb3-37"></a>        data <span class="op">=</span> [(name, <span class="bu">getattr</span>(obj, name)) </span>
+<span id="cb3-38"><a href="#cb3-38"></a>                <span class="cf">for</span> name <span class="kw">in</span> <span class="bu">dir</span>(obj) </span>
+<span id="cb3-39"><a href="#cb3-39"></a>                <span class="cf">if</span> <span class="bu">callable</span>(<span class="bu">getattr</span>(obj, name)) <span class="kw">and</span> name[<span class="dv">0</span>:<span class="dv">2</span>]<span class="op">!=</span><span class="st">'__'</span>]</span>
+<span id="cb3-40"><a href="#cb3-40"></a>        <span class="cf">for</span> item <span class="kw">in</span> data:</span>
+<span id="cb3-41"><a href="#cb3-41"></a>            <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>item[<span class="dv">0</span>]<span class="sc">!s:&lt;20s}</span><span class="ss"> </span><span class="sc">{</span><span class="bu">type</span>(item[<span class="dv">1</span>])<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-42"><a href="#cb3-42"></a>        <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb3-43"><a href="#cb3-43"></a>    <span class="cf">if</span> what <span class="kw">in</span> <span class="st">'all private methods'</span>:</span>
+<span id="cb3-44"><a href="#cb3-44"></a>        <span class="bu">print</span>(<span class="st">'PRIVATE METHODS'</span>)</span>
+<span id="cb3-45"><a href="#cb3-45"></a>        data <span class="op">=</span> [(name, <span class="bu">getattr</span>(obj, name)) </span>
+<span id="cb3-46"><a href="#cb3-46"></a>                <span class="cf">for</span> name <span class="kw">in</span> <span class="bu">dir</span>(obj) </span>
+<span id="cb3-47"><a href="#cb3-47"></a>                <span class="cf">if</span> <span class="bu">callable</span>(<span class="bu">getattr</span>(obj,name)) <span class="kw">and</span> name[<span class="dv">0</span>:<span class="dv">2</span>]<span class="op">==</span><span class="st">'__'</span>]</span>
+<span id="cb3-48"><a href="#cb3-48"></a>        <span class="cf">for</span> item <span class="kw">in</span> data:</span>
+<span id="cb3-49"><a href="#cb3-49"></a>            <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>item[<span class="dv">0</span>]<span class="sc">!s:&lt;20s}</span><span class="ss"> </span><span class="sc">{</span><span class="bu">type</span>(item[<span class="dv">1</span>])<span class="sc">}</span><span class="ss">'</span>)     </span>
+<span id="cb3-50"><a href="#cb3-50"></a>        <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, let’s test how this funtion works and what it reveals if we pass some common objects.</p>
+<p>First, let’s consider a Boolen value.</p>
+<div id="bool" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>x <span class="op">=</span> <span class="va">False</span> <span class="co"># Boolean</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>obj_explore(x, what<span class="op">=</span><span class="st">'all'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>False
+************************************************************
+Object report on object = False
+Object class        : &lt;class 'bool'&gt;
+Parent classes      : (&lt;class 'int'&gt;,)
+Occupied memory     : 28
+PUBLIC PROPERTIES
+denominator         = 1     &lt;class 'int'&gt;
+imag                = 0     &lt;class 'int'&gt;
+numerator           = 0     &lt;class 'int'&gt;
+real                = 0     &lt;class 'int'&gt;
+
+
+PRIVATE PROPERTIES
+__doc__             = 'bool(x) -&gt; bool\n\nReturns True ' &lt;class 'str'&gt;
+
+
+PUBLIC METHODS
+as_integer_ratio     &lt;class 'builtin_function_or_method'&gt;
+bit_count            &lt;class 'builtin_function_or_method'&gt;
+bit_length           &lt;class 'builtin_function_or_method'&gt;
+conjugate            &lt;class 'builtin_function_or_method'&gt;
+from_bytes           &lt;class 'builtin_function_or_method'&gt;
+to_bytes             &lt;class 'builtin_function_or_method'&gt;
+
+
+PRIVATE METHODS
+__abs__              &lt;class 'method-wrapper'&gt;
+__add__              &lt;class 'method-wrapper'&gt;
+__and__              &lt;class 'method-wrapper'&gt;
+__bool__             &lt;class 'method-wrapper'&gt;
+__ceil__             &lt;class 'builtin_function_or_method'&gt;
+__class__            &lt;class 'type'&gt;
+__delattr__          &lt;class 'method-wrapper'&gt;
+__dir__              &lt;class 'builtin_function_or_method'&gt;
+__divmod__           &lt;class 'method-wrapper'&gt;
+__eq__               &lt;class 'method-wrapper'&gt;
+__float__            &lt;class 'method-wrapper'&gt;
+__floor__            &lt;class 'builtin_function_or_method'&gt;
+__floordiv__         &lt;class 'method-wrapper'&gt;
+__format__           &lt;class 'builtin_function_or_method'&gt;
+__ge__               &lt;class 'method-wrapper'&gt;
+__getattribute__     &lt;class 'method-wrapper'&gt;
+__getnewargs__       &lt;class 'builtin_function_or_method'&gt;
+__getstate__         &lt;class 'builtin_function_or_method'&gt;
+__gt__               &lt;class 'method-wrapper'&gt;
+__hash__             &lt;class 'method-wrapper'&gt;
+__index__            &lt;class 'method-wrapper'&gt;
+__init__             &lt;class 'method-wrapper'&gt;
+__init_subclass__    &lt;class 'builtin_function_or_method'&gt;
+__int__              &lt;class 'method-wrapper'&gt;
+__invert__           &lt;class 'method-wrapper'&gt;
+__le__               &lt;class 'method-wrapper'&gt;
+__lshift__           &lt;class 'method-wrapper'&gt;
+__lt__               &lt;class 'method-wrapper'&gt;
+__mod__              &lt;class 'method-wrapper'&gt;
+__mul__              &lt;class 'method-wrapper'&gt;
+__ne__               &lt;class 'method-wrapper'&gt;
+__neg__              &lt;class 'method-wrapper'&gt;
+__new__              &lt;class 'builtin_function_or_method'&gt;
+__or__               &lt;class 'method-wrapper'&gt;
+__pos__              &lt;class 'method-wrapper'&gt;
+__pow__              &lt;class 'method-wrapper'&gt;
+__radd__             &lt;class 'method-wrapper'&gt;
+__rand__             &lt;class 'method-wrapper'&gt;
+__rdivmod__          &lt;class 'method-wrapper'&gt;
+__reduce__           &lt;class 'builtin_function_or_method'&gt;
+__reduce_ex__        &lt;class 'builtin_function_or_method'&gt;
+__repr__             &lt;class 'method-wrapper'&gt;
+__rfloordiv__        &lt;class 'method-wrapper'&gt;
+__rlshift__          &lt;class 'method-wrapper'&gt;
+__rmod__             &lt;class 'method-wrapper'&gt;
+__rmul__             &lt;class 'method-wrapper'&gt;
+__ror__              &lt;class 'method-wrapper'&gt;
+__round__            &lt;class 'builtin_function_or_method'&gt;
+__rpow__             &lt;class 'method-wrapper'&gt;
+__rrshift__          &lt;class 'method-wrapper'&gt;
+__rshift__           &lt;class 'method-wrapper'&gt;
+__rsub__             &lt;class 'method-wrapper'&gt;
+__rtruediv__         &lt;class 'method-wrapper'&gt;
+__rxor__             &lt;class 'method-wrapper'&gt;
+__setattr__          &lt;class 'method-wrapper'&gt;
+__sizeof__           &lt;class 'builtin_function_or_method'&gt;
+__str__              &lt;class 'method-wrapper'&gt;
+__sub__              &lt;class 'method-wrapper'&gt;
+__subclasshook__     &lt;class 'builtin_function_or_method'&gt;
+__truediv__          &lt;class 'method-wrapper'&gt;
+__trunc__            &lt;class 'builtin_function_or_method'&gt;
+__xor__              &lt;class 'method-wrapper'&gt;
+
+</code></pre>
+</div>
+</div>
+<p>Next, let’s consider an integer and a float number.</p>
+<div id="integer" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>x <span class="op">=</span> <span class="dv">1</span> <span class="co"># Integer</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>obj_explore(x, what<span class="op">=</span><span class="st">'all'</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a>y <span class="op">=</span> <span class="fl">4.32913</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>obj_explore(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1
+************************************************************
+Object report on object = 1
+Object class        : &lt;class 'int'&gt;
+Parent classes      : (&lt;class 'object'&gt;,)
+Occupied memory     : 28
+PUBLIC PROPERTIES
+denominator         = 1     &lt;class 'int'&gt;
+imag                = 0     &lt;class 'int'&gt;
+numerator           = 1     &lt;class 'int'&gt;
+real                = 1     &lt;class 'int'&gt;
+
+
+PRIVATE PROPERTIES
+__doc__             = 'int([x]) -&gt; integer\nint(x, bas' &lt;class 'str'&gt;
+
+
+PUBLIC METHODS
+as_integer_ratio     &lt;class 'builtin_function_or_method'&gt;
+bit_count            &lt;class 'builtin_function_or_method'&gt;
+bit_length           &lt;class 'builtin_function_or_method'&gt;
+conjugate            &lt;class 'builtin_function_or_method'&gt;
+from_bytes           &lt;class 'builtin_function_or_method'&gt;
+to_bytes             &lt;class 'builtin_function_or_method'&gt;
+
+
+PRIVATE METHODS
+__abs__              &lt;class 'method-wrapper'&gt;
+__add__              &lt;class 'method-wrapper'&gt;
+__and__              &lt;class 'method-wrapper'&gt;
+__bool__             &lt;class 'method-wrapper'&gt;
+__ceil__             &lt;class 'builtin_function_or_method'&gt;
+__class__            &lt;class 'type'&gt;
+__delattr__          &lt;class 'method-wrapper'&gt;
+__dir__              &lt;class 'builtin_function_or_method'&gt;
+__divmod__           &lt;class 'method-wrapper'&gt;
+__eq__               &lt;class 'method-wrapper'&gt;
+__float__            &lt;class 'method-wrapper'&gt;
+__floor__            &lt;class 'builtin_function_or_method'&gt;
+__floordiv__         &lt;class 'method-wrapper'&gt;
+__format__           &lt;class 'builtin_function_or_method'&gt;
+__ge__               &lt;class 'method-wrapper'&gt;
+__getattribute__     &lt;class 'method-wrapper'&gt;
+__getnewargs__       &lt;class 'builtin_function_or_method'&gt;
+__getstate__         &lt;class 'builtin_function_or_method'&gt;
+__gt__               &lt;class 'method-wrapper'&gt;
+__hash__             &lt;class 'method-wrapper'&gt;
+__index__            &lt;class 'method-wrapper'&gt;
+__init__             &lt;class 'method-wrapper'&gt;
+__init_subclass__    &lt;class 'builtin_function_or_method'&gt;
+__int__              &lt;class 'method-wrapper'&gt;
+__invert__           &lt;class 'method-wrapper'&gt;
+__le__               &lt;class 'method-wrapper'&gt;
+__lshift__           &lt;class 'method-wrapper'&gt;
+__lt__               &lt;class 'method-wrapper'&gt;
+__mod__              &lt;class 'method-wrapper'&gt;
+__mul__              &lt;class 'method-wrapper'&gt;
+__ne__               &lt;class 'method-wrapper'&gt;
+__neg__              &lt;class 'method-wrapper'&gt;
+__new__              &lt;class 'builtin_function_or_method'&gt;
+__or__               &lt;class 'method-wrapper'&gt;
+__pos__              &lt;class 'method-wrapper'&gt;
+__pow__              &lt;class 'method-wrapper'&gt;
+__radd__             &lt;class 'method-wrapper'&gt;
+__rand__             &lt;class 'method-wrapper'&gt;
+__rdivmod__          &lt;class 'method-wrapper'&gt;
+__reduce__           &lt;class 'builtin_function_or_method'&gt;
+__reduce_ex__        &lt;class 'builtin_function_or_method'&gt;
+__repr__             &lt;class 'method-wrapper'&gt;
+__rfloordiv__        &lt;class 'method-wrapper'&gt;
+__rlshift__          &lt;class 'method-wrapper'&gt;
+__rmod__             &lt;class 'method-wrapper'&gt;
+__rmul__             &lt;class 'method-wrapper'&gt;
+__ror__              &lt;class 'method-wrapper'&gt;
+__round__            &lt;class 'builtin_function_or_method'&gt;
+__rpow__             &lt;class 'method-wrapper'&gt;
+__rrshift__          &lt;class 'method-wrapper'&gt;
+__rshift__           &lt;class 'method-wrapper'&gt;
+__rsub__             &lt;class 'method-wrapper'&gt;
+__rtruediv__         &lt;class 'method-wrapper'&gt;
+__rxor__             &lt;class 'method-wrapper'&gt;
+__setattr__          &lt;class 'method-wrapper'&gt;
+__sizeof__           &lt;class 'builtin_function_or_method'&gt;
+__str__              &lt;class 'method-wrapper'&gt;
+__sub__              &lt;class 'method-wrapper'&gt;
+__subclasshook__     &lt;class 'builtin_function_or_method'&gt;
+__truediv__          &lt;class 'method-wrapper'&gt;
+__trunc__            &lt;class 'builtin_function_or_method'&gt;
+__xor__              &lt;class 'method-wrapper'&gt;
+
+
+4.32913
+************************************************************
+Object report on object = 4.32913
+Object class        : &lt;class 'float'&gt;
+Parent classes      : (&lt;class 'object'&gt;,)
+Occupied memory     : 24
+PUBLIC PROPERTIES
+imag                = 0.0   &lt;class 'float'&gt;
+real                = 4.32913 &lt;class 'float'&gt;
+
+
+PRIVATE PROPERTIES
+__doc__             = 'Convert a string or number to ' &lt;class 'str'&gt;
+
+
+PUBLIC METHODS
+as_integer_ratio     &lt;class 'builtin_function_or_method'&gt;
+conjugate            &lt;class 'builtin_function_or_method'&gt;
+fromhex              &lt;class 'builtin_function_or_method'&gt;
+hex                  &lt;class 'builtin_function_or_method'&gt;
+is_integer           &lt;class 'builtin_function_or_method'&gt;
+
+
+PRIVATE METHODS
+__abs__              &lt;class 'method-wrapper'&gt;
+__add__              &lt;class 'method-wrapper'&gt;
+__bool__             &lt;class 'method-wrapper'&gt;
+__ceil__             &lt;class 'builtin_function_or_method'&gt;
+__class__            &lt;class 'type'&gt;
+__delattr__          &lt;class 'method-wrapper'&gt;
+__dir__              &lt;class 'builtin_function_or_method'&gt;
+__divmod__           &lt;class 'method-wrapper'&gt;
+__eq__               &lt;class 'method-wrapper'&gt;
+__float__            &lt;class 'method-wrapper'&gt;
+__floor__            &lt;class 'builtin_function_or_method'&gt;
+__floordiv__         &lt;class 'method-wrapper'&gt;
+__format__           &lt;class 'builtin_function_or_method'&gt;
+__ge__               &lt;class 'method-wrapper'&gt;
+__getattribute__     &lt;class 'method-wrapper'&gt;
+__getformat__        &lt;class 'builtin_function_or_method'&gt;
+__getnewargs__       &lt;class 'builtin_function_or_method'&gt;
+__getstate__         &lt;class 'builtin_function_or_method'&gt;
+__gt__               &lt;class 'method-wrapper'&gt;
+__hash__             &lt;class 'method-wrapper'&gt;
+__init__             &lt;class 'method-wrapper'&gt;
+__init_subclass__    &lt;class 'builtin_function_or_method'&gt;
+__int__              &lt;class 'method-wrapper'&gt;
+__le__               &lt;class 'method-wrapper'&gt;
+__lt__               &lt;class 'method-wrapper'&gt;
+__mod__              &lt;class 'method-wrapper'&gt;
+__mul__              &lt;class 'method-wrapper'&gt;
+__ne__               &lt;class 'method-wrapper'&gt;
+__neg__              &lt;class 'method-wrapper'&gt;
+__new__              &lt;class 'builtin_function_or_method'&gt;
+__pos__              &lt;class 'method-wrapper'&gt;
+__pow__              &lt;class 'method-wrapper'&gt;
+__radd__             &lt;class 'method-wrapper'&gt;
+__rdivmod__          &lt;class 'method-wrapper'&gt;
+__reduce__           &lt;class 'builtin_function_or_method'&gt;
+__reduce_ex__        &lt;class 'builtin_function_or_method'&gt;
+__repr__             &lt;class 'method-wrapper'&gt;
+__rfloordiv__        &lt;class 'method-wrapper'&gt;
+__rmod__             &lt;class 'method-wrapper'&gt;
+__rmul__             &lt;class 'method-wrapper'&gt;
+__round__            &lt;class 'builtin_function_or_method'&gt;
+__rpow__             &lt;class 'method-wrapper'&gt;
+__rsub__             &lt;class 'method-wrapper'&gt;
+__rtruediv__         &lt;class 'method-wrapper'&gt;
+__setattr__          &lt;class 'method-wrapper'&gt;
+__sizeof__           &lt;class 'builtin_function_or_method'&gt;
+__str__              &lt;class 'method-wrapper'&gt;
+__sub__              &lt;class 'method-wrapper'&gt;
+__subclasshook__     &lt;class 'builtin_function_or_method'&gt;
+__truediv__          &lt;class 'method-wrapper'&gt;
+__trunc__            &lt;class 'builtin_function_or_method'&gt;
+
+</code></pre>
+</div>
+</div>
+<p>Finally, a string:</p>
+<div id="string" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a>x <span class="op">=</span> <span class="st">"Australian National University"</span> <span class="co"># String</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>obj_explore(x,<span class="st">'public methods'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Australian National University
+************************************************************
+Object report on object = Australian National University
+Object class        : &lt;class 'str'&gt;
+Parent classes      : (&lt;class 'object'&gt;,)
+Occupied memory     : 79
+PUBLIC METHODS
+capitalize           &lt;class 'builtin_function_or_method'&gt;
+casefold             &lt;class 'builtin_function_or_method'&gt;
+center               &lt;class 'builtin_function_or_method'&gt;
+count                &lt;class 'builtin_function_or_method'&gt;
+encode               &lt;class 'builtin_function_or_method'&gt;
+endswith             &lt;class 'builtin_function_or_method'&gt;
+expandtabs           &lt;class 'builtin_function_or_method'&gt;
+find                 &lt;class 'builtin_function_or_method'&gt;
+format               &lt;class 'builtin_function_or_method'&gt;
+format_map           &lt;class 'builtin_function_or_method'&gt;
+index                &lt;class 'builtin_function_or_method'&gt;
+isalnum              &lt;class 'builtin_function_or_method'&gt;
+isalpha              &lt;class 'builtin_function_or_method'&gt;
+isascii              &lt;class 'builtin_function_or_method'&gt;
+isdecimal            &lt;class 'builtin_function_or_method'&gt;
+isdigit              &lt;class 'builtin_function_or_method'&gt;
+isidentifier         &lt;class 'builtin_function_or_method'&gt;
+islower              &lt;class 'builtin_function_or_method'&gt;
+isnumeric            &lt;class 'builtin_function_or_method'&gt;
+isprintable          &lt;class 'builtin_function_or_method'&gt;
+isspace              &lt;class 'builtin_function_or_method'&gt;
+istitle              &lt;class 'builtin_function_or_method'&gt;
+isupper              &lt;class 'builtin_function_or_method'&gt;
+join                 &lt;class 'builtin_function_or_method'&gt;
+ljust                &lt;class 'builtin_function_or_method'&gt;
+lower                &lt;class 'builtin_function_or_method'&gt;
+lstrip               &lt;class 'builtin_function_or_method'&gt;
+maketrans            &lt;class 'builtin_function_or_method'&gt;
+partition            &lt;class 'builtin_function_or_method'&gt;
+removeprefix         &lt;class 'builtin_function_or_method'&gt;
+removesuffix         &lt;class 'builtin_function_or_method'&gt;
+replace              &lt;class 'builtin_function_or_method'&gt;
+rfind                &lt;class 'builtin_function_or_method'&gt;
+rindex               &lt;class 'builtin_function_or_method'&gt;
+rjust                &lt;class 'builtin_function_or_method'&gt;
+rpartition           &lt;class 'builtin_function_or_method'&gt;
+rsplit               &lt;class 'builtin_function_or_method'&gt;
+rstrip               &lt;class 'builtin_function_or_method'&gt;
+split                &lt;class 'builtin_function_or_method'&gt;
+splitlines           &lt;class 'builtin_function_or_method'&gt;
+startswith           &lt;class 'builtin_function_or_method'&gt;
+strip                &lt;class 'builtin_function_or_method'&gt;
+swapcase             &lt;class 'builtin_function_or_method'&gt;
+title                &lt;class 'builtin_function_or_method'&gt;
+translate            &lt;class 'builtin_function_or_method'&gt;
+upper                &lt;class 'builtin_function_or_method'&gt;
+zfill                &lt;class 'builtin_function_or_method'&gt;
+
+</code></pre>
+</div>
+</div>
+<p>Containers and mappings are also objects with accessible attributes and methods.</p>
+<div id="containers" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a>x <span class="op">=</span> [<span class="dv">4</span>,<span class="dv">5</span>,<span class="st">'hello'</span>] <span class="co"># List</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>obj_explore(x,<span class="st">'public'</span>)</span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a>x <span class="op">=</span> (<span class="dv">4</span>,<span class="dv">5</span>,<span class="st">'hello'</span>) <span class="co"># Tuple =&gt; immutable</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>obj_explore(x,<span class="st">'public'</span>)</span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a>x <span class="op">=</span> {<span class="st">"key"</span>: <span class="st">"value"</span>,<span class="st">"another_key"</span>: <span class="dv">574</span>} <span class="co"># Dictionary</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a>obj_explore(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[4, 5, 'hello']
+************************************************************
+Object report on object = [4, 5, 'hello']
+Object class        : &lt;class 'list'&gt;
+Parent classes      : (&lt;class 'object'&gt;,)
+Occupied memory     : 88
+PUBLIC PROPERTIES
+
+
+PUBLIC METHODS
+append               &lt;class 'builtin_function_or_method'&gt;
+clear                &lt;class 'builtin_function_or_method'&gt;
+copy                 &lt;class 'builtin_function_or_method'&gt;
+count                &lt;class 'builtin_function_or_method'&gt;
+extend               &lt;class 'builtin_function_or_method'&gt;
+index                &lt;class 'builtin_function_or_method'&gt;
+insert               &lt;class 'builtin_function_or_method'&gt;
+pop                  &lt;class 'builtin_function_or_method'&gt;
+remove               &lt;class 'builtin_function_or_method'&gt;
+reverse              &lt;class 'builtin_function_or_method'&gt;
+sort                 &lt;class 'builtin_function_or_method'&gt;
+
+
+(4, 5, 'hello')
+************************************************************
+Object report on object = (4, 5, 'hello')
+Object class        : &lt;class 'tuple'&gt;
+Parent classes      : (&lt;class 'object'&gt;,)
+Occupied memory     : 64
+PUBLIC PROPERTIES
+
+
+PUBLIC METHODS
+count                &lt;class 'builtin_function_or_method'&gt;
+index                &lt;class 'builtin_function_or_method'&gt;
+
+
+{'key': 'value', 'another_key': 574}
+************************************************************
+Object report on object = {'key': 'value', 'another_key': 574}
+Object class        : &lt;class 'dict'&gt;
+Parent classes      : (&lt;class 'object'&gt;,)
+Occupied memory     : 184
+PUBLIC PROPERTIES
+
+
+PRIVATE PROPERTIES
+__doc__             = 'dict() -&gt; new empty dictionary' &lt;class 'str'&gt;
+__hash__            = None       &lt;class 'NoneType'&gt;
+
+
+PUBLIC METHODS
+clear                &lt;class 'builtin_function_or_method'&gt;
+copy                 &lt;class 'builtin_function_or_method'&gt;
+fromkeys             &lt;class 'builtin_function_or_method'&gt;
+get                  &lt;class 'builtin_function_or_method'&gt;
+items                &lt;class 'builtin_function_or_method'&gt;
+keys                 &lt;class 'builtin_function_or_method'&gt;
+pop                  &lt;class 'builtin_function_or_method'&gt;
+popitem              &lt;class 'builtin_function_or_method'&gt;
+setdefault           &lt;class 'builtin_function_or_method'&gt;
+update               &lt;class 'builtin_function_or_method'&gt;
+values               &lt;class 'builtin_function_or_method'&gt;
+
+
+PRIVATE METHODS
+__class__            &lt;class 'type'&gt;
+__class_getitem__    &lt;class 'builtin_function_or_method'&gt;
+__contains__         &lt;class 'builtin_function_or_method'&gt;
+__delattr__          &lt;class 'method-wrapper'&gt;
+__delitem__          &lt;class 'method-wrapper'&gt;
+__dir__              &lt;class 'builtin_function_or_method'&gt;
+__eq__               &lt;class 'method-wrapper'&gt;
+__format__           &lt;class 'builtin_function_or_method'&gt;
+__ge__               &lt;class 'method-wrapper'&gt;
+__getattribute__     &lt;class 'method-wrapper'&gt;
+__getitem__          &lt;class 'builtin_function_or_method'&gt;
+__getstate__         &lt;class 'builtin_function_or_method'&gt;
+__gt__               &lt;class 'method-wrapper'&gt;
+__init__             &lt;class 'method-wrapper'&gt;
+__init_subclass__    &lt;class 'builtin_function_or_method'&gt;
+__ior__              &lt;class 'method-wrapper'&gt;
+__iter__             &lt;class 'method-wrapper'&gt;
+__le__               &lt;class 'method-wrapper'&gt;
+__len__              &lt;class 'method-wrapper'&gt;
+__lt__               &lt;class 'method-wrapper'&gt;
+__ne__               &lt;class 'method-wrapper'&gt;
+__new__              &lt;class 'builtin_function_or_method'&gt;
+__or__               &lt;class 'method-wrapper'&gt;
+__reduce__           &lt;class 'builtin_function_or_method'&gt;
+__reduce_ex__        &lt;class 'builtin_function_or_method'&gt;
+__repr__             &lt;class 'method-wrapper'&gt;
+__reversed__         &lt;class 'builtin_function_or_method'&gt;
+__ror__              &lt;class 'method-wrapper'&gt;
+__setattr__          &lt;class 'method-wrapper'&gt;
+__setitem__          &lt;class 'method-wrapper'&gt;
+__sizeof__           &lt;class 'builtin_function_or_method'&gt;
+__str__              &lt;class 'method-wrapper'&gt;
+__subclasshook__     &lt;class 'builtin_function_or_method'&gt;
+
+</code></pre>
+</div>
+</div>
+</section>
+<section id="create-a-firm-class" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Create a <code>Firm</code> class</h1>
+<div id="firm-class" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">class</span> Firm:</span>
+<span id="cb12-2"><a href="#cb12-2"></a>    <span class="co">'''</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="co">    This class stores the parameters of the production function</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co">    f(k)=Ak^alpha, and implements the function.</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="co">    '''</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a></span>
+<span id="cb12-7"><a href="#cb12-7"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, A<span class="op">=</span><span class="fl">2.0</span>):</span>
+<span id="cb12-8"><a href="#cb12-8"></a>        <span class="va">self</span>.alpha <span class="op">=</span> alpha </span>
+<span id="cb12-9"><a href="#cb12-9"></a>        <span class="va">self</span>.A <span class="op">=</span> A </span>
+<span id="cb12-10"><a href="#cb12-10"></a>    </span>
+<span id="cb12-11"><a href="#cb12-11"></a>    <span class="kw">def</span> production(<span class="va">self</span>, value):</span>
+<span id="cb12-12"><a href="#cb12-12"></a>        <span class="cf">return</span> <span class="va">self</span>.A <span class="op">*</span> (value<span class="op">**</span><span class="va">self</span>.alpha)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First, let’s insepct this class using the <code>obj_explore()</code> function.</p>
+<div id="inspect-firm-class" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a>firm_example <span class="op">=</span> Firm()</span>
+<span id="cb13-2"><a href="#cb13-2"></a>obj_explore(firm_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;__main__.Firm object at 0x0000026809AABE90&gt;
+************************************************************
+Object report on object = &lt;__main__.Firm object at 0x0000026809AABE90&gt;
+Object class        : &lt;class '__main__.Firm'&gt;
+Parent classes      : (&lt;class 'object'&gt;,)
+Occupied memory     : 56
+PUBLIC PROPERTIES
+A                   = 2.0   &lt;class 'float'&gt;
+alpha               = 0.5   &lt;class 'float'&gt;
+
+
+PRIVATE PROPERTIES
+__dict__            = {'alpha': 0.5, 'A': 2.0} &lt;class 'dict'&gt;
+__doc__             = '\n    This class stores the par' &lt;class 'str'&gt;
+__module__          = '__main__' &lt;class 'str'&gt;
+__weakref__         = None       &lt;class 'NoneType'&gt;
+
+
+PUBLIC METHODS
+production           &lt;class 'method'&gt;
+
+
+PRIVATE METHODS
+__class__            &lt;class 'type'&gt;
+__delattr__          &lt;class 'method-wrapper'&gt;
+__dir__              &lt;class 'builtin_function_or_method'&gt;
+__eq__               &lt;class 'method-wrapper'&gt;
+__format__           &lt;class 'builtin_function_or_method'&gt;
+__ge__               &lt;class 'method-wrapper'&gt;
+__getattribute__     &lt;class 'method-wrapper'&gt;
+__getstate__         &lt;class 'builtin_function_or_method'&gt;
+__gt__               &lt;class 'method-wrapper'&gt;
+__hash__             &lt;class 'method-wrapper'&gt;
+__init__             &lt;class 'method'&gt;
+__init_subclass__    &lt;class 'builtin_function_or_method'&gt;
+__le__               &lt;class 'method-wrapper'&gt;
+__lt__               &lt;class 'method-wrapper'&gt;
+__ne__               &lt;class 'method-wrapper'&gt;
+__new__              &lt;class 'builtin_function_or_method'&gt;
+__reduce__           &lt;class 'builtin_function_or_method'&gt;
+__reduce_ex__        &lt;class 'builtin_function_or_method'&gt;
+__repr__             &lt;class 'method-wrapper'&gt;
+__setattr__          &lt;class 'method-wrapper'&gt;
+__sizeof__           &lt;class 'builtin_function_or_method'&gt;
+__str__              &lt;class 'method-wrapper'&gt;
+__subclasshook__     &lt;class 'builtin_function_or_method'&gt;
+
+</code></pre>
+</div>
+</div>
+<p>Next, let’s call the <code>Firm.production()</code> method and calculate the values.</p>
+<div id="firm-class-with-methods" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a>firm1 <span class="op">=</span> Firm()</span>
+<span id="cb15-2"><a href="#cb15-2"></a>firm2 <span class="op">=</span> Firm(A<span class="op">=</span><span class="fl">3.0</span>)</span>
+<span id="cb15-3"><a href="#cb15-3"></a>k <span class="op">=</span> <span class="fl">10.0</span> </span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="bu">print</span>(firm1.production(k))</span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="bu">print</span>(firm2.production(k))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>6.324555320336759
+9.486832980505138</code></pre>
+</div>
+</div>
+</section>
+<section id="an-example-bundelgood-class-that-overrides-some-operators." class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> An example: <code>BundelGood</code> class that overrides some operators.</h1>
+<p>Consider the following model of a bundle goods market. A bundle of goods is a collection of particular items offered at a specified price. For example, Happy Meals at McDonalds is a set of items in a meal sold for a particular price.</p>
+<p>The gain is to develop a Python class to represent a bundle good with the following specifications: - The class attribute (common to all objects of this class) is a list of goods. - The public property is a vector of integers defining how many of each goods are in the bundle. - The other property is the price for that bundle.</p>
+<p>The following arithmetic operations are defined for the bungles:</p>
+<ul>
+<li>addition:
+<ul>
+<li>sum of two bundles is a bundle with added up items and prices</li>
+<li>sum of a bundle and a number (float or int) increases the price</li>
+</ul></li>
+<li>subtraction:
+<ul>
+<li>difference between two bundles should produce a bundle with difference in items and difference in prices</li>
+<li>subtracting a number (float or int) from a bundle should only decrease its price</li>
+</ul></li>
+<li>multiplication is only defined for bundle and an integers, and results in the bundle with all items multiplied by this number, and price increased by the same number</li>
+<li>division is only defined for integers, and only such that the all quantities are divisible by this integer, the resulting bundle is a fraction of the original, with the price also decreased by the same number</li>
+</ul>
+<div id="bundlegood-clas" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">class</span> BundleGood:</span>
+<span id="cb17-2"><a href="#cb17-2"></a>    <span class="co">"""</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="co">    This is a class of bundled goods with well defined arithmetics.</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="co">    """</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a>    items <span class="op">=</span> (</span>
+<span id="cb17-7"><a href="#cb17-7"></a>        <span class="st">"Opera A"</span>,</span>
+<span id="cb17-8"><a href="#cb17-8"></a>        <span class="st">"Opera B"</span>,</span>
+<span id="cb17-9"><a href="#cb17-9"></a>        <span class="st">"Ballet A"</span>,</span>
+<span id="cb17-10"><a href="#cb17-10"></a>        <span class="st">"Ballet B"</span>,</span>
+<span id="cb17-11"><a href="#cb17-11"></a>        <span class="st">"Symphonic orchestra concert"</span>,</span>
+<span id="cb17-12"><a href="#cb17-12"></a>        <span class="st">"Rock opera"</span>,</span>
+<span id="cb17-13"><a href="#cb17-13"></a>        <span class="st">"Operetta"</span>,</span>
+<span id="cb17-14"><a href="#cb17-14"></a>    )</span>
+<span id="cb17-15"><a href="#cb17-15"></a></span>
+<span id="cb17-16"><a href="#cb17-16"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(</span>
+<span id="cb17-17"><a href="#cb17-17"></a>        <span class="va">self</span>,</span>
+<span id="cb17-18"><a href="#cb17-18"></a>        quantities<span class="op">=</span>[</span>
+<span id="cb17-19"><a href="#cb17-19"></a>            <span class="dv">0</span>,</span>
+<span id="cb17-20"><a href="#cb17-20"></a>        ],</span>
+<span id="cb17-21"><a href="#cb17-21"></a>        price<span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb17-22"><a href="#cb17-22"></a>    ):</span>
+<span id="cb17-23"><a href="#cb17-23"></a>        <span class="co">"""</span></span>
+<span id="cb17-24"><a href="#cb17-24"></a><span class="co">        This method creates a bundled good object.</span></span>
+<span id="cb17-25"><a href="#cb17-25"></a><span class="co">        """</span></span>
+<span id="cb17-26"><a href="#cb17-26"></a>        <span class="va">self</span>.quantities <span class="op">=</span> quantities</span>
+<span id="cb17-27"><a href="#cb17-27"></a>        <span class="va">self</span>.price <span class="op">=</span> price</span>
+<span id="cb17-28"><a href="#cb17-28"></a></span>
+<span id="cb17-29"><a href="#cb17-29"></a>        <span class="co"># ?? To transform non-standard quantities argument</span></span>
+<span id="cb17-30"><a href="#cb17-30"></a>        n <span class="op">=</span> <span class="bu">len</span>(<span class="va">self</span>.items)</span>
+<span id="cb17-31"><a href="#cb17-31"></a>        passed_n <span class="op">=</span> <span class="bu">len</span>(<span class="va">self</span>.quantities)</span>
+<span id="cb17-32"><a href="#cb17-32"></a>        <span class="cf">if</span> passed_n <span class="op">&lt;</span> n:</span>
+<span id="cb17-33"><a href="#cb17-33"></a>            <span class="va">self</span>.quantities <span class="op">=</span> <span class="va">self</span>.quantities <span class="op">+</span> [</span>
+<span id="cb17-34"><a href="#cb17-34"></a>                <span class="dv">0</span> <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n <span class="op">-</span> passed_n)</span>
+<span id="cb17-35"><a href="#cb17-35"></a>            ]</span>
+<span id="cb17-36"><a href="#cb17-36"></a>        <span class="cf">elif</span> passed_n <span class="op">&gt;</span> n:</span>
+<span id="cb17-37"><a href="#cb17-37"></a>            <span class="va">self</span>.quantities <span class="op">=</span> <span class="va">self</span>.quantities[:n]</span>
+<span id="cb17-38"><a href="#cb17-38"></a>        <span class="va">self</span>.quantities <span class="op">=</span> [<span class="bu">int</span>(x) <span class="cf">for</span> x <span class="kw">in</span> <span class="va">self</span>.quantities]</span>
+<span id="cb17-39"><a href="#cb17-39"></a></span>
+<span id="cb17-40"><a href="#cb17-40"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb17-41"><a href="#cb17-41"></a>        <span class="co">'''</span></span>
+<span id="cb17-42"><a href="#cb17-42"></a><span class="co">        This method creates a string representation of the object.</span></span>
+<span id="cb17-43"><a href="#cb17-43"></a><span class="co">        '''</span></span>
+<span id="cb17-44"><a href="#cb17-44"></a></span>
+<span id="cb17-45"><a href="#cb17-45"></a>        <span class="cf">return</span> <span class="ss">f'Bundled goods </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>quantities<span class="sc">!r}</span><span class="ss"> with price </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>price<span class="sc">:.2f}</span><span class="ss">.'</span></span>
+<span id="cb17-46"><a href="#cb17-46"></a></span>
+<span id="cb17-47"><a href="#cb17-47"></a>    <span class="kw">def</span> <span class="fu">__add__</span>(<span class="va">self</span>, other):</span>
+<span id="cb17-48"><a href="#cb17-48"></a>        <span class="co">"""</span></span>
+<span id="cb17-49"><a href="#cb17-49"></a><span class="co">        This method overrides the + operation to make it suitable for</span></span>
+<span id="cb17-50"><a href="#cb17-50"></a><span class="co">        this setting.</span></span>
+<span id="cb17-51"><a href="#cb17-51"></a><span class="co">        """</span></span>
+<span id="cb17-52"><a href="#cb17-52"></a></span>
+<span id="cb17-53"><a href="#cb17-53"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(other, BundleGood):</span>
+<span id="cb17-54"><a href="#cb17-54"></a>            q1 <span class="op">=</span> [</span>
+<span id="cb17-55"><a href="#cb17-55"></a>                x <span class="op">+</span> y <span class="cf">for</span> x, y <span class="kw">in</span> <span class="bu">zip</span>(<span class="va">self</span>.quantities, other.quantities)</span>
+<span id="cb17-56"><a href="#cb17-56"></a>            ]</span>
+<span id="cb17-57"><a href="#cb17-57"></a>            p1 <span class="op">=</span> <span class="va">self</span>.price <span class="op">+</span> other.price</span>
+<span id="cb17-58"><a href="#cb17-58"></a>            <span class="cf">return</span> BundleGood(quantities<span class="op">=</span>q1, price<span class="op">=</span>p1)</span>
+<span id="cb17-59"><a href="#cb17-59"></a></span>
+<span id="cb17-60"><a href="#cb17-60"></a>        <span class="cf">elif</span> <span class="bu">isinstance</span>(other, (<span class="bu">int</span>, <span class="bu">float</span>)):</span>
+<span id="cb17-61"><a href="#cb17-61"></a>            p1 <span class="op">=</span> <span class="va">self</span>.price <span class="op">+</span> other</span>
+<span id="cb17-62"><a href="#cb17-62"></a>            <span class="cf">return</span> BundleGood(quantities<span class="op">=</span><span class="va">self</span>.quantities, price<span class="op">=</span>p1)</span>
+<span id="cb17-63"><a href="#cb17-63"></a></span>
+<span id="cb17-64"><a href="#cb17-64"></a>        <span class="cf">else</span>:</span>
+<span id="cb17-65"><a href="#cb17-65"></a>            <span class="cf">raise</span> <span class="pp">TypeError</span>(</span>
+<span id="cb17-66"><a href="#cb17-66"></a>                <span class="st">"The + operator can only add bundle to another bundle, or a number to bundle price."</span></span>
+<span id="cb17-67"><a href="#cb17-67"></a>            )</span>
+<span id="cb17-68"><a href="#cb17-68"></a></span>
+<span id="cb17-69"><a href="#cb17-69"></a>    <span class="kw">def</span> <span class="fu">__sub__</span>(<span class="va">self</span>, other):</span>
+<span id="cb17-70"><a href="#cb17-70"></a>        <span class="co">"""</span></span>
+<span id="cb17-71"><a href="#cb17-71"></a><span class="co">        This method overrides the - operation to make it suitable for</span></span>
+<span id="cb17-72"><a href="#cb17-72"></a><span class="co">        this setting.</span></span>
+<span id="cb17-73"><a href="#cb17-73"></a><span class="co">        """</span></span>
+<span id="cb17-74"><a href="#cb17-74"></a></span>
+<span id="cb17-75"><a href="#cb17-75"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(other, BundleGood):</span>
+<span id="cb17-76"><a href="#cb17-76"></a>            q1 <span class="op">=</span> [</span>
+<span id="cb17-77"><a href="#cb17-77"></a>                x <span class="op">-</span> y <span class="cf">for</span> x, y <span class="kw">in</span> <span class="bu">zip</span>(<span class="va">self</span>.quantities, other.quantities)</span>
+<span id="cb17-78"><a href="#cb17-78"></a>            ]</span>
+<span id="cb17-79"><a href="#cb17-79"></a>            p1 <span class="op">=</span> <span class="va">self</span>.price <span class="op">-</span> other.price</span>
+<span id="cb17-80"><a href="#cb17-80"></a>            <span class="cf">return</span> BundleGood(quantities<span class="op">=</span>q1, price<span class="op">=</span>p1)</span>
+<span id="cb17-81"><a href="#cb17-81"></a></span>
+<span id="cb17-82"><a href="#cb17-82"></a>        <span class="cf">elif</span> <span class="bu">isinstance</span>(other, (<span class="bu">int</span>, <span class="bu">float</span>)):</span>
+<span id="cb17-83"><a href="#cb17-83"></a>            p1 <span class="op">=</span> <span class="va">self</span>.price <span class="op">-</span> other</span>
+<span id="cb17-84"><a href="#cb17-84"></a>            <span class="cf">return</span> BundleGood(quantities<span class="op">=</span><span class="va">self</span>.quantities, price<span class="op">=</span>p1)</span>
+<span id="cb17-85"><a href="#cb17-85"></a></span>
+<span id="cb17-86"><a href="#cb17-86"></a>        <span class="cf">else</span>:</span>
+<span id="cb17-87"><a href="#cb17-87"></a>            <span class="cf">raise</span> <span class="pp">TypeError</span>(</span>
+<span id="cb17-88"><a href="#cb17-88"></a>                <span class="st">"The + operator can only subtract another bundle from a bundle, or a number from bundle price."</span></span>
+<span id="cb17-89"><a href="#cb17-89"></a>            )</span>
+<span id="cb17-90"><a href="#cb17-90"></a></span>
+<span id="cb17-91"><a href="#cb17-91"></a>    <span class="kw">def</span> <span class="fu">__mul__</span>(<span class="va">self</span>, num):</span>
+<span id="cb17-92"><a href="#cb17-92"></a>        <span class="co">'''</span></span>
+<span id="cb17-93"><a href="#cb17-93"></a><span class="co">        This method overrides the * operator. It creates a repetition of</span></span>
+<span id="cb17-94"><a href="#cb17-94"></a><span class="co">        the original bundle</span></span>
+<span id="cb17-95"><a href="#cb17-95"></a><span class="co">        '''</span></span>
+<span id="cb17-96"><a href="#cb17-96"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(num, <span class="bu">int</span>):</span>
+<span id="cb17-97"><a href="#cb17-97"></a>            q1 <span class="op">=</span> [x <span class="op">*</span> num <span class="cf">for</span> x <span class="kw">in</span> <span class="va">self</span>.quantities]</span>
+<span id="cb17-98"><a href="#cb17-98"></a>            p1 <span class="op">=</span> <span class="va">self</span>.price <span class="op">*</span> num</span>
+<span id="cb17-99"><a href="#cb17-99"></a>            <span class="cf">return</span> BundleGood(price<span class="op">=</span>p1, quantities<span class="op">=</span>q1)</span>
+<span id="cb17-100"><a href="#cb17-100"></a>        <span class="cf">else</span>:</span>
+<span id="cb17-101"><a href="#cb17-101"></a>            <span class="cf">raise</span> <span class="pp">TypeError</span>(<span class="st">'Can only multiply bundle by an integer'</span>)</span>
+<span id="cb17-102"><a href="#cb17-102"></a></span>
+<span id="cb17-103"><a href="#cb17-103"></a>    <span class="kw">def</span> <span class="fu">__truediv__</span>(<span class="va">self</span>,num):</span>
+<span id="cb17-104"><a href="#cb17-104"></a>        <span class="co">'''</span></span>
+<span id="cb17-105"><a href="#cb17-105"></a><span class="co">        This method overrides the / operator. If returns a fraction of</span></span>
+<span id="cb17-106"><a href="#cb17-106"></a><span class="co">        the original bundle, only if quantities are divisable. </span></span>
+<span id="cb17-107"><a href="#cb17-107"></a><span class="co">        '''</span></span>
+<span id="cb17-108"><a href="#cb17-108"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(num, <span class="bu">int</span>):</span>
+<span id="cb17-109"><a href="#cb17-109"></a>            q1 <span class="op">=</span> [q<span class="op">//</span>num <span class="cf">for</span> q <span class="kw">in</span> <span class="va">self</span>.quantities]</span>
+<span id="cb17-110"><a href="#cb17-110"></a>            <span class="cf">if</span> <span class="kw">not</span> <span class="bu">all</span>(q<span class="op">%</span>num<span class="op">==</span><span class="dv">0</span> <span class="cf">for</span> q <span class="kw">in</span> <span class="va">self</span>.quantities):</span>
+<span id="cb17-111"><a href="#cb17-111"></a>                <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">'Can not divide bundle into fractional parts'</span>)</span>
+<span id="cb17-112"><a href="#cb17-112"></a>            p1<span class="op">=</span><span class="va">self</span>.price <span class="op">/</span> num</span>
+<span id="cb17-113"><a href="#cb17-113"></a>            <span class="cf">return</span> BundleGood(price<span class="op">=</span>p1, quantities<span class="op">=</span>q1)</span>
+<span id="cb17-114"><a href="#cb17-114"></a>        <span class="cf">else</span>:</span>
+<span id="cb17-115"><a href="#cb17-115"></a>            <span class="cf">raise</span> <span class="pp">TypeError</span>(<span class="st">'Can only divide bundle by an integer'</span>)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First, let’s inspect the `<code>__init__</code>` magic method to see if it can handle nonstandard quantities:</p>
+<div id="init-insepction" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="co"># standard case</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>x <span class="op">=</span> BundleGood([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>], <span class="fl">11.43</span>)</span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="bu">print</span>(x)</span>
+<span id="cb18-4"><a href="#cb18-4"></a></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="co"># missing item quantities</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>x <span class="op">=</span> BundleGood([<span class="dv">1</span>, <span class="dv">2</span>])</span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="bu">print</span>(x)</span>
+<span id="cb18-8"><a href="#cb18-8"></a></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="co"># too many items</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>x <span class="op">=</span> BundleGood(<span class="bu">range</span>(<span class="dv">25</span>), <span class="fl">100.2</span>)</span>
+<span id="cb18-11"><a href="#cb18-11"></a><span class="bu">print</span>(x)</span>
+<span id="cb18-12"><a href="#cb18-12"></a></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="co"># non-integer quantities</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a>x <span class="op">=</span> BundleGood([<span class="fl">1.5</span>, <span class="fl">2.3</span>, <span class="fl">3.2</span>, <span class="fl">4.1</span>, <span class="fl">5.75</span>, <span class="fl">6.86</span>, <span class="fl">7.97</span>], <span class="fl">1.43</span>)</span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="bu">print</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bundled goods [1, 2, 3, 4, 5, 6, 7] with price 11.43.
+Bundled goods [1, 2, 0, 0, 0, 0, 0] with price 0.00.
+Bundled goods [0, 1, 2, 3, 4, 5, 6] with price 100.20.
+Bundled goods [1, 2, 3, 4, 5, 6, 7] with price 1.43.</code></pre>
+</div>
+</div>
+<p>Next, let’s examine the <code>+</code> and <code>-</code> operators.</p>
+<div id="plus-and-subtraction" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a>x <span class="op">=</span> BundleGood([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>], <span class="fl">11.43</span>)</span>
+<span id="cb20-2"><a href="#cb20-2"></a>y <span class="op">=</span> BundleGood([<span class="dv">7</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>], <span class="fl">77.45</span>)</span>
+<span id="cb20-3"><a href="#cb20-3"></a>z <span class="op">=</span> x <span class="op">+</span> y</span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="bu">print</span>(z)</span>
+<span id="cb20-5"><a href="#cb20-5"></a></span>
+<span id="cb20-6"><a href="#cb20-6"></a>z <span class="op">=</span> y <span class="op">-</span> x</span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="bu">print</span>(z)</span>
+<span id="cb20-8"><a href="#cb20-8"></a></span>
+<span id="cb20-9"><a href="#cb20-9"></a>z <span class="op">=</span> x <span class="op">+</span> <span class="fl">4.531</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="bu">print</span>(z)</span>
+<span id="cb20-11"><a href="#cb20-11"></a></span>
+<span id="cb20-12"><a href="#cb20-12"></a>z <span class="op">=</span> y <span class="op">-</span> <span class="dv">77</span></span>
+<span id="cb20-13"><a href="#cb20-13"></a><span class="bu">print</span>(z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bundled goods [8, 8, 8, 8, 8, 8, 8] with price 88.88.
+Bundled goods [6, 4, 2, 0, -2, -4, -6] with price 66.02.
+Bundled goods [1, 2, 3, 4, 5, 6, 7] with price 15.96.
+Bundled goods [7, 6, 5, 4, 3, 2, 1] with price 0.45.</code></pre>
+</div>
+</div>
+<p>What about <code>*</code> and <code>/</code>?</p>
+<div id="multiplication-and-division" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="cf">try</span>:</span>
+<span id="cb22-2"><a href="#cb22-2"></a>    z <span class="op">=</span> x <span class="op">*</span> <span class="fl">11.5</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="cf">except</span> <span class="pp">TypeError</span>:</span>
+<span id="cb22-4"><a href="#cb22-4"></a>    <span class="bu">print</span>(<span class="st">"Ok 1"</span>)</span>
+<span id="cb22-5"><a href="#cb22-5"></a></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="cf">try</span>:</span>
+<span id="cb22-7"><a href="#cb22-7"></a>    z <span class="op">=</span> x <span class="op">*</span> y</span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="cf">except</span> <span class="pp">TypeError</span>:</span>
+<span id="cb22-9"><a href="#cb22-9"></a>    <span class="bu">print</span>(<span class="st">"Ok 2"</span>)</span>
+<span id="cb22-10"><a href="#cb22-10"></a></span>
+<span id="cb22-11"><a href="#cb22-11"></a><span class="cf">try</span>:</span>
+<span id="cb22-12"><a href="#cb22-12"></a>    z <span class="op">=</span> x <span class="op">/</span> y</span>
+<span id="cb22-13"><a href="#cb22-13"></a><span class="cf">except</span> <span class="pp">TypeError</span>:</span>
+<span id="cb22-14"><a href="#cb22-14"></a>    <span class="bu">print</span>(<span class="st">"Ok 3"</span>)</span>
+<span id="cb22-15"><a href="#cb22-15"></a></span>
+<span id="cb22-16"><a href="#cb22-16"></a>z <span class="op">=</span> (x <span class="op">+</span> y) <span class="op">/</span> <span class="dv">8</span></span>
+<span id="cb22-17"><a href="#cb22-17"></a><span class="bu">print</span>(z)</span>
+<span id="cb22-18"><a href="#cb22-18"></a></span>
+<span id="cb22-19"><a href="#cb22-19"></a><span class="cf">try</span>:</span>
+<span id="cb22-20"><a href="#cb22-20"></a>    (x <span class="op">+</span> y) <span class="op">/</span> <span class="dv">7</span></span>
+<span id="cb22-21"><a href="#cb22-21"></a><span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb22-22"><a href="#cb22-22"></a>    <span class="bu">print</span>(<span class="st">"Ok 4"</span>)</span>
+<span id="cb22-23"><a href="#cb22-23"></a></span>
+<span id="cb22-24"><a href="#cb22-24"></a>z <span class="op">=</span> x <span class="op">*</span> <span class="dv">15</span> <span class="op">-</span> y <span class="op">*</span> <span class="dv">2</span></span>
+<span id="cb22-25"><a href="#cb22-25"></a><span class="bu">print</span>(z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ok 1
+Ok 2
+Ok 3
+Bundled goods [1, 1, 1, 1, 1, 1, 1] with price 11.11.
+Ok 4
+Bundled goods [1, 18, 35, 52, 69, 86, 103] with price 16.55.</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
