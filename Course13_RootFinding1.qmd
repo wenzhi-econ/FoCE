@@ -1,0 +1,394 @@
+---
+title: "Course 13 and 23: Root Finding"
+format:
+    html:
+        theme: cosmo
+        code-fold: false 
+        code-line-numbers: true
+        code-copy: true
+        page-layout: full
+        highlight-style: github
+        number-sections: true
+        toc: true
+jupyter: python3
+execute: 
+    eval: true
+    echo: true
+---
+
+Python version:
+
+```{python}
+# | label: version 
+import sys
+print(sys.version)
+```
+
+In this file, I will summarize some methods to find a root of a function, that is, to solve the equation
+
+$$
+f(x) = 0.
+$$
+
+# Bisection Method
+
+```{python}
+# | label: bisection 
+
+def bisection(f, a=0, b=1, tol=1e-6, maxiter=100, callback=None):
+    """
+    This function finds the root of function f (the first argument)
+    using the bisection method on the interval [a,b], with given
+    tolerance and maximum number of iterations.
+
+    Input arguments:
+        f: the function of interest
+        a: the lower bound of the interval
+        b: the upper bound of the interval
+        tol: tolerance
+        maxiter: maximum number of iterations
+        callback: a function that will be invoked at each iteration if
+        given
+    """
+
+    if f(a) * f(b) > 0:
+        raise ValueError(
+            "Function has the same sign at the given bounds."
+        )
+    for i in range(maxiter):
+        err = abs(b - a)
+        if err < tol:
+            break
+        else:
+            x = (a + b) / 2
+            if f(a) * f(x) > 0:
+                a = x
+            else:
+                b = x
+        if callback is not None:
+            callback(fun=f, x=x, iter=i)
+    else:
+        raise RuntimeError(
+            "Failed to converge in {maxiter} iterations."
+        )
+    return x
+```
+
+Next, I will test this root-finding function:
+
+```{python}
+# | label: bisection example 
+
+f = lambda x: -4 * (x**3) + 5 * x + 1
+a, b = -3, -0.5
+x = bisection(f, a, b)
+print("Solution is x=%1.3f, f(x)=%1.12f" % (x, f(x)))
+
+
+def show_iteration(fun, x, iter):
+    print(f"Iteration {iter:<2d}: fun(x) = {fun(x):<+3.20e}")
+
+
+x = bisection(f, a, b, callback=show_iteration)
+```
+
+# Newton-Raphson (Newton) Method
+
+```{python}
+# | label: newton 
+
+def newton(fun, grad, x0, tol=1e-6, maxiter=100, callback=None):
+    """
+    This finds the root of function fun (the first argument) using the
+    newton method, with initial guess x0 and given tolerance and maximum
+    number of iterations.
+
+    Input arguments:
+        fun: function of interest
+        grad: the first derivative of func
+        x0: initial guess
+        tol: tolerance
+        maxiter: maximum number of iterations
+        callback: a function that will be invoked at each iteration if
+        given
+    """
+    for i in range(maxiter):
+        x1 = x0 - fun(x0) / grad(x0)
+        x_bar = (x1 + x0) / 2
+        err = fun(x_bar)
+
+        if callback is not None:
+            callback(
+                cb_arg_fun=fun,
+                cb_arg_grad=grad,
+                cb_arg_x0=x0,
+                cb_arg_x1=x1,
+                cb_arg_x_bar=x_bar,
+                cb_arg_iter=i,
+            )
+
+        if abs(err) < tol:
+            break
+        else:
+            x0 = x1
+    else:
+        raise RuntimeError(f"Failed to converge in {maxiter} iterations.")
+    return x_bar
+```
+
+Then, let's test this function using a simple polynomial function.
+
+```{python}
+# | label: newton test 1
+
+f = lambda x: -4 * (x**3) + 5 * x + 1
+g = lambda x: -12 * (x**2) + 5
+x = newton(f, g, x0=-2.5, maxiter=7)
+print(f"Solution is {x=:1.20f}, {f(x)=:1.20f}.")
+```
+
+To show the iteration process, let's create a `print_step` function which will be called in each iteration.
+
+```{python}
+# | label: newtwon test 2
+
+def print_step(
+    cb_arg_fun, cb_arg_grad, cb_arg_x_bar, cb_arg_iter, **kwargs
+):
+    print(
+        f"Iteration {cb_arg_iter+1:<1d}: \nx_bar={cb_arg_x_bar:<1.20f}\nfunction value at x_bar={cb_arg_fun(cb_arg_x_bar):<1.20f}\ngradient at x_bar={cb_arg_grad(cb_arg_x_bar):<1.20f}\n"
+    )
+
+
+x_bar = newton(f, g, x0=-2.5, callback=print_step)
+```
+
+A better way is to visualize the iteration process:
+
+```{python}
+# | label: newton test 3
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+a, b = -3, -0.5  
+xd = np.linspace(a, b, 1000)  
+
+def plot_step(
+    cb_arg_fun, cb_arg_grad, cb_arg_x0, cb_arg_x1, cb_arg_iter, **kwargs
+):
+    plot_step.counter += 1
+    if cb_arg_iter < 10:
+        plt.plot(xd, cb_arg_fun(xd), c="red")
+        plt.plot([a, b], [0, 0], c="black")
+        ylim = [min(cb_arg_fun(b), 0), cb_arg_fun(a)]
+        plt.plot([cb_arg_x0, cb_arg_x0], ylim, c="grey")
+        l = lambda z: cb_arg_grad(cb_arg_x0) * (z - cb_arg_x1)
+        plt.plot(xd, l(xd), c="green")
+        plt.ylim(bottom=10 * cb_arg_fun(b))
+        plt.title(f"Iteration {cb_arg_iter + 1}")
+        plt.ion()
+        plt.show()
+
+plot_step.counter = 0 
+newton(f, g, x0=-2.5, callback=plot_step)
+print(f"Converged in {plot_step.counter} steps" )
+```
+
+# Problems with the Newton Method
+
+## A graphical illustration
+
+First, I will write down codes to graphically illustrate the iteration of the Newton method, and present a well-functioned example.
+
+```{python}
+# | label: illustration
+
+def newton_pic(f, g, x0, a=0, b=1, **kwargs):
+    '''
+    This function draws the iteration of the Newton method in one graph,
+    with bounds [a,b].
+    '''
+    xd = np.linspace(start=a, stop=b, num=1000)
+    plt.plot(xd, f(xd), c='red')
+    plt.plot([a, b], [0, 0], c='black')
+    ylim = [f(a), min(f(b), 0)]
+    def plot_step_inner(**kwargs):
+        plot_step_inner.counter += 1
+        x0 = kwargs['cb_arg_x0']
+        x1 = kwargs['cb_arg_x1']
+        f0 = kwargs['cb_arg_fun'](x0) 
+        plt.plot([x0,x0], [0,f0], c='green')
+        plt.plot([x0,x1], [f0,0], c='green')
+    plot_step_inner.counter = 0 
+
+    try:
+        x_bar = newton(f, g, x0, callback=plot_step_inner, **kwargs)
+        print(f'Converged in {plot_step_inner.counter} steps.')
+        print(f'{x_bar =:<1.20f}, function value is {f(x_bar):<1.20f}.')
+    except RuntimeError:
+        print(f'Failed to converge in {plot_step_inner.counter} iterations.')
+    
+    plt.xlim((a, b))
+    plt.ion()
+    plt.show()
+
+#!! good case
+f_test = lambda x: -4 * (x**3) + 5 * x + 1
+g_test = lambda x: -12 * (x**2) + 5
+
+newton_pic(f=f_test, g=g_test, x0=-2.5 , a=-3, b=-0.5, maxiter=10)
+```
+
+## Multiple solutions and sensitivity to the initial guess
+
+```{python}
+# | label: multiple 1
+newton_pic(f=f_test, g=g_test, x0=0.2, a=-2, b=1.5, maxiter=10)
+```
+
+```{python}
+# | label: multiple 2
+newton_pic(f=f_test, g=g_test, x0=1.0, a=-2, b=1.5, maxiter=10)
+```
+
+## Diversion and cycles
+
+```{python}
+# | label: diversion 
+f = lambda x: np.arctan(x)
+g = lambda x: 1 / (1 + x**2)
+newton_pic(f=f, g=g, x0=1.25, a=-20, b=20)
+newton_pic(f=f, g=g, x0=1.5, a=-20, b=20, maxiter=10)
+```
+
+```{python}
+# | label: cycle 
+f = lambda x: -4 * x**3 + 5 * x + 1
+g = lambda x: -12 * x**2 + 5
+x0 = -0.5689842546416416
+newton_pic(f, g, x0, a=-1.5, b=1.5, maxiter=15)
+```
+
+## Function domain and differentiability
+
+```{python}
+# | label: differentiability 
+
+
+f = lambda x: np.log(x)
+g = lambda x: 1/x
+x0 = 2.9
+newton_pic(f,g,x0,a=0.001,b=3)
+```
+
+# Multivariate Newton Method
+
+Here, let's consider a multivariate root-finding problem given by
+
+$$
+G(x) = 0,
+$$
+
+where $G(x)$ is a $n$-valued function, and $x \in \mathbb{R}^n$ . The **Jacobian matrix** is the$n$ by $n$ matrix of partial derivatives $\nabla G$. The Newton improvement is given by the following equation,
+
+$$
+x_{i+1}=x_i-\left(\nabla G\left(x_i\right)\right)^{-1} G\left(x_i\right).
+$$
+
+In this section, let's consider a 2-d case, where function $G$ takes a 2 by 1 column vector as inputs and returns a 2 by 1 column vector, and its Jacobain matrix $H$ returns a 2 by 2 matrix.
+
+$$
+\begin{gathered}G(x, y)=\binom{2 \sin (x) \cos (y+\pi)-1.15 \sin (1.25 \pi-2 x)}{2 \cos (x) \sin (y+\pi)} \\H(x, y)=\left(\begin{array}{cc}2 \cos (x) \cos (y+\pi)+2.3 \cos (1.25 \pi-2 x) & -2 \sin (x) \sin (y+\pi) \\-2 \sin (x) \sin (y+\pi) & 2 \cos (x) \cos (y+\pi)\end{array}\right)\end{gathered}.
+$$
+
+First, let's code up the newton algorithm. Notice that this function is very specific to our current example, and its arguments should stick to the rules strictly (especially that `x0` should be a column vector as a `numpy.ndarray` object.
+
+```{python}
+
+# | label: 2-d newton method
+
+def newton2(fun, grad, x0, tol=1e-6, maxiter=100, callback=None):
+    """
+    This finds the root of a 2-dimensional function fun (the first
+    argument) using the newton method, with initial guess x0 and given
+    tolerance and maximum number of iterations.
+
+    Input arguments:
+        fun: a function that receives a 2*1 np.ndarray as input, and
+        returns a 2*1 np.ndarray
+        grad: the gradient function of func that receives a 2*1 np.ndarray as input, and returns a 2*2 np.ndarray
+        x0: initial guess as a 2*1 np.ndarray
+        tol: tolerance
+        maxiter: maximum number of iterations
+        callback: a function that will be invoked at each iteration if
+        given
+    """
+    x, y = x0
+
+    for i in range(maxiter):
+        x1 = x0 - np.linalg.inv(grad(x0)).dot(fun(x0))
+        x_bar = (x0 + x1) / 2
+        err = fun(x_bar)
+
+        if callback is not None:
+            callback(
+                arg_iter=i,
+                arg_err=err,
+                arg_xbar=x_bar,
+                arg_x0=x0,
+                arg_x1=x1,
+            )
+
+        if np.sqrt(np.sum(err**2)) < tol:
+            break
+        else:
+            x0 = x1
+
+    else:
+        raise RuntimeError(
+            f"Failed to converge in {maxiter} iterations."
+        )
+    return x_bar
+```
+
+Now, we can test this function!
+
+```{python}
+
+# | label: test 2-d newton
+
+def g(x_array):
+    x = x_array[0, 0]
+    y = x_array[1, 0]
+    g_1 = 2 * np.sin(x) * np.cos(y + np.pi) \
+          - 2 * 0.575 * np.sin(1.25 * np.pi - 2 * x)
+    g_2 = 2 * np.cos(x) * np.sin(y + np.pi)
+    result = np.array([g_1, g_2]).reshape((2, 1))
+    return result
+
+
+def h(x_array):
+    x = x_array[0, 0]
+    y = x_array[1, 0]
+    h_11 = 2 * np.cos(x) * np.cos(y + np.pi) \
+           - 2 * 0.575 * np.sin(1.25 * np.pi - 2 * x)
+    h_12 = -2 * np.sin(x) * np.sin(y + np.pi)
+    h_21 = -2 * np.sin(x) * np.sin(y + np.pi)
+    h_22 = 2 * np.cos(x) * np.cos(y + np.pi)
+
+    result = np.array([[h_11, h_12], [h_21, h_22]])
+    return result
+
+
+x_bar = newton2(g, h, x0=np.array([-1.8, -0.2]).reshape((2, 1)))
+print(x_bar)
+
+def print_iter(arg_xbar, arg_err, arg_iter, **kwargs):
+    print(f"Iteration {arg_iter+1}")
+    print("x_bar =", arg_xbar.ravel())
+    print("function value at x_bar =", arg_err.ravel())
+
+x_bar = newton2(g, h, x0=np.array([-1.8, -0.2]).reshape((2, 1)), callback=print_iter)
+print(x_bar)
+```
