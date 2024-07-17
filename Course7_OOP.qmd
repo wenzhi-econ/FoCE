@@ -176,7 +176,7 @@ print(firm2.production(k))
 
 ```
 
-# An example: `BundelGood` class that overrides some operators.
+# An example: `BundleGood` class that overrides some operators.
 
 Consider the following model of a bundle goods market. A bundle of goods is a collection of particular items offered at a specified price. For example, Happy Meals at McDonalds is a set of items in a meal sold for a particular price.
 
