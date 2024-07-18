@@ -148,7 +148,7 @@ window.Quarto = {
 
 
 <p>Python version:</p>
-<div id="version" class="cell" data-execution_count="1">
+<div id="212c9bc7" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> sys</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="bu">print</span>(sys.version)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -161,7 +161,7 @@ f(x) = 0.
 \]</span></p>
 <section id="bisection-method" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Bisection Method</h1>
-<div id="bisection" class="cell" data-execution_count="2">
+<div id="ee739685" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">def</span> bisection(f, a<span class="op">=</span><span class="dv">0</span>, b<span class="op">=</span><span class="dv">1</span>, tol<span class="op">=</span><span class="fl">1e-6</span>, maxiter<span class="op">=</span><span class="dv">100</span>, callback<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb3-2"><a href="#cb3-2"></a>    <span class="co">"""</span></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="co">    This function finds the root of function f (the first argument)</span></span>
@@ -201,7 +201,7 @@ f(x) = 0.
 <span id="cb3-37"><a href="#cb3-37"></a>    <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, I will test this root-finding function:</p>
-<div id="bisection-example" class="cell" data-execution_count="3">
+<div id="1079bdf0" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>f <span class="op">=</span> <span class="kw">lambda</span> x: <span class="op">-</span><span class="dv">4</span> <span class="op">*</span> (x<span class="op">**</span><span class="dv">3</span>) <span class="op">+</span> <span class="dv">5</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">1</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>a, b <span class="op">=</span> <span class="op">-</span><span class="dv">3</span>, <span class="op">-</span><span class="fl">0.5</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a>x <span class="op">=</span> bisection(f, a, b)</span>
@@ -242,7 +242,7 @@ Iteration 21: fun(x) = +8.34465197385725332424e-07</code></pre>
 </section>
 <section id="newton-raphson-newton-method" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Newton-Raphson (Newton) Method</h1>
-<div id="newton" class="cell" data-execution_count="4">
+<div id="87b97c91" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">def</span> newton(fun, grad, x0, tol<span class="op">=</span><span class="fl">1e-6</span>, maxiter<span class="op">=</span><span class="dv">100</span>, callback<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb6-2"><a href="#cb6-2"></a>    <span class="co">"""</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a><span class="co">    This finds the root of function fun (the first argument) using the</span></span>
@@ -282,7 +282,7 @@ Iteration 21: fun(x) = +8.34465197385725332424e-07</code></pre>
 <span id="cb6-37"><a href="#cb6-37"></a>    <span class="cf">return</span> x_bar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Then, let’s test this function using a simple polynomial function.</p>
-<div id="newton-test-1" class="cell" data-execution_count="5">
+<div id="9a959b61" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a>f <span class="op">=</span> <span class="kw">lambda</span> x: <span class="op">-</span><span class="dv">4</span> <span class="op">*</span> (x<span class="op">**</span><span class="dv">3</span>) <span class="op">+</span> <span class="dv">5</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">1</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>g <span class="op">=</span> <span class="kw">lambda</span> x: <span class="op">-</span><span class="dv">12</span> <span class="op">*</span> (x<span class="op">**</span><span class="dv">2</span>) <span class="op">+</span> <span class="dv">5</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a>x <span class="op">=</span> newton(f, g, x0<span class="op">=-</span><span class="fl">2.5</span>, maxiter<span class="op">=</span><span class="dv">7</span>)</span>
@@ -292,7 +292,7 @@ Iteration 21: fun(x) = +8.34465197385725332424e-07</code></pre>
 </div>
 </div>
 <p>To show the iteration process, let’s create a <code>print_step</code> function which will be called in each iteration.</p>
-<div id="newtwon-test-2" class="cell" data-execution_count="6">
+<div id="e40bcc4c" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">def</span> print_step(</span>
 <span id="cb9-2"><a href="#cb9-2"></a>    cb_arg_fun, cb_arg_grad, cb_arg_x_bar, cb_arg_iter, <span class="op">**</span>kwargs</span>
 <span id="cb9-3"><a href="#cb9-3"></a>):</span>
@@ -341,7 +341,7 @@ gradient at x_bar=-7.00000168330764260816
 </div>
 </div>
 <p>A better way is to visualize the iteration process:</p>
-<div id="newton-test-3" class="cell" data-execution_count="7">
+<div id="1b409850" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb11-2"><a href="#cb11-2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb11-3"><a href="#cb11-3"></a></span>
@@ -370,49 +370,49 @@ gradient at x_bar=-7.00000168330764260816
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-test-3-output-1.png" id="newton-test-3-1" width="575" height="431" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-8-output-1.png" width="575" height="431" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-test-3-output-2.png" id="newton-test-3-2" width="575" height="431" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-8-output-2.png" width="575" height="431" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-test-3-output-3.png" id="newton-test-3-3" width="566" height="431" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-8-output-3.png" width="566" height="431" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-test-3-output-4.png" id="newton-test-3-4" width="566" height="431" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-8-output-4.png" width="566" height="431" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-test-3-output-5.png" id="newton-test-3-5" width="566" height="431" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-8-output-5.png" width="566" height="431" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-test-3-output-6.png" id="newton-test-3-6" width="566" height="431" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-8-output-6.png" width="566" height="431" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-test-3-output-7.png" id="newton-test-3-7" width="566" height="431" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-8-output-7.png" width="566" height="431" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -426,7 +426,7 @@ gradient at x_bar=-7.00000168330764260816
 <section id="a-graphical-illustration" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="a-graphical-illustration"><span class="header-section-number">3.1</span> A graphical illustration</h2>
 <p>First, I will write down codes to graphically illustrate the iteration of the Newton method, and present a well-functioned example.</p>
-<div id="cell-illustration" class="cell" data-execution_count="8">
+<div id="028977c9" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">def</span> newton_pic(f, g, x0, a<span class="op">=</span><span class="dv">0</span>, b<span class="op">=</span><span class="dv">1</span>, <span class="op">**</span>kwargs):</span>
 <span id="cb13-2"><a href="#cb13-2"></a>    <span class="co">'''</span></span>
 <span id="cb13-3"><a href="#cb13-3"></a><span class="co">    This function draws the iteration of the Newton method in one graph,</span></span>
@@ -468,7 +468,7 @@ x_bar =-1.00000007013781599952, function value is 0.00000049096477106048.</code>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/illustration-output-2.png" id="illustration" width="583" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-9-output-2.png" width="583" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -476,7 +476,7 @@ x_bar =-1.00000007013781599952, function value is 0.00000049096477106048.</code>
 </section>
 <section id="multiple-solutions-and-sensitivity-to-the-initial-guess" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="multiple-solutions-and-sensitivity-to-the-initial-guess"><span class="header-section-number">3.2</span> Multiple solutions and sensitivity to the initial guess</h2>
-<p>::: {#cell-multiple 1 .cell execution_count=9}</p>
+<div id="8a2c8379" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a>newton_pic(f<span class="op">=</span>f_test, g<span class="op">=</span>g_test, x0<span class="op">=</span><span class="fl">0.2</span>, a<span class="op">=-</span><span class="dv">2</span>, b<span class="op">=</span><span class="fl">1.5</span>, maxiter<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Converged in 4 steps.
@@ -485,12 +485,12 @@ x_bar =-0.20710671189147439319, function value is 0.00000031080791274007.</code>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/multiple-1-output-2.png" id="multiple-1" width="580" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-10-output-2.png" width="580" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
-<p>::: {#cell-multiple 2 .cell execution_count=10}</p>
+</div>
+<div id="9c9a040b" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a>newton_pic(f<span class="op">=</span>f_test, g<span class="op">=</span>g_test, x0<span class="op">=</span><span class="fl">1.0</span>, a<span class="op">=-</span><span class="dv">2</span>, b<span class="op">=</span><span class="fl">1.5</span>, maxiter<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Converged in 5 steps.
@@ -499,15 +499,15 @@ x_bar =1.20710678238549595775, function value is -0.00000001496920809529.</code>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/multiple-2-output-2.png" id="multiple-2" width="580" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-11-output-2.png" width="580" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 </section>
 <section id="diversion-and-cycles" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="diversion-and-cycles"><span class="header-section-number">3.3</span> Diversion and cycles</h2>
-<div id="diversion" class="cell" data-execution_count="11">
+<div id="289af4df" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a>f <span class="op">=</span> <span class="kw">lambda</span> x: np.arctan(x)</span>
 <span id="cb19-2"><a href="#cb19-2"></a>g <span class="op">=</span> <span class="kw">lambda</span> x: <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> x<span class="op">**</span><span class="dv">2</span>)</span>
 <span id="cb19-3"><a href="#cb19-3"></a>newton_pic(f<span class="op">=</span>f, g<span class="op">=</span>g, x0<span class="op">=</span><span class="fl">1.25</span>, a<span class="op">=-</span><span class="dv">20</span>, b<span class="op">=</span><span class="dv">20</span>)</span>
@@ -519,7 +519,7 @@ x_bar =-0.00000000977954507284, function value is -0.00000000977954507284.</code
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/diversion-output-2.png" id="diversion-1" width="590" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-12-output-2.png" width="590" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -529,12 +529,12 @@ x_bar =-0.00000000977954507284, function value is -0.00000000977954507284.</code
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/diversion-output-4.png" id="diversion-2" width="590" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-12-output-4.png" width="590" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="cell-cycle" class="cell" data-execution_count="12">
+<div id="f860d8cd" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a>f <span class="op">=</span> <span class="kw">lambda</span> x: <span class="op">-</span><span class="dv">4</span> <span class="op">*</span> x<span class="op">**</span><span class="dv">3</span> <span class="op">+</span> <span class="dv">5</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">1</span></span>
 <span id="cb22-2"><a href="#cb22-2"></a>g <span class="op">=</span> <span class="kw">lambda</span> x: <span class="op">-</span><span class="dv">12</span> <span class="op">*</span> x<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> <span class="dv">5</span></span>
 <span id="cb22-3"><a href="#cb22-3"></a>x0 <span class="op">=</span> <span class="op">-</span><span class="fl">0.5689842546416416</span></span>
@@ -545,7 +545,7 @@ x_bar =-0.00000000977954507284, function value is -0.00000000977954507284.</code
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/cycle-output-2.png" id="cycle" width="580" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-13-output-2.png" width="580" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -553,7 +553,7 @@ x_bar =-0.00000000977954507284, function value is -0.00000000977954507284.</code
 </section>
 <section id="function-domain-and-differentiability" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="function-domain-and-differentiability"><span class="header-section-number">3.4</span> Function domain and differentiability</h2>
-<div id="cell-differentiability" class="cell" data-execution_count="13">
+<div id="fd61cb26" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a>f <span class="op">=</span> <span class="kw">lambda</span> x: np.log(x)</span>
 <span id="cb24-2"><a href="#cb24-2"></a>g <span class="op">=</span> <span class="kw">lambda</span> x: <span class="dv">1</span><span class="op">/</span>x</span>
 <span id="cb24-3"><a href="#cb24-3"></a>x0 <span class="op">=</span> <span class="fl">2.9</span></span>
@@ -561,10 +561,14 @@ x_bar =-0.00000000977954507284, function value is -0.00000000977954507284.</code
 <div class="cell-output cell-output-stdout">
 <pre><code>Failed to converge in 100 iterations.</code></pre>
 </div>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\wang\AppData\Local\Temp\ipykernel_27932\1245437304.py:1: RuntimeWarning: invalid value encountered in log
+  f = lambda x: np.log(x)</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/differentiability-output-2.png" id="differentiability" width="580" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-14-output-3.png" width="580" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -586,85 +590,85 @@ x_{i+1}=x_i-\left(\nabla G\left(x_i\right)\right)^{-1} G\left(x_i\right).
 \begin{gathered}G(x, y)=\binom{2 \sin (x) \cos (y+\pi)-1.15 \sin (1.25 \pi-2 x)}{2 \cos (x) \sin (y+\pi)} \\H(x, y)=\left(\begin{array}{cc}2 \cos (x) \cos (y+\pi)+2.3 \cos (1.25 \pi-2 x) &amp; -2 \sin (x) \sin (y+\pi) \\-2 \sin (x) \sin (y+\pi) &amp; 2 \cos (x) \cos (y+\pi)\end{array}\right)\end{gathered}.
 \]</span></p>
 <p>First, let’s code up the newton algorithm. Notice that this function is very specific to our current example, and its arguments should stick to the rules strictly (especially that <code>x0</code> should be a column vector as a <code>numpy.ndarray</code> object.</p>
-<div id="d-newton-method" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">def</span> newton2(fun, grad, x0, tol<span class="op">=</span><span class="fl">1e-6</span>, maxiter<span class="op">=</span><span class="dv">100</span>, callback<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb26-2"><a href="#cb26-2"></a>    <span class="co">"""</span></span>
-<span id="cb26-3"><a href="#cb26-3"></a><span class="co">    This finds the root of a 2-dimensional function fun (the first</span></span>
-<span id="cb26-4"><a href="#cb26-4"></a><span class="co">    argument) using the newton method, with initial guess x0 and given</span></span>
-<span id="cb26-5"><a href="#cb26-5"></a><span class="co">    tolerance and maximum number of iterations.</span></span>
-<span id="cb26-6"><a href="#cb26-6"></a></span>
-<span id="cb26-7"><a href="#cb26-7"></a><span class="co">    Input arguments:</span></span>
-<span id="cb26-8"><a href="#cb26-8"></a><span class="co">        fun: a function that receives a 2*1 np.ndarray as input, and</span></span>
-<span id="cb26-9"><a href="#cb26-9"></a><span class="co">        returns a 2*1 np.ndarray</span></span>
-<span id="cb26-10"><a href="#cb26-10"></a><span class="co">        grad: the gradient function of func that receives a 2*1 np.ndarray as input, and returns a 2*2 np.ndarray</span></span>
-<span id="cb26-11"><a href="#cb26-11"></a><span class="co">        x0: initial guess as a 2*1 np.ndarray</span></span>
-<span id="cb26-12"><a href="#cb26-12"></a><span class="co">        tol: tolerance</span></span>
-<span id="cb26-13"><a href="#cb26-13"></a><span class="co">        maxiter: maximum number of iterations</span></span>
-<span id="cb26-14"><a href="#cb26-14"></a><span class="co">        callback: a function that will be invoked at each iteration if</span></span>
-<span id="cb26-15"><a href="#cb26-15"></a><span class="co">        given</span></span>
-<span id="cb26-16"><a href="#cb26-16"></a><span class="co">    """</span></span>
-<span id="cb26-17"><a href="#cb26-17"></a>    x, y <span class="op">=</span> x0</span>
-<span id="cb26-18"><a href="#cb26-18"></a></span>
-<span id="cb26-19"><a href="#cb26-19"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(maxiter):</span>
-<span id="cb26-20"><a href="#cb26-20"></a>        x1 <span class="op">=</span> x0 <span class="op">-</span> np.linalg.inv(grad(x0)).dot(fun(x0))</span>
-<span id="cb26-21"><a href="#cb26-21"></a>        x_bar <span class="op">=</span> (x0 <span class="op">+</span> x1) <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb26-22"><a href="#cb26-22"></a>        err <span class="op">=</span> fun(x_bar)</span>
-<span id="cb26-23"><a href="#cb26-23"></a></span>
-<span id="cb26-24"><a href="#cb26-24"></a>        <span class="cf">if</span> callback <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb26-25"><a href="#cb26-25"></a>            callback(</span>
-<span id="cb26-26"><a href="#cb26-26"></a>                arg_iter<span class="op">=</span>i,</span>
-<span id="cb26-27"><a href="#cb26-27"></a>                arg_err<span class="op">=</span>err,</span>
-<span id="cb26-28"><a href="#cb26-28"></a>                arg_xbar<span class="op">=</span>x_bar,</span>
-<span id="cb26-29"><a href="#cb26-29"></a>                arg_x0<span class="op">=</span>x0,</span>
-<span id="cb26-30"><a href="#cb26-30"></a>                arg_x1<span class="op">=</span>x1,</span>
-<span id="cb26-31"><a href="#cb26-31"></a>            )</span>
-<span id="cb26-32"><a href="#cb26-32"></a></span>
-<span id="cb26-33"><a href="#cb26-33"></a>        <span class="cf">if</span> np.sqrt(np.<span class="bu">sum</span>(err<span class="op">**</span><span class="dv">2</span>)) <span class="op">&lt;</span> tol:</span>
-<span id="cb26-34"><a href="#cb26-34"></a>            <span class="cf">break</span></span>
-<span id="cb26-35"><a href="#cb26-35"></a>        <span class="cf">else</span>:</span>
-<span id="cb26-36"><a href="#cb26-36"></a>            x0 <span class="op">=</span> x1</span>
-<span id="cb26-37"><a href="#cb26-37"></a></span>
-<span id="cb26-38"><a href="#cb26-38"></a>    <span class="cf">else</span>:</span>
-<span id="cb26-39"><a href="#cb26-39"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(</span>
-<span id="cb26-40"><a href="#cb26-40"></a>            <span class="ss">f"Failed to converge in </span><span class="sc">{</span>maxiter<span class="sc">}</span><span class="ss"> iterations."</span></span>
-<span id="cb26-41"><a href="#cb26-41"></a>        )</span>
-<span id="cb26-42"><a href="#cb26-42"></a>    <span class="cf">return</span> x_bar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="731a166d" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">def</span> newton2(fun, grad, x0, tol<span class="op">=</span><span class="fl">1e-6</span>, maxiter<span class="op">=</span><span class="dv">100</span>, callback<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb27-2"><a href="#cb27-2"></a>    <span class="co">"""</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="co">    This finds the root of a 2-dimensional function fun (the first</span></span>
+<span id="cb27-4"><a href="#cb27-4"></a><span class="co">    argument) using the newton method, with initial guess x0 and given</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a><span class="co">    tolerance and maximum number of iterations.</span></span>
+<span id="cb27-6"><a href="#cb27-6"></a></span>
+<span id="cb27-7"><a href="#cb27-7"></a><span class="co">    Input arguments:</span></span>
+<span id="cb27-8"><a href="#cb27-8"></a><span class="co">        fun: a function that receives a 2*1 np.ndarray as input, and</span></span>
+<span id="cb27-9"><a href="#cb27-9"></a><span class="co">        returns a 2*1 np.ndarray</span></span>
+<span id="cb27-10"><a href="#cb27-10"></a><span class="co">        grad: the gradient function of func that receives a 2*1 np.ndarray as input, and returns a 2*2 np.ndarray</span></span>
+<span id="cb27-11"><a href="#cb27-11"></a><span class="co">        x0: initial guess as a 2*1 np.ndarray</span></span>
+<span id="cb27-12"><a href="#cb27-12"></a><span class="co">        tol: tolerance</span></span>
+<span id="cb27-13"><a href="#cb27-13"></a><span class="co">        maxiter: maximum number of iterations</span></span>
+<span id="cb27-14"><a href="#cb27-14"></a><span class="co">        callback: a function that will be invoked at each iteration if</span></span>
+<span id="cb27-15"><a href="#cb27-15"></a><span class="co">        given</span></span>
+<span id="cb27-16"><a href="#cb27-16"></a><span class="co">    """</span></span>
+<span id="cb27-17"><a href="#cb27-17"></a>    x, y <span class="op">=</span> x0</span>
+<span id="cb27-18"><a href="#cb27-18"></a></span>
+<span id="cb27-19"><a href="#cb27-19"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(maxiter):</span>
+<span id="cb27-20"><a href="#cb27-20"></a>        x1 <span class="op">=</span> x0 <span class="op">-</span> np.linalg.inv(grad(x0)).dot(fun(x0))</span>
+<span id="cb27-21"><a href="#cb27-21"></a>        x_bar <span class="op">=</span> (x0 <span class="op">+</span> x1) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb27-22"><a href="#cb27-22"></a>        err <span class="op">=</span> fun(x_bar)</span>
+<span id="cb27-23"><a href="#cb27-23"></a></span>
+<span id="cb27-24"><a href="#cb27-24"></a>        <span class="cf">if</span> callback <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb27-25"><a href="#cb27-25"></a>            callback(</span>
+<span id="cb27-26"><a href="#cb27-26"></a>                arg_iter<span class="op">=</span>i,</span>
+<span id="cb27-27"><a href="#cb27-27"></a>                arg_err<span class="op">=</span>err,</span>
+<span id="cb27-28"><a href="#cb27-28"></a>                arg_xbar<span class="op">=</span>x_bar,</span>
+<span id="cb27-29"><a href="#cb27-29"></a>                arg_x0<span class="op">=</span>x0,</span>
+<span id="cb27-30"><a href="#cb27-30"></a>                arg_x1<span class="op">=</span>x1,</span>
+<span id="cb27-31"><a href="#cb27-31"></a>            )</span>
+<span id="cb27-32"><a href="#cb27-32"></a></span>
+<span id="cb27-33"><a href="#cb27-33"></a>        <span class="cf">if</span> np.sqrt(np.<span class="bu">sum</span>(err<span class="op">**</span><span class="dv">2</span>)) <span class="op">&lt;</span> tol:</span>
+<span id="cb27-34"><a href="#cb27-34"></a>            <span class="cf">break</span></span>
+<span id="cb27-35"><a href="#cb27-35"></a>        <span class="cf">else</span>:</span>
+<span id="cb27-36"><a href="#cb27-36"></a>            x0 <span class="op">=</span> x1</span>
+<span id="cb27-37"><a href="#cb27-37"></a></span>
+<span id="cb27-38"><a href="#cb27-38"></a>    <span class="cf">else</span>:</span>
+<span id="cb27-39"><a href="#cb27-39"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(</span>
+<span id="cb27-40"><a href="#cb27-40"></a>            <span class="ss">f"Failed to converge in </span><span class="sc">{</span>maxiter<span class="sc">}</span><span class="ss"> iterations."</span></span>
+<span id="cb27-41"><a href="#cb27-41"></a>        )</span>
+<span id="cb27-42"><a href="#cb27-42"></a>    <span class="cf">return</span> x_bar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, we can test this function!</p>
-<div id="test-2-d-newton" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">def</span> g(x_array):</span>
-<span id="cb27-2"><a href="#cb27-2"></a>    x <span class="op">=</span> x_array[<span class="dv">0</span>, <span class="dv">0</span>]</span>
-<span id="cb27-3"><a href="#cb27-3"></a>    y <span class="op">=</span> x_array[<span class="dv">1</span>, <span class="dv">0</span>]</span>
-<span id="cb27-4"><a href="#cb27-4"></a>    g_1 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi) <span class="op">\</span></span>
-<span id="cb27-5"><a href="#cb27-5"></a>          <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> <span class="fl">0.575</span> <span class="op">*</span> np.sin(<span class="fl">1.25</span> <span class="op">*</span> np.pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x)</span>
-<span id="cb27-6"><a href="#cb27-6"></a>    g_2 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
-<span id="cb27-7"><a href="#cb27-7"></a>    result <span class="op">=</span> np.array([g_1, g_2]).reshape((<span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb27-8"><a href="#cb27-8"></a>    <span class="cf">return</span> result</span>
-<span id="cb27-9"><a href="#cb27-9"></a></span>
-<span id="cb27-10"><a href="#cb27-10"></a></span>
-<span id="cb27-11"><a href="#cb27-11"></a><span class="kw">def</span> h(x_array):</span>
-<span id="cb27-12"><a href="#cb27-12"></a>    x <span class="op">=</span> x_array[<span class="dv">0</span>, <span class="dv">0</span>]</span>
-<span id="cb27-13"><a href="#cb27-13"></a>    y <span class="op">=</span> x_array[<span class="dv">1</span>, <span class="dv">0</span>]</span>
-<span id="cb27-14"><a href="#cb27-14"></a>    h_11 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi) <span class="op">\</span></span>
-<span id="cb27-15"><a href="#cb27-15"></a>           <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> <span class="fl">0.575</span> <span class="op">*</span> np.sin(<span class="fl">1.25</span> <span class="op">*</span> np.pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x)</span>
-<span id="cb27-16"><a href="#cb27-16"></a>    h_12 <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
-<span id="cb27-17"><a href="#cb27-17"></a>    h_21 <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
-<span id="cb27-18"><a href="#cb27-18"></a>    h_22 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi)</span>
-<span id="cb27-19"><a href="#cb27-19"></a></span>
-<span id="cb27-20"><a href="#cb27-20"></a>    result <span class="op">=</span> np.array([[h_11, h_12], [h_21, h_22]])</span>
-<span id="cb27-21"><a href="#cb27-21"></a>    <span class="cf">return</span> result</span>
-<span id="cb27-22"><a href="#cb27-22"></a></span>
-<span id="cb27-23"><a href="#cb27-23"></a></span>
-<span id="cb27-24"><a href="#cb27-24"></a>x_bar <span class="op">=</span> newton2(g, h, x0<span class="op">=</span>np.array([<span class="op">-</span><span class="fl">1.8</span>, <span class="op">-</span><span class="fl">0.2</span>]).reshape((<span class="dv">2</span>, <span class="dv">1</span>)))</span>
-<span id="cb27-25"><a href="#cb27-25"></a><span class="bu">print</span>(x_bar)</span>
-<span id="cb27-26"><a href="#cb27-26"></a></span>
-<span id="cb27-27"><a href="#cb27-27"></a><span class="kw">def</span> print_iter(arg_xbar, arg_err, arg_iter, <span class="op">**</span>kwargs):</span>
-<span id="cb27-28"><a href="#cb27-28"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb27-29"><a href="#cb27-29"></a>    <span class="bu">print</span>(<span class="st">"x_bar ="</span>, arg_xbar.ravel())</span>
-<span id="cb27-30"><a href="#cb27-30"></a>    <span class="bu">print</span>(<span class="st">"function value at x_bar ="</span>, arg_err.ravel())</span>
-<span id="cb27-31"><a href="#cb27-31"></a></span>
-<span id="cb27-32"><a href="#cb27-32"></a>x_bar <span class="op">=</span> newton2(g, h, x0<span class="op">=</span>np.array([<span class="op">-</span><span class="fl">1.8</span>, <span class="op">-</span><span class="fl">0.2</span>]).reshape((<span class="dv">2</span>, <span class="dv">1</span>)), callback<span class="op">=</span>print_iter)</span>
-<span id="cb27-33"><a href="#cb27-33"></a><span class="bu">print</span>(x_bar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="33fe3462" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">def</span> g(x_array):</span>
+<span id="cb28-2"><a href="#cb28-2"></a>    x <span class="op">=</span> x_array[<span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb28-3"><a href="#cb28-3"></a>    y <span class="op">=</span> x_array[<span class="dv">1</span>, <span class="dv">0</span>]</span>
+<span id="cb28-4"><a href="#cb28-4"></a>    g_1 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi) <span class="op">\</span></span>
+<span id="cb28-5"><a href="#cb28-5"></a>          <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> <span class="fl">0.575</span> <span class="op">*</span> np.sin(<span class="fl">1.25</span> <span class="op">*</span> np.pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x)</span>
+<span id="cb28-6"><a href="#cb28-6"></a>    g_2 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
+<span id="cb28-7"><a href="#cb28-7"></a>    result <span class="op">=</span> np.array([g_1, g_2]).reshape((<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb28-8"><a href="#cb28-8"></a>    <span class="cf">return</span> result</span>
+<span id="cb28-9"><a href="#cb28-9"></a></span>
+<span id="cb28-10"><a href="#cb28-10"></a></span>
+<span id="cb28-11"><a href="#cb28-11"></a><span class="kw">def</span> h(x_array):</span>
+<span id="cb28-12"><a href="#cb28-12"></a>    x <span class="op">=</span> x_array[<span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb28-13"><a href="#cb28-13"></a>    y <span class="op">=</span> x_array[<span class="dv">1</span>, <span class="dv">0</span>]</span>
+<span id="cb28-14"><a href="#cb28-14"></a>    h_11 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi) <span class="op">\</span></span>
+<span id="cb28-15"><a href="#cb28-15"></a>           <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> <span class="fl">0.575</span> <span class="op">*</span> np.sin(<span class="fl">1.25</span> <span class="op">*</span> np.pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x)</span>
+<span id="cb28-16"><a href="#cb28-16"></a>    h_12 <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
+<span id="cb28-17"><a href="#cb28-17"></a>    h_21 <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> np.sin(x) <span class="op">*</span> np.sin(y <span class="op">+</span> np.pi)</span>
+<span id="cb28-18"><a href="#cb28-18"></a>    h_22 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.cos(x) <span class="op">*</span> np.cos(y <span class="op">+</span> np.pi)</span>
+<span id="cb28-19"><a href="#cb28-19"></a></span>
+<span id="cb28-20"><a href="#cb28-20"></a>    result <span class="op">=</span> np.array([[h_11, h_12], [h_21, h_22]])</span>
+<span id="cb28-21"><a href="#cb28-21"></a>    <span class="cf">return</span> result</span>
+<span id="cb28-22"><a href="#cb28-22"></a></span>
+<span id="cb28-23"><a href="#cb28-23"></a></span>
+<span id="cb28-24"><a href="#cb28-24"></a>x_bar <span class="op">=</span> newton2(g, h, x0<span class="op">=</span>np.array([<span class="op">-</span><span class="fl">1.8</span>, <span class="op">-</span><span class="fl">0.2</span>]).reshape((<span class="dv">2</span>, <span class="dv">1</span>)))</span>
+<span id="cb28-25"><a href="#cb28-25"></a><span class="bu">print</span>(x_bar)</span>
+<span id="cb28-26"><a href="#cb28-26"></a></span>
+<span id="cb28-27"><a href="#cb28-27"></a><span class="kw">def</span> print_iter(arg_xbar, arg_err, arg_iter, <span class="op">**</span>kwargs):</span>
+<span id="cb28-28"><a href="#cb28-28"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-29"><a href="#cb28-29"></a>    <span class="bu">print</span>(<span class="st">"x_bar ="</span>, arg_xbar.ravel())</span>
+<span id="cb28-30"><a href="#cb28-30"></a>    <span class="bu">print</span>(<span class="st">"function value at x_bar ="</span>, arg_err.ravel())</span>
+<span id="cb28-31"><a href="#cb28-31"></a></span>
+<span id="cb28-32"><a href="#cb28-32"></a>x_bar <span class="op">=</span> newton2(g, h, x0<span class="op">=</span>np.array([<span class="op">-</span><span class="fl">1.8</span>, <span class="op">-</span><span class="fl">0.2</span>]).reshape((<span class="dv">2</span>, <span class="dv">1</span>)), callback<span class="op">=</span>print_iter)</span>
+<span id="cb28-33"><a href="#cb28-33"></a><span class="bu">print</span>(x_bar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[-0.56967279]
  [-3.14159265]]
@@ -742,120 +746,124 @@ f(x) = a \log(x) + b\log(1-x) + c = 0, ab&lt;0.
 </section>
 <section id="newton-bisection-hybrid-algorithm" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="newton-bisection-hybrid-algorithm"><span class="header-section-number">5.2</span> Newton-bisection hybrid algorithm</h2>
-<div id="newton-bisection" class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">def</span> newton_bounds(</span>
-<span id="cb29-2"><a href="#cb29-2"></a>    fun,</span>
-<span id="cb29-3"><a href="#cb29-3"></a>    grad,</span>
-<span id="cb29-4"><a href="#cb29-4"></a>    x0<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb29-5"><a href="#cb29-5"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb29-6"><a href="#cb29-6"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
-<span id="cb29-7"><a href="#cb29-7"></a>    maxiter<span class="op">=</span><span class="dv">100</span>,</span>
-<span id="cb29-8"><a href="#cb29-8"></a>    callback<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb29-9"><a href="#cb29-9"></a>):</span>
-<span id="cb29-10"><a href="#cb29-10"></a>    <span class="co">"""</span></span>
-<span id="cb29-11"><a href="#cb29-11"></a><span class="co">    This function combines the newton method and the bisection method to</span></span>
-<span id="cb29-12"><a href="#cb29-12"></a><span class="co">    solve a root-finding problem with given lower and upper bounds.</span></span>
-<span id="cb29-13"><a href="#cb29-13"></a></span>
-<span id="cb29-14"><a href="#cb29-14"></a><span class="co">    Input arguments:</span></span>
-<span id="cb29-15"><a href="#cb29-15"></a><span class="co">        fun: the function of interest</span></span>
-<span id="cb29-16"><a href="#cb29-16"></a><span class="co">        grad: the derivate of the fun</span></span>
-<span id="cb29-17"><a href="#cb29-17"></a><span class="co">        x0: initial guess</span></span>
-<span id="cb29-18"><a href="#cb29-18"></a><span class="co">        bounds: a tuple that contains the lower and upper bounds</span></span>
-<span id="cb29-19"><a href="#cb29-19"></a><span class="co">        tol: tolerance</span></span>
-<span id="cb29-20"><a href="#cb29-20"></a><span class="co">        maxiter: maximum number of iterations</span></span>
-<span id="cb29-21"><a href="#cb29-21"></a><span class="co">        callback: a function that will be called in each iteration</span></span>
-<span id="cb29-22"><a href="#cb29-22"></a><span class="co">    """</span></span>
-<span id="cb29-23"><a href="#cb29-23"></a>    a, b <span class="op">=</span> bounds</span>
-<span id="cb29-24"><a href="#cb29-24"></a>    sign_a <span class="op">=</span> np.sign(fun(a))</span>
-<span id="cb29-25"><a href="#cb29-25"></a>    sign_b <span class="op">=</span> np.sign(fun(b))</span>
-<span id="cb29-26"><a href="#cb29-26"></a>    <span class="cf">if</span> sign_a <span class="op">*</span> sign_b <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb29-27"><a href="#cb29-27"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(</span>
-<span id="cb29-28"><a href="#cb29-28"></a>            <span class="st">"Function has the same signs at the initial lower and upper bounds."</span></span>
-<span id="cb29-29"><a href="#cb29-29"></a>        )</span>
-<span id="cb29-30"><a href="#cb29-30"></a></span>
-<span id="cb29-31"><a href="#cb29-31"></a>    <span class="cf">if</span> x0 <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb29-32"><a href="#cb29-32"></a>        x0 <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb29-33"><a href="#cb29-33"></a></span>
-<span id="cb29-34"><a href="#cb29-34"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(maxiter):</span>
-<span id="cb29-35"><a href="#cb29-35"></a>        f0 <span class="op">=</span> fun(x0)</span>
-<span id="cb29-36"><a href="#cb29-36"></a>        newton_x1 <span class="op">=</span> x0 <span class="op">-</span> fun(x0) <span class="op">/</span> grad(x0)</span>
-<span id="cb29-37"><a href="#cb29-37"></a>        <span class="cf">if</span> newton_x1 <span class="op">&gt;</span> b <span class="kw">or</span> newton_x1 <span class="op">&lt;</span> a:</span>
-<span id="cb29-38"><a href="#cb29-38"></a>            <span class="cf">if</span> np.sign(f0) <span class="op">*</span> sign_a <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb29-39"><a href="#cb29-39"></a>                a <span class="op">=</span> x0</span>
-<span id="cb29-40"><a href="#cb29-40"></a>            <span class="cf">else</span>:</span>
-<span id="cb29-41"><a href="#cb29-41"></a>                b <span class="op">=</span> x0</span>
-<span id="cb29-42"><a href="#cb29-42"></a>            x1 <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb29-43"><a href="#cb29-43"></a>            step_type <span class="op">=</span> <span class="st">"bisection"</span></span>
-<span id="cb29-44"><a href="#cb29-44"></a>        <span class="cf">else</span>:</span>
-<span id="cb29-45"><a href="#cb29-45"></a>            x1 <span class="op">=</span> newton_x1</span>
-<span id="cb29-46"><a href="#cb29-46"></a>            step_type <span class="op">=</span> <span class="st">"newton"</span></span>
-<span id="cb29-47"><a href="#cb29-47"></a></span>
-<span id="cb29-48"><a href="#cb29-48"></a>        err <span class="op">=</span> fun(x1)</span>
-<span id="cb29-49"><a href="#cb29-49"></a></span>
-<span id="cb29-50"><a href="#cb29-50"></a>        <span class="cf">if</span> callback <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb29-51"><a href="#cb29-51"></a>            callback(</span>
-<span id="cb29-52"><a href="#cb29-52"></a>                arg_iter<span class="op">=</span>i,</span>
-<span id="cb29-53"><a href="#cb29-53"></a>                arg_type<span class="op">=</span>step_type,</span>
-<span id="cb29-54"><a href="#cb29-54"></a>                arg_err<span class="op">=</span>err,</span>
-<span id="cb29-55"><a href="#cb29-55"></a>                arg_x0<span class="op">=</span>x0,</span>
-<span id="cb29-56"><a href="#cb29-56"></a>                arg_x1<span class="op">=</span>x1,</span>
-<span id="cb29-57"><a href="#cb29-57"></a>                arg_bounds<span class="op">=</span>(a, b),</span>
-<span id="cb29-58"><a href="#cb29-58"></a>            )</span>
-<span id="cb29-59"><a href="#cb29-59"></a></span>
-<span id="cb29-60"><a href="#cb29-60"></a>        <span class="cf">if</span> <span class="bu">abs</span>(err) <span class="op">&lt;</span> tol:</span>
-<span id="cb29-61"><a href="#cb29-61"></a>            <span class="cf">break</span></span>
-<span id="cb29-62"><a href="#cb29-62"></a></span>
-<span id="cb29-63"><a href="#cb29-63"></a>        x0 <span class="op">=</span> x1</span>
-<span id="cb29-64"><a href="#cb29-64"></a>    <span class="cf">else</span>:</span>
-<span id="cb29-65"><a href="#cb29-65"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(</span>
-<span id="cb29-66"><a href="#cb29-66"></a>            <span class="ss">f"Failed to converge in </span><span class="sc">{</span>maxiter<span class="sc">}</span><span class="ss"> iterations."</span></span>
-<span id="cb29-67"><a href="#cb29-67"></a>        )</span>
-<span id="cb29-68"><a href="#cb29-68"></a></span>
-<span id="cb29-69"><a href="#cb29-69"></a>    <span class="cf">return</span> x1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fe23f955" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">def</span> newton_bounds(</span>
+<span id="cb30-2"><a href="#cb30-2"></a>    fun,</span>
+<span id="cb30-3"><a href="#cb30-3"></a>    grad,</span>
+<span id="cb30-4"><a href="#cb30-4"></a>    x0<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb30-5"><a href="#cb30-5"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb30-6"><a href="#cb30-6"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb30-7"><a href="#cb30-7"></a>    maxiter<span class="op">=</span><span class="dv">100</span>,</span>
+<span id="cb30-8"><a href="#cb30-8"></a>    callback<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb30-9"><a href="#cb30-9"></a>):</span>
+<span id="cb30-10"><a href="#cb30-10"></a>    <span class="co">"""</span></span>
+<span id="cb30-11"><a href="#cb30-11"></a><span class="co">    This function combines the newton method and the bisection method to</span></span>
+<span id="cb30-12"><a href="#cb30-12"></a><span class="co">    solve a root-finding problem with given lower and upper bounds.</span></span>
+<span id="cb30-13"><a href="#cb30-13"></a></span>
+<span id="cb30-14"><a href="#cb30-14"></a><span class="co">    Input arguments:</span></span>
+<span id="cb30-15"><a href="#cb30-15"></a><span class="co">        fun: the function of interest</span></span>
+<span id="cb30-16"><a href="#cb30-16"></a><span class="co">        grad: the derivate of the fun</span></span>
+<span id="cb30-17"><a href="#cb30-17"></a><span class="co">        x0: initial guess</span></span>
+<span id="cb30-18"><a href="#cb30-18"></a><span class="co">        bounds: a tuple that contains the lower and upper bounds</span></span>
+<span id="cb30-19"><a href="#cb30-19"></a><span class="co">        tol: tolerance</span></span>
+<span id="cb30-20"><a href="#cb30-20"></a><span class="co">        maxiter: maximum number of iterations</span></span>
+<span id="cb30-21"><a href="#cb30-21"></a><span class="co">        callback: a function that will be called in each iteration</span></span>
+<span id="cb30-22"><a href="#cb30-22"></a><span class="co">    """</span></span>
+<span id="cb30-23"><a href="#cb30-23"></a>    a, b <span class="op">=</span> bounds</span>
+<span id="cb30-24"><a href="#cb30-24"></a>    sign_a <span class="op">=</span> np.sign(fun(a))</span>
+<span id="cb30-25"><a href="#cb30-25"></a>    sign_b <span class="op">=</span> np.sign(fun(b))</span>
+<span id="cb30-26"><a href="#cb30-26"></a>    <span class="cf">if</span> sign_a <span class="op">*</span> sign_b <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb30-27"><a href="#cb30-27"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(</span>
+<span id="cb30-28"><a href="#cb30-28"></a>            <span class="st">"Function has the same signs at the initial lower and upper bounds."</span></span>
+<span id="cb30-29"><a href="#cb30-29"></a>        )</span>
+<span id="cb30-30"><a href="#cb30-30"></a></span>
+<span id="cb30-31"><a href="#cb30-31"></a>    <span class="cf">if</span> x0 <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb30-32"><a href="#cb30-32"></a>        x0 <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb30-33"><a href="#cb30-33"></a></span>
+<span id="cb30-34"><a href="#cb30-34"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(maxiter):</span>
+<span id="cb30-35"><a href="#cb30-35"></a>        f0 <span class="op">=</span> fun(x0)</span>
+<span id="cb30-36"><a href="#cb30-36"></a>        newton_x1 <span class="op">=</span> x0 <span class="op">-</span> fun(x0) <span class="op">/</span> grad(x0)</span>
+<span id="cb30-37"><a href="#cb30-37"></a>        <span class="cf">if</span> newton_x1 <span class="op">&gt;</span> b <span class="kw">or</span> newton_x1 <span class="op">&lt;</span> a:</span>
+<span id="cb30-38"><a href="#cb30-38"></a>            <span class="cf">if</span> np.sign(f0) <span class="op">*</span> sign_a <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb30-39"><a href="#cb30-39"></a>                a <span class="op">=</span> x0</span>
+<span id="cb30-40"><a href="#cb30-40"></a>            <span class="cf">else</span>:</span>
+<span id="cb30-41"><a href="#cb30-41"></a>                b <span class="op">=</span> x0</span>
+<span id="cb30-42"><a href="#cb30-42"></a>            x1 <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb30-43"><a href="#cb30-43"></a>            step_type <span class="op">=</span> <span class="st">"bisection"</span></span>
+<span id="cb30-44"><a href="#cb30-44"></a>        <span class="cf">else</span>:</span>
+<span id="cb30-45"><a href="#cb30-45"></a>            x1 <span class="op">=</span> newton_x1</span>
+<span id="cb30-46"><a href="#cb30-46"></a>            step_type <span class="op">=</span> <span class="st">"newton"</span></span>
+<span id="cb30-47"><a href="#cb30-47"></a></span>
+<span id="cb30-48"><a href="#cb30-48"></a>        err <span class="op">=</span> fun(x1)</span>
+<span id="cb30-49"><a href="#cb30-49"></a></span>
+<span id="cb30-50"><a href="#cb30-50"></a>        <span class="cf">if</span> callback <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb30-51"><a href="#cb30-51"></a>            callback(</span>
+<span id="cb30-52"><a href="#cb30-52"></a>                arg_iter<span class="op">=</span>i,</span>
+<span id="cb30-53"><a href="#cb30-53"></a>                arg_type<span class="op">=</span>step_type,</span>
+<span id="cb30-54"><a href="#cb30-54"></a>                arg_err<span class="op">=</span>err,</span>
+<span id="cb30-55"><a href="#cb30-55"></a>                arg_x0<span class="op">=</span>x0,</span>
+<span id="cb30-56"><a href="#cb30-56"></a>                arg_x1<span class="op">=</span>x1,</span>
+<span id="cb30-57"><a href="#cb30-57"></a>                arg_bounds<span class="op">=</span>(a, b),</span>
+<span id="cb30-58"><a href="#cb30-58"></a>            )</span>
+<span id="cb30-59"><a href="#cb30-59"></a></span>
+<span id="cb30-60"><a href="#cb30-60"></a>        <span class="cf">if</span> <span class="bu">abs</span>(err) <span class="op">&lt;</span> tol:</span>
+<span id="cb30-61"><a href="#cb30-61"></a>            <span class="cf">break</span></span>
+<span id="cb30-62"><a href="#cb30-62"></a></span>
+<span id="cb30-63"><a href="#cb30-63"></a>        x0 <span class="op">=</span> x1</span>
+<span id="cb30-64"><a href="#cb30-64"></a>    <span class="cf">else</span>:</span>
+<span id="cb30-65"><a href="#cb30-65"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(</span>
+<span id="cb30-66"><a href="#cb30-66"></a>            <span class="ss">f"Failed to converge in </span><span class="sc">{</span>maxiter<span class="sc">}</span><span class="ss"> iterations."</span></span>
+<span id="cb30-67"><a href="#cb30-67"></a>        )</span>
+<span id="cb30-68"><a href="#cb30-68"></a></span>
+<span id="cb30-69"><a href="#cb30-69"></a>    <span class="cf">return</span> x1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, let’s present a case where this function works pretty well. But to do this, we need to define two auxiliary functions to present iterations and have a glimpse at the function of interest.</p>
-<div id="newton-bisection-auxiliary-functions" class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">def</span> print_iter(</span>
-<span id="cb30-2"><a href="#cb30-2"></a>    arg_iter, arg_type, arg_err, arg_x0, arg_x1, arg_bounds, <span class="op">**</span>kwargs</span>
-<span id="cb30-3"><a href="#cb30-3"></a>):</span>
-<span id="cb30-4"><a href="#cb30-4"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>arg_type<span class="sc">:s}</span><span class="ss">"</span>)</span>
-<span id="cb30-5"><a href="#cb30-5"></a>    <span class="bu">print</span>(</span>
-<span id="cb30-6"><a href="#cb30-6"></a>        <span class="ss">f"x_0 = </span><span class="sc">{</span>arg_x0<span class="sc">:&lt;1.20f}</span><span class="ss">, bounds = (</span><span class="sc">{</span>arg_bounds[<span class="dv">0</span>]<span class="sc">:&lt;1.10f}</span><span class="ss">, </span><span class="sc">{</span>arg_bounds[<span class="dv">1</span>]<span class="sc">:&lt;1.10f}</span><span class="ss">)"</span></span>
-<span id="cb30-7"><a href="#cb30-7"></a>    )</span>
-<span id="cb30-8"><a href="#cb30-8"></a>    <span class="bu">print</span>(<span class="ss">f"x_bar = </span><span class="sc">{</span>arg_x1<span class="sc">:&lt;1.20f}</span><span class="ss">, fun(x_bar) = </span><span class="sc">{</span>arg_err<span class="sc">:&lt;1.20f}</span><span class="ss">"</span>)</span>
-<span id="cb30-9"><a href="#cb30-9"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb30-10"><a href="#cb30-10"></a>    </span>
-<span id="cb30-11"><a href="#cb30-11"></a><span class="kw">def</span> fun_grad_list(a, b, c):</span>
-<span id="cb30-12"><a href="#cb30-12"></a>    f <span class="op">=</span> <span class="kw">lambda</span> x: a <span class="op">*</span> np.log(x) <span class="op">+</span> b <span class="op">*</span> np.log(<span class="dv">1</span> <span class="op">-</span> x) <span class="op">+</span> c</span>
-<span id="cb30-13"><a href="#cb30-13"></a>    g <span class="op">=</span> <span class="kw">lambda</span> x: a <span class="op">/</span> x <span class="op">-</span> b <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> x)</span>
-<span id="cb30-14"><a href="#cb30-14"></a>    <span class="cf">return</span> [f, g]</span>
-<span id="cb30-15"><a href="#cb30-15"></a>    </span>
-<span id="cb30-16"><a href="#cb30-16"></a><span class="kw">def</span> plot_fun(a, b, c):</span>
-<span id="cb30-17"><a href="#cb30-17"></a>    fun <span class="op">=</span> fun_grad_list(a, b, c)[<span class="dv">0</span>]</span>
-<span id="cb30-18"><a href="#cb30-18"></a>    xd <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">10000</span>)</span>
-<span id="cb30-19"><a href="#cb30-19"></a>    plt.plot(xd, fun(xd), c<span class="op">=</span><span class="st">'red'</span>)</span>
-<span id="cb30-20"><a href="#cb30-20"></a>    plt.plot([<span class="dv">0</span>,<span class="dv">1</span>], [<span class="dv">0</span>,<span class="dv">0</span>], c<span class="op">=</span><span class="st">'black'</span>)</span>
-<span id="cb30-21"><a href="#cb30-21"></a>    plt.ion()</span>
-<span id="cb30-22"><a href="#cb30-22"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="8c485a49" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">def</span> print_iter(</span>
+<span id="cb31-2"><a href="#cb31-2"></a>    arg_iter, arg_type, arg_err, arg_x0, arg_x1, arg_bounds, <span class="op">**</span>kwargs</span>
+<span id="cb31-3"><a href="#cb31-3"></a>):</span>
+<span id="cb31-4"><a href="#cb31-4"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>arg_type<span class="sc">:s}</span><span class="ss">"</span>)</span>
+<span id="cb31-5"><a href="#cb31-5"></a>    <span class="bu">print</span>(</span>
+<span id="cb31-6"><a href="#cb31-6"></a>        <span class="ss">f"x_0 = </span><span class="sc">{</span>arg_x0<span class="sc">:&lt;1.20f}</span><span class="ss">, bounds = (</span><span class="sc">{</span>arg_bounds[<span class="dv">0</span>]<span class="sc">:&lt;1.10f}</span><span class="ss">, </span><span class="sc">{</span>arg_bounds[<span class="dv">1</span>]<span class="sc">:&lt;1.10f}</span><span class="ss">)"</span></span>
+<span id="cb31-7"><a href="#cb31-7"></a>    )</span>
+<span id="cb31-8"><a href="#cb31-8"></a>    <span class="bu">print</span>(<span class="ss">f"x_bar = </span><span class="sc">{</span>arg_x1<span class="sc">:&lt;1.20f}</span><span class="ss">, fun(x_bar) = </span><span class="sc">{</span>arg_err<span class="sc">:&lt;1.20f}</span><span class="ss">"</span>)</span>
+<span id="cb31-9"><a href="#cb31-9"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb31-10"><a href="#cb31-10"></a>    </span>
+<span id="cb31-11"><a href="#cb31-11"></a><span class="kw">def</span> fun_grad_list(a, b, c):</span>
+<span id="cb31-12"><a href="#cb31-12"></a>    f <span class="op">=</span> <span class="kw">lambda</span> x: a <span class="op">*</span> np.log(x) <span class="op">+</span> b <span class="op">*</span> np.log(<span class="dv">1</span> <span class="op">-</span> x) <span class="op">+</span> c</span>
+<span id="cb31-13"><a href="#cb31-13"></a>    g <span class="op">=</span> <span class="kw">lambda</span> x: a <span class="op">/</span> x <span class="op">-</span> b <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> x)</span>
+<span id="cb31-14"><a href="#cb31-14"></a>    <span class="cf">return</span> [f, g]</span>
+<span id="cb31-15"><a href="#cb31-15"></a>    </span>
+<span id="cb31-16"><a href="#cb31-16"></a><span class="kw">def</span> plot_fun(a, b, c):</span>
+<span id="cb31-17"><a href="#cb31-17"></a>    fun <span class="op">=</span> fun_grad_list(a, b, c)[<span class="dv">0</span>]</span>
+<span id="cb31-18"><a href="#cb31-18"></a>    xd <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">10000</span>)</span>
+<span id="cb31-19"><a href="#cb31-19"></a>    plt.plot(xd, fun(xd), c<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb31-20"><a href="#cb31-20"></a>    plt.plot([<span class="dv">0</span>,<span class="dv">1</span>], [<span class="dv">0</span>,<span class="dv">0</span>], c<span class="op">=</span><span class="st">'black'</span>)</span>
+<span id="cb31-21"><a href="#cb31-21"></a>    plt.ion()</span>
+<span id="cb31-22"><a href="#cb31-22"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The well-functioned example has the following parameters: <code>a=1; b=-4; c=0.5</code>.</p>
-<div id="newton-bisection-test-1" class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1"></a>a <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb31-2"><a href="#cb31-2"></a>b <span class="op">=</span> <span class="op">-</span><span class="dv">4</span></span>
-<span id="cb31-3"><a href="#cb31-3"></a>c <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb31-4"><a href="#cb31-4"></a>plot_fun(a, b, c)</span>
-<span id="cb31-5"><a href="#cb31-5"></a></span>
-<span id="cb31-6"><a href="#cb31-6"></a>newton_bounds(</span>
-<span id="cb31-7"><a href="#cb31-7"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
-<span id="cb31-8"><a href="#cb31-8"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
-<span id="cb31-9"><a href="#cb31-9"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb31-10"><a href="#cb31-10"></a>    callback<span class="op">=</span>print_iter,</span>
-<span id="cb31-11"><a href="#cb31-11"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
-<span id="cb31-12"><a href="#cb31-12"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="00f5df06" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1"></a>a <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a>b <span class="op">=</span> <span class="op">-</span><span class="dv">4</span></span>
+<span id="cb32-3"><a href="#cb32-3"></a>c <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb32-4"><a href="#cb32-4"></a>plot_fun(a, b, c)</span>
+<span id="cb32-5"><a href="#cb32-5"></a></span>
+<span id="cb32-6"><a href="#cb32-6"></a>newton_bounds(</span>
+<span id="cb32-7"><a href="#cb32-7"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb32-8"><a href="#cb32-8"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb32-9"><a href="#cb32-9"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb32-10"><a href="#cb32-10"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb32-11"><a href="#cb32-11"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb32-12"><a href="#cb32-12"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\wang\AppData\Local\Temp\ipykernel_27932\3621155250.py:12: RuntimeWarning: divide by zero encountered in log
+  f = lambda x: a * np.log(x) + b * np.log(1 - x) + c</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-bisection-test-1-output-1.png" id="newton-bisection-test-1-1" width="578" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-19-output-2.png" width="578" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -876,27 +884,31 @@ x_bar = 0.22209978959601761606, fun(x_bar) = -0.00000038625098985889
 
 </code></pre>
 </div>
-<div id="newton-bisection-test-1-2" class="cell-output cell-output-display" data-execution_count="103">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>0.22209978959601762</code></pre>
 </div>
 </div>
 <p>Another example is as follows.</p>
-<div id="newton-bisection-test-2" class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1"></a>a, b, c <span class="op">=</span> <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">5</span></span>
-<span id="cb34-2"><a href="#cb34-2"></a></span>
-<span id="cb34-3"><a href="#cb34-3"></a>plot_fun(a, b, c)</span>
-<span id="cb34-4"><a href="#cb34-4"></a>newton_bounds(</span>
-<span id="cb34-5"><a href="#cb34-5"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
-<span id="cb34-6"><a href="#cb34-6"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
-<span id="cb34-7"><a href="#cb34-7"></a>    x0<span class="op">=</span><span class="fl">0.9</span>,</span>
-<span id="cb34-8"><a href="#cb34-8"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb34-9"><a href="#cb34-9"></a>    callback<span class="op">=</span>print_iter,</span>
-<span id="cb34-10"><a href="#cb34-10"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
-<span id="cb34-11"><a href="#cb34-11"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="99b7b5ed" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1"></a>a, b, c <span class="op">=</span> <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">5</span></span>
+<span id="cb36-2"><a href="#cb36-2"></a></span>
+<span id="cb36-3"><a href="#cb36-3"></a>plot_fun(a, b, c)</span>
+<span id="cb36-4"><a href="#cb36-4"></a>newton_bounds(</span>
+<span id="cb36-5"><a href="#cb36-5"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb36-6"><a href="#cb36-6"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb36-7"><a href="#cb36-7"></a>    x0<span class="op">=</span><span class="fl">0.9</span>,</span>
+<span id="cb36-8"><a href="#cb36-8"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb36-9"><a href="#cb36-9"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb36-10"><a href="#cb36-10"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb36-11"><a href="#cb36-11"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\wang\AppData\Local\Temp\ipykernel_27932\3621155250.py:12: RuntimeWarning: divide by zero encountered in log
+  f = lambda x: a * np.log(x) + b * np.log(1 - x) + c</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-bisection-test-2-output-1.png" id="newton-bisection-test-2-1" width="590" height="414" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-20-output-2.png" width="590" height="414" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -937,29 +949,29 @@ x_bar = 0.99330715373996880668, fun(x_bar) = 0.00000070159679843584
 
 </code></pre>
 </div>
-<div id="newton-bisection-test-2-2" class="cell-output cell-output-display" data-execution_count="104">
+<div class="cell-output cell-output-display" data-execution_count="19">
 <pre><code>0.9933071537399688</code></pre>
 </div>
 </div>
 <p>However, if <span class="math inline">\(c\)</span> is too large, then this function cannot reach its root within a limited number of iterations.</p>
-<p>::: {#cell-newton-bisection test 3 .cell execution_count=20}</p>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1"></a>np.seterr(<span class="bu">all</span><span class="op">=</span><span class="va">None</span>, divide<span class="op">=</span><span class="st">'ignore'</span>, over<span class="op">=</span><span class="va">None</span>, under<span class="op">=</span><span class="va">None</span>, invalid<span class="op">=</span><span class="st">'ignore'</span>)</span>
-<span id="cb37-2"><a href="#cb37-2"></a></span>
-<span id="cb37-3"><a href="#cb37-3"></a>a, b, c <span class="op">=</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>, <span class="op">-</span><span class="dv">100</span></span>
-<span id="cb37-4"><a href="#cb37-4"></a></span>
-<span id="cb37-5"><a href="#cb37-5"></a>plot_fun(a, b, c)</span>
-<span id="cb37-6"><a href="#cb37-6"></a></span>
-<span id="cb37-7"><a href="#cb37-7"></a>newton_bounds(</span>
-<span id="cb37-8"><a href="#cb37-8"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
-<span id="cb37-9"><a href="#cb37-9"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
-<span id="cb37-10"><a href="#cb37-10"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb37-11"><a href="#cb37-11"></a>    callback<span class="op">=</span>print_iter,</span>
-<span id="cb37-12"><a href="#cb37-12"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
-<span id="cb37-13"><a href="#cb37-13"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="2cf6683d" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1"></a>np.seterr(<span class="bu">all</span><span class="op">=</span><span class="va">None</span>, divide<span class="op">=</span><span class="st">'ignore'</span>, over<span class="op">=</span><span class="va">None</span>, under<span class="op">=</span><span class="va">None</span>, invalid<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb40-2"><a href="#cb40-2"></a></span>
+<span id="cb40-3"><a href="#cb40-3"></a>a, b, c <span class="op">=</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>, <span class="op">-</span><span class="dv">100</span></span>
+<span id="cb40-4"><a href="#cb40-4"></a></span>
+<span id="cb40-5"><a href="#cb40-5"></a>plot_fun(a, b, c)</span>
+<span id="cb40-6"><a href="#cb40-6"></a></span>
+<span id="cb40-7"><a href="#cb40-7"></a>newton_bounds(</span>
+<span id="cb40-8"><a href="#cb40-8"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb40-9"><a href="#cb40-9"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb40-10"><a href="#cb40-10"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb40-11"><a href="#cb40-11"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb40-12"><a href="#cb40-12"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb40-13"><a href="#cb40-13"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-bisection-test-3-output-1.png" id="newton-bisection-test-3" width="586" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-21-output-1.png" width="586" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1469,7 +1481,7 @@ x_bar = 0.99999999999999666933, fun(x_bar) = 0.00680956404482913058
 <div class="ansi-escaped-output">
 <pre><span class="ansi-red-fg ansi-bold">---------------------------------------------------------------------------</span>
 <span class="ansi-red-fg ansi-bold">RuntimeError</span>                              Traceback (most recent call last)
-Cell <span class="ansi-green-fg ansi-bold">In[105], line 7</span>
+Cell <span class="ansi-green-fg ansi-bold">In[20], line 7</span>
 <span class="ansi-green-fg">      3</span> a, b, c <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(98,98,98)">2</span>, <span style="color:rgb(98,98,98)">-</span><span style="color:rgb(98,98,98)">3</span>, <span style="color:rgb(98,98,98)">-</span><span style="color:rgb(98,98,98)">100</span>
 <span class="ansi-green-fg">      5</span> plot_fun(a, b, c)
 <span class="ansi-green-fg ansi-bold">----&gt; 7</span> newton_bounds(
@@ -1480,7 +1492,7 @@ Cell <span class="ansi-green-fg ansi-bold">In[105], line 7</span>
 <span class="ansi-green-fg">     12</span>     tol<span style="color:rgb(98,98,98)">=</span><span style="color:rgb(98,98,98)">1e-6</span>,
 <span class="ansi-green-fg">     13</span> )
 
-Cell <span class="ansi-green-fg ansi-bold">In[101], line 65</span>, in <span class="ansi-cyan-fg">newton_bounds</span><span class="ansi-blue-fg ansi-bold">(fun, grad, x0, bounds, tol, maxiter, callback)</span>
+Cell <span class="ansi-green-fg ansi-bold">In[16], line 65</span>, in <span class="ansi-cyan-fg">newton_bounds</span><span class="ansi-blue-fg ansi-bold">(fun, grad, x0, bounds, tol, maxiter, callback)</span>
 <span class="ansi-green-fg">     63</span>     x0 <span style="color:rgb(98,98,98)">=</span> x1
 <span class="ansi-green-fg">     64</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
 <span class="ansi-green-fg ansi-bold">---&gt; 65</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(
@@ -1491,27 +1503,27 @@ Cell <span class="ansi-green-fg ansi-bold">In[101], line 65</span>, in <span cla
 <span class="ansi-red-fg ansi-bold">RuntimeError</span>: Failed to converge in 100 iterations.</pre>
 </div>
 </div>
-<p>:::</p>
+</div>
 <p>Likewise, if <span class="math inline">\(c\)</span> is too small, then this function cannot reach its root within a limited number of iterations. Or in this example, we need to set a larger <code>maxiter</code> so that we can find its root (which is extremely close to 0).</p>
-<p>::: {#cell-newton-bisection test 4 .cell execution_count=21}</p>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1"></a>np.seterr(<span class="bu">all</span><span class="op">=</span><span class="va">None</span>, divide<span class="op">=</span><span class="st">'ignore'</span>, over<span class="op">=</span><span class="va">None</span>, under<span class="op">=</span><span class="va">None</span>, invalid<span class="op">=</span><span class="st">'ignore'</span>)</span>
-<span id="cb39-2"><a href="#cb39-2"></a></span>
-<span id="cb39-3"><a href="#cb39-3"></a>a, b, c <span class="op">=</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>, <span class="dv">100</span></span>
-<span id="cb39-4"><a href="#cb39-4"></a></span>
-<span id="cb39-5"><a href="#cb39-5"></a>plot_fun(a, b, c)</span>
-<span id="cb39-6"><a href="#cb39-6"></a></span>
-<span id="cb39-7"><a href="#cb39-7"></a>newton_bounds(</span>
-<span id="cb39-8"><a href="#cb39-8"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
-<span id="cb39-9"><a href="#cb39-9"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
-<span id="cb39-10"><a href="#cb39-10"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb39-11"><a href="#cb39-11"></a>    callback<span class="op">=</span>print_iter,</span>
-<span id="cb39-12"><a href="#cb39-12"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
-<span id="cb39-13"><a href="#cb39-13"></a>    maxiter<span class="op">=</span><span class="dv">50</span></span>
-<span id="cb39-14"><a href="#cb39-14"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="f316f148" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1"></a>np.seterr(<span class="bu">all</span><span class="op">=</span><span class="va">None</span>, divide<span class="op">=</span><span class="st">'ignore'</span>, over<span class="op">=</span><span class="va">None</span>, under<span class="op">=</span><span class="va">None</span>, invalid<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb42-2"><a href="#cb42-2"></a></span>
+<span id="cb42-3"><a href="#cb42-3"></a>a, b, c <span class="op">=</span> <span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>, <span class="dv">100</span></span>
+<span id="cb42-4"><a href="#cb42-4"></a></span>
+<span id="cb42-5"><a href="#cb42-5"></a>plot_fun(a, b, c)</span>
+<span id="cb42-6"><a href="#cb42-6"></a></span>
+<span id="cb42-7"><a href="#cb42-7"></a>newton_bounds(</span>
+<span id="cb42-8"><a href="#cb42-8"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb42-9"><a href="#cb42-9"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb42-10"><a href="#cb42-10"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb42-11"><a href="#cb42-11"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb42-12"><a href="#cb42-12"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb42-13"><a href="#cb42-13"></a>    maxiter<span class="op">=</span><span class="dv">50</span></span>
+<span id="cb42-14"><a href="#cb42-14"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course13_RootFinding1_files/figure-html/newton-bisection-test-4-output-1.png" id="newton-bisection-test-4" width="575" height="411" class="figure-img"></p>
+<p><img src="Course13_RootFinding1_files/figure-html/cell-22-output-1.png" width="575" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1771,7 +1783,7 @@ x_bar = 0.00000000000000044409, fun(x_bar) = 29.29898758288557303331
 <div class="ansi-escaped-output">
 <pre><span class="ansi-red-fg ansi-bold">---------------------------------------------------------------------------</span>
 <span class="ansi-red-fg ansi-bold">RuntimeError</span>                              Traceback (most recent call last)
-Cell <span class="ansi-green-fg ansi-bold">In[106], line 7</span>
+Cell <span class="ansi-green-fg ansi-bold">In[21], line 7</span>
 <span class="ansi-green-fg">      3</span> a, b, c <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(98,98,98)">2</span>, <span style="color:rgb(98,98,98)">-</span><span style="color:rgb(98,98,98)">3</span>, <span style="color:rgb(98,98,98)">100</span>
 <span class="ansi-green-fg">      5</span> plot_fun(a, b, c)
 <span class="ansi-green-fg ansi-bold">----&gt; 7</span> newton_bounds(
@@ -1783,7 +1795,7 @@ Cell <span class="ansi-green-fg ansi-bold">In[106], line 7</span>
 <span class="ansi-green-fg">     13</span>     maxiter<span style="color:rgb(98,98,98)">=</span><span style="color:rgb(98,98,98)">50</span>
 <span class="ansi-green-fg">     14</span> )
 
-Cell <span class="ansi-green-fg ansi-bold">In[101], line 65</span>, in <span class="ansi-cyan-fg">newton_bounds</span><span class="ansi-blue-fg ansi-bold">(fun, grad, x0, bounds, tol, maxiter, callback)</span>
+Cell <span class="ansi-green-fg ansi-bold">In[16], line 65</span>, in <span class="ansi-cyan-fg">newton_bounds</span><span class="ansi-blue-fg ansi-bold">(fun, grad, x0, bounds, tol, maxiter, callback)</span>
 <span class="ansi-green-fg">     63</span>     x0 <span style="color:rgb(98,98,98)">=</span> x1
 <span class="ansi-green-fg">     64</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
 <span class="ansi-green-fg ansi-bold">---&gt; 65</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(
@@ -1794,16 +1806,16 @@ Cell <span class="ansi-green-fg ansi-bold">In[101], line 65</span>, in <span cla
 <span class="ansi-red-fg ansi-bold">RuntimeError</span>: Failed to converge in 50 iterations.</pre>
 </div>
 </div>
-<p>:::</p>
-<p>::: {#cell-newton-bisection test 4 with a larger maxiter .cell execution_count=22}</p>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1"></a>newton_bounds(</span>
-<span id="cb41-2"><a href="#cb41-2"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
-<span id="cb41-3"><a href="#cb41-3"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
-<span id="cb41-4"><a href="#cb41-4"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb41-5"><a href="#cb41-5"></a>    callback<span class="op">=</span>print_iter,</span>
-<span id="cb41-6"><a href="#cb41-6"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
-<span id="cb41-7"><a href="#cb41-7"></a>    maxiter<span class="op">=</span><span class="dv">100</span></span>
-<span id="cb41-8"><a href="#cb41-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="4374a2f6" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1"></a>newton_bounds(</span>
+<span id="cb44-2"><a href="#cb44-2"></a>    fun_grad_list(a, b, c)[<span class="dv">0</span>],</span>
+<span id="cb44-3"><a href="#cb44-3"></a>    fun_grad_list(a, b, c)[<span class="dv">1</span>],</span>
+<span id="cb44-4"><a href="#cb44-4"></a>    bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb44-5"><a href="#cb44-5"></a>    callback<span class="op">=</span>print_iter,</span>
+<span id="cb44-6"><a href="#cb44-6"></a>    tol<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb44-7"><a href="#cb44-7"></a>    maxiter<span class="op">=</span><span class="dv">100</span></span>
+<span id="cb44-8"><a href="#cb44-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Iteration 1: bisection
 x_0 = 0.50000000000000000000, bounds = (0.0000000000, 0.5000000000)
@@ -2181,10 +2193,10 @@ x_bar = 0.00000000000000000000, fun(x_bar) = -0.00000001878569833025
 
 </code></pre>
 </div>
-<div id="newton-bisection-test-4-with-a-larger-maxiter" class="cell-output cell-output-display" data-execution_count="107">
+<div class="cell-output cell-output-display" data-execution_count="22">
 <pre><code>1.928749829847467e-22</code></pre>
 </div>
-<p>:::</p>
+</div>
 </section>
 </section>
 

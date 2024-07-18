@@ -180,7 +180,7 @@ f(x) \longrightarrow \max
 \begin{aligned}f^{\prime}(x)=-4 x^3+5 x+1 &amp; =0 \\-4 x\left(x^2-1\right)+x+1 &amp; =0 \\(x+1)\left(-4 x^2+4 x+1\right) &amp; =0 \\(x+1)\left(x-\frac{1}{2}-\frac{1}{\sqrt{2}}\right)\left(x-\frac{1}{2}+\frac{1}{\sqrt{2}}\right) &amp; =0\end{aligned}.
 \]</span></p>
 <p>First, let’s have a graphical illustration:</p>
-<p>::: {#cell-example 1 .cell execution_count=1}</p>
+<div id="4199a12d" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3"></a></span>
@@ -228,13 +228,13 @@ f(x) \longrightarrow \max
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course24_GridSearch_files/figure-html/example-1-output-1.png" id="example-1" width="582" height="411" class="figure-img"></p>
+<p><img src="Course24_GridSearch_files/figure-html/cell-2-output-1.png" width="582" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 <p>Next, let’s try the newton method we have introduced before:</p>
-<div id="newton-solution" class="cell" data-execution_count="2">
+<div id="63c9b948" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">def</span> newton(fun, grad, x0, tol<span class="op">=</span><span class="fl">1e-6</span>, maxiter<span class="op">=</span><span class="dv">100</span>, callback<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb2-2"><a href="#cb2-2"></a>    <span class="co">"""</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a><span class="co">    This finds the root of function fun (the first argument) using the</span></span>
@@ -356,7 +356,7 @@ gradient at x_bar=-12.48528140897278149168
 </div>
 </div>
 <p>Next, try the grid search method:</p>
-<div id="grid-search-example-1" class="cell" data-execution_count="3">
+<div id="ef8b8433" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">def</span> grid_search(fun, bounds<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>), n_grid<span class="op">=</span><span class="dv">10</span>):</span>
 <span id="cb4-2"><a href="#cb4-2"></a>    <span class="co">"""</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="co">    Grid search between bounds over given number of points.</span></span>
@@ -378,7 +378,7 @@ which is closest to critical point 1.20711, difference = 9.600e-02.</code></pre>
 </div>
 </div>
 <p>Finally, let’s increase <code>n_grid</code> and see how does the increase affect the solution accuracy:</p>
-<p>::: {#cell-increase n_grid .cell execution_count=4}</p>
+<div id="128449c1" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>data <span class="op">=</span> {<span class="st">'n'</span>: [<span class="dv">2</span><span class="op">**</span>i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">20</span>)]}</span>
 <span id="cb6-2"><a href="#cb6-2"></a>data[<span class="st">'err'</span>] <span class="op">=</span> np.empty(shape<span class="op">=</span><span class="bu">len</span>(data[<span class="st">'n'</span>]))</span>
 <span id="cb6-3"><a href="#cb6-3"></a></span>
@@ -396,16 +396,16 @@ which is closest to critical point 1.20711, difference = 9.600e-02.</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course24_GridSearch_files/figure-html/increase-n_grid-output-1.png" id="increase-n_grid" width="581" height="411" class="figure-img"></p>
+<p><img src="Course24_GridSearch_files/figure-html/cell-5-output-1.png" width="581" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 </section>
 <section id="another-example" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Another Example</h1>
 <p>Let’s consider the following objective function to be maximized.</p>
-<p>::: {#cell-example 2 .cell execution_count=5}</p>
+<div id="69ddfec9" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">def</span> f(x):</span>
 <span id="cb7-2"><a href="#cb7-2"></a>    x <span class="op">=</span> np.asarray(x)</span>
 <span id="cb7-3"><a href="#cb7-3"></a>    <span class="cf">if</span> x.size <span class="op">==</span> <span class="dv">1</span>:</span>
@@ -433,11 +433,11 @@ which is closest to critical point 1.20711, difference = 9.600e-02.</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course24_GridSearch_files/figure-html/example-2-output-1.png" id="example-2" width="590" height="416" class="figure-img"></p>
+<p><img src="Course24_GridSearch_files/figure-html/cell-6-output-1.png" width="590" height="416" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 <section id="why-is-this-hard" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="why-is-this-hard"><span class="header-section-number">2.1</span> Why is this hard</h2>
 <p><em>Any function with cases is usually nasty</em></p>
@@ -464,7 +464,7 @@ which is closest to critical point 1.20711, difference = 9.600e-02.</code></pre>
 <section id="algorithm-results" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="algorithm-results"><span class="header-section-number">2.3</span> Algorithm results</h2>
 <p>First, let’s try a relatively small <code>n_grid</code>.</p>
-<p>::: {#cell-try a small n_grid .cell execution_count=6}</p>
+<div id="3fea975e" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a>bounds, n <span class="op">=</span> (<span class="op">-</span><span class="dv">2</span>,<span class="dv">2</span>), <span class="dv">10</span> </span>
 <span id="cb8-2"><a href="#cb8-2"></a>plt.plot(xd,f(xd),label<span class="op">=</span><span class="st">'function'</span>,c<span class="op">=</span><span class="st">'red'</span>)</span>
 <span id="cb8-3"><a href="#cb8-3"></a>plt.ylim((<span class="op">-</span><span class="dv">10</span>,<span class="dv">10</span>))</span>
@@ -477,13 +477,13 @@ which is closest to critical point 1.20711, difference = 9.600e-02.</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course24_GridSearch_files/figure-html/try-a-small-n_grid-output-1.png" id="try-a-small-n_grid" width="590" height="416" class="figure-img"></p>
+<p><img src="Course24_GridSearch_files/figure-html/cell-7-output-1.png" width="590" height="416" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 <p>Slightly increasing <code>n_grid</code>, we obtain</p>
-<p>::: {#cell-try a slightly larger n_grid .cell execution_count=7}</p>
+<div id="f9959f5b" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a>bounds, n <span class="op">=</span> (<span class="op">-</span><span class="dv">2</span>,<span class="dv">2</span>), <span class="dv">100</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>plt.plot(xd,f(xd),label<span class="op">=</span><span class="st">'function'</span>,c<span class="op">=</span><span class="st">'red'</span>)</span>
 <span id="cb9-3"><a href="#cb9-3"></a>plt.ylim((<span class="op">-</span><span class="dv">10</span>,<span class="dv">10</span>))</span>
@@ -496,13 +496,13 @@ which is closest to critical point 1.20711, difference = 9.600e-02.</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course24_GridSearch_files/figure-html/try-a-slightly-larger-n_grid-output-1.png" id="try-a-slightly-larger-n_grid" width="590" height="416" class="figure-img"></p>
+<p><img src="Course24_GridSearch_files/figure-html/cell-8-output-1.png" width="590" height="416" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 <p>Finally, we use a large <code>n_grid</code>.</p>
-<p>::: {#cell-final n_grid .cell execution_count=8}</p>
+<div id="8c9c38de" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a>bounds, n <span class="op">=</span> (<span class="op">-</span><span class="dv">2</span>,<span class="dv">2</span>), <span class="dv">500</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>plt.plot(xd,f(xd),label<span class="op">=</span><span class="st">'function'</span>,c<span class="op">=</span><span class="st">'red'</span>)</span>
 <span id="cb10-3"><a href="#cb10-3"></a>plt.ylim((<span class="op">-</span><span class="dv">10</span>,<span class="dv">10</span>))</span>
@@ -515,11 +515,11 @@ which is closest to critical point 1.20711, difference = 9.600e-02.</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course24_GridSearch_files/figure-html/final-n_grid-output-1.png" id="final-n_grid" width="590" height="416" class="figure-img"></p>
+<p><img src="Course24_GridSearch_files/figure-html/cell-9-output-1.png" width="590" height="416" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 </section>
 </section>
 

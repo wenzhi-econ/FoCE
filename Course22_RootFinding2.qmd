@@ -68,7 +68,6 @@ $$
 First, let's code up this algorithm. Note that even if this is a scalar example, we'd like to allow it to pass a multivariate function.
 
 ```{python}
-# | label: fixed point iteration 
 
 import numpy as np 
 
@@ -97,7 +96,6 @@ def fixed_point_iterations(
 Now let's run this algorithm to the example of interest:
 
 ```{python}
-# | label: scalar example 
 
 def print_iter_info(arg_iter, arg_x0, arg_x1, arg_err):
     print(f"Iteration {arg_iter+1}:")
@@ -115,7 +113,6 @@ fixed_point_iterations(F, x0=1.0, tol=1e-10, callback=print_iter_info)
 Finally, let's use a graphical illustration to see what happened in this example.
 
 ```{python}
-# | label: scalar exampel graphical illustration 
 
 import matplotlib.pyplot as plt 
 
@@ -216,7 +213,6 @@ $$
 First, we need to code up a class that represent such a platform economy with different attributes.
 
 ```{python}
-# | label: platform class
 
 class PlatformModel:
     '''Simple platform equilibrium model'''
@@ -269,7 +265,6 @@ Notice the key method of this class is `fixed_point_func`, which given a `(m,n)`
 Then, I will utilize the `fixed_point_iterations` function in the scalar example, and solve for a stable utility matrix, with the stable market shares and choice probabilities matrix.
 
 ```{python}
-# | label: platform example
 
 def printiter(arg_iter, arg_err, arg_x1, **kwargs):
     print(f'Iteration {arg_iter+1:d}, \nerr = \n{arg_err!r}, \nx_1 = \n{arg_x1!r}\n')

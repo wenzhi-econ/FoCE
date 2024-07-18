@@ -14,12 +14,12 @@ jupyter: python3
 execute: 
     eval: true
     echo: true
+    error: true
 ---
 
 Python version:
 
 ```{python}
-# | label: version 
 import sys
 print(sys.version)
 ```
@@ -33,7 +33,6 @@ $$
 # Bisection Method
 
 ```{python}
-# | label: bisection 
 
 def bisection(f, a=0, b=1, tol=1e-6, maxiter=100, callback=None):
     """
@@ -77,7 +76,6 @@ def bisection(f, a=0, b=1, tol=1e-6, maxiter=100, callback=None):
 Next, I will test this root-finding function:
 
 ```{python}
-# | label: bisection example 
 
 f = lambda x: -4 * (x**3) + 5 * x + 1
 a, b = -3, -0.5
@@ -95,7 +93,6 @@ x = bisection(f, a, b, callback=show_iteration)
 # Newton-Raphson (Newton) Method
 
 ```{python}
-# | label: newton 
 
 def newton(fun, grad, x0, tol=1e-6, maxiter=100, callback=None):
     """
@@ -139,7 +136,6 @@ def newton(fun, grad, x0, tol=1e-6, maxiter=100, callback=None):
 Then, let's test this function using a simple polynomial function.
 
 ```{python}
-# | label: newton test 1
 
 f = lambda x: -4 * (x**3) + 5 * x + 1
 g = lambda x: -12 * (x**2) + 5
@@ -150,7 +146,6 @@ print(f"Solution is {x=:1.20f}, {f(x)=:1.20f}.")
 To show the iteration process, let's create a `print_step` function which will be called in each iteration.
 
 ```{python}
-# | label: newtwon test 2
 
 def print_step(
     cb_arg_fun, cb_arg_grad, cb_arg_x_bar, cb_arg_iter, **kwargs
@@ -166,7 +161,6 @@ x_bar = newton(f, g, x0=-2.5, callback=print_step)
 A better way is to visualize the iteration process:
 
 ```{python}
-# | label: newton test 3
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -202,7 +196,6 @@ print(f"Converged in {plot_step.counter} steps" )
 First, I will write down codes to graphically illustrate the iteration of the Newton method, and present a well-functioned example.
 
 ```{python}
-# | label: illustration
 
 def newton_pic(f, g, x0, a=0, b=1, **kwargs):
     '''
@@ -243,19 +236,19 @@ newton_pic(f=f_test, g=g_test, x0=-2.5 , a=-3, b=-0.5, maxiter=10)
 ## Multiple solutions and sensitivity to the initial guess
 
 ```{python}
-# | label: multiple 1
+
 newton_pic(f=f_test, g=g_test, x0=0.2, a=-2, b=1.5, maxiter=10)
 ```
 
 ```{python}
-# | label: multiple 2
+
 newton_pic(f=f_test, g=g_test, x0=1.0, a=-2, b=1.5, maxiter=10)
 ```
 
 ## Diversion and cycles
 
 ```{python}
-# | label: diversion 
+
 f = lambda x: np.arctan(x)
 g = lambda x: 1 / (1 + x**2)
 newton_pic(f=f, g=g, x0=1.25, a=-20, b=20)
@@ -263,7 +256,7 @@ newton_pic(f=f, g=g, x0=1.5, a=-20, b=20, maxiter=10)
 ```
 
 ```{python}
-# | label: cycle 
+
 f = lambda x: -4 * x**3 + 5 * x + 1
 g = lambda x: -12 * x**2 + 5
 x0 = -0.5689842546416416
@@ -273,8 +266,6 @@ newton_pic(f, g, x0, a=-1.5, b=1.5, maxiter=15)
 ## Function domain and differentiability
 
 ```{python}
-# | label: differentiability 
-
 
 f = lambda x: np.log(x)
 g = lambda x: 1/x
@@ -305,8 +296,6 @@ $$
 First, let's code up the newton algorithm. Notice that this function is very specific to our current example, and its arguments should stick to the rules strictly (especially that `x0` should be a column vector as a `numpy.ndarray` object.
 
 ```{python}
-
-# | label: 2-d newton method
 
 def newton2(fun, grad, x0, tol=1e-6, maxiter=100, callback=None):
     """
@@ -355,8 +344,6 @@ def newton2(fun, grad, x0, tol=1e-6, maxiter=100, callback=None):
 Now, we can test this function!
 
 ```{python}
-
-# | label: test 2-d newton
 
 def g(x_array):
     x = x_array[0, 0]
@@ -418,7 +405,6 @@ This equation arise in the models of discrete choice in IO, for example when com
 ## Newton-bisection hybrid algorithm
 
 ```{python}
-# | label: newton-bisection
 
 def newton_bounds(
     fun,
@@ -494,7 +480,6 @@ def newton_bounds(
 Now, let's present a case where this function works pretty well. But to do this, we need to define two auxiliary functions to present iterations and have a glimpse at the function of interest.
 
 ```{python}
-# | label: newton bisection auxiliary functions 
 
 def print_iter(
     arg_iter, arg_type, arg_err, arg_x0, arg_x1, arg_bounds, **kwargs
@@ -523,7 +508,6 @@ def plot_fun(a, b, c):
 The well-functioned example has the following parameters: `a=1; b=-4; c=0.5`.
 
 ```{python}
-# | label: newton-bisection test 1
 
 a = 1
 b = -4
@@ -542,7 +526,6 @@ newton_bounds(
 Another example is as follows.
 
 ```{python}
-# | label: newton-bisection test 2
 
 a, b, c = 1, -1, -5
 
@@ -560,8 +543,6 @@ newton_bounds(
 However, if $c$ is too large, then this function cannot reach its root within a limited number of iterations.
 
 ```{python}
-# | label: newton-bisection test 3
-# | error: true 
 
 np.seterr(all=None, divide='ignore', over=None, under=None, invalid='ignore')
 
@@ -581,8 +562,6 @@ newton_bounds(
 Likewise, if $c$ is too small, then this function cannot reach its root within a limited number of iterations. Or in this example, we need to set a larger `maxiter` so that we can find its root (which is extremely close to 0).
 
 ```{python}
-# | label: newton-bisection test 4
-# | error: true 
 
 np.seterr(all=None, divide='ignore', over=None, under=None, invalid='ignore')
 
@@ -601,8 +580,6 @@ newton_bounds(
 ```
 
 ```{python}
-# | label: newton-bisection test 4 with a larger maxiter
-
 
 newton_bounds(
     fun_grad_list(a, b, c)[0],

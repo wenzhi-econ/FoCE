@@ -176,7 +176,7 @@ x_{n+1} = F(x_n),
 \begin{aligned}&amp; F(x)=x-\exp \left(-(x-2)^2\right)+\frac{1}{2} \\&amp; x_{i+1}=x_i-\exp \left(-\left(x_i-2\right)^2\right)+\frac{1}{2}\end{aligned}.
 \]</span></p>
 <p>First, let’s code up this algorithm. Note that even if this is a scalar example, we’d like to allow it to pass a multivariate function.</p>
-<div id="fixed-point-iteration" class="cell" data-execution_count="1">
+<div id="fbe1e616" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="kw">def</span> fixed_point_iterations(</span>
@@ -201,7 +201,7 @@ x_{n+1} = F(x_n),
 <span id="cb1-22"><a href="#cb1-22"></a>    <span class="cf">return</span> x0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now let’s run this algorithm to the example of interest:</p>
-<p>::: {#cell-scalar example .cell execution_count=2}</p>
+<div id="a553886d" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">def</span> print_iter_info(arg_iter, arg_x0, arg_x1, arg_err):</span>
 <span id="cb2-2"><a href="#cb2-2"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">:"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>arg_x0 <span class="op">=</span> <span class="sc">:&lt;1.20f}</span><span class="ss">, </span><span class="sc">{</span>arg_x1 <span class="op">=</span> <span class="sc">:&lt;1.20f}</span><span class="ss">"</span>)</span>
@@ -280,12 +280,12 @@ arg_err = 0.00000000008985789890
 
 </code></pre>
 </div>
-<div id="scalar-example" class="cell-output cell-output-display" data-execution_count="40">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>1.1674453887343719</code></pre>
 </div>
-<p>:::</p>
+</div>
 <p>Finally, let’s use a graphical illustration to see what happened in this example.</p>
-<p>::: {#cell-scalar exampel graphical illustration .cell execution_count=3}</p>
+<div id="712dac19" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a>a, b <span class="op">=</span> <span class="dv">0</span>, <span class="dv">2</span></span>
@@ -315,11 +315,11 @@ arg_err = 0.00000000008985789890
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course22_RootFinding2_files/figure-html/scalar-exampel-graphical-illustration-output-2.png" id="scalar-exampel-graphical-illustration" width="579" height="411" class="figure-img"></p>
+<p><img src="Course22_RootFinding2_files/figure-html/cell-4-output-2.png" width="579" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 <p>Finally, I will write down the conditions for convergence in scalar case:</p>
 <p><span class="math display">\[
 |F'(x^\star)| &lt; 1
@@ -386,7 +386,7 @@ u_{ij} = c_{ij} + \sum_{t=1}^n \pi_t \frac{\exp(u_{it})}{\sum_{k=1}^m \exp(u_{kt
 <section id="implementation" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="implementation"><span class="header-section-number">3.2</span> Implementation</h2>
 <p>First, we need to code up a class that represent such a platform economy with different attributes.</p>
-<div id="platform-class" class="cell" data-execution_count="4">
+<div id="50a03bfc" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">class</span> PlatformModel:</span>
 <span id="cb7-2"><a href="#cb7-2"></a>    <span class="co">'''Simple platform equilibrium model'''</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, m<span class="op">=</span><span class="dv">2</span>, n<span class="op">=</span><span class="dv">2</span>, seed<span class="op">=</span><span class="dv">1234</span>):</span>
@@ -434,7 +434,7 @@ u_{ij} = c_{ij} + \sum_{t=1}^n \pi_t \frac{\exp(u_{it})}{\sum_{k=1}^m \exp(u_{kt
 </div>
 <p>Notice the key method of this class is <code>fixed_point_func</code>, which given a <code>(m,n)</code> array, will return another <code>(m,n)</code> array that represents the last equation in the last section.</p>
 <p>Then, I will utilize the <code>fixed_point_iterations</code> function in the scalar example, and solve for a stable utility matrix, with the stable market shares and choice probabilities matrix.</p>
-<div id="platform-example" class="cell" data-execution_count="5">
+<div id="37c8a2ed" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">def</span> printiter(arg_iter, arg_err, arg_x1, <span class="op">**</span>kwargs):</span>
 <span id="cb8-2"><a href="#cb8-2"></a>    <span class="bu">print</span>(<span class="ss">f'Iteration </span><span class="sc">{</span>arg_iter<span class="op">+</span><span class="dv">1</span><span class="sc">:d}</span><span class="ss">, </span><span class="ch">\n</span><span class="ss">err = </span><span class="ch">\n</span><span class="sc">{</span>arg_err<span class="sc">!r}</span><span class="ss">, </span><span class="ch">\n</span><span class="ss">x_1 = </span><span class="ch">\n</span><span class="sc">{</span>arg_x1<span class="sc">!r}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
 <span id="cb8-3"><a href="#cb8-3"></a></span>

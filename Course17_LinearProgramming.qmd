@@ -47,9 +47,6 @@ $$
 To solve this simple example, we will use the `scipy.optimize.linprog` function provided by the SciPy package (for more information about this function, read its [document here](https://docs.scipy.org/doc/scipy-1.10.0/reference/generated/scipy.optimize.linprog.html#scipy.optimize.linprog).
 
 ```{python}
-# | label: linprog example
-# | echo: true 
-# | eval: true 
 
 import sys
 import numpy as np 
@@ -106,8 +103,6 @@ Beijing license plate lottery
 First, let's read the dataset and have initial data preparation work.
 
 ```{python}
-# | label: load the dataset 
-# | eval: true
 
 import pandas as pd 
 
@@ -131,7 +126,6 @@ print(f'After droping the missing values, this dataset has {dt.shape[0]} observa
 Next, let's contrast the price distribution before and after the introduction of plates ration.
 
 ```{python}
-# | label: compare distributions 
 
 import matplotlib.pyplot as plt 
 
@@ -175,7 +169,6 @@ Next, we need to exogenously specify the cost associated from "transporting from
 Finally, we can calculate the two variables $origin_{ij}$ and $destination_{ij}$ from the data, which are presented below.
 
 ```{python}
-# | label: origin and destination 
 
 # number of bins to represent distribution
 N = 5
@@ -190,7 +183,6 @@ print(d10, d11, sep='\n\n')
 Therefore, we can set up the parameters of this linear programming problem now.
 
 ```{python}
-# | label: set up parameters
 
 costs = np.ones((N,N)) - np.eye(N)
 origins = np.array(d10)
@@ -204,7 +196,6 @@ plt.spy(costs)
 Then, set up the problem using the arrays that can be directly passed to the `sicpy.optimize.linporg` function.
 
 ```{python}
-# | label: arguments 
 
 C = costs.reshape(N*N)
 A1 = np.kron(np.eye(N),np.ones((1,N)))  # sums of x for each origin
@@ -217,7 +208,6 @@ b = np.concatenate((origins,destinations))
 Finally, we can solve the problem now!
 
 ```{python}
-# | label: solve the problem 
 
 res = linprog(c=C,A_eq=A[:-1],b_eq=b[:-1],bounds=(0,None),method='simplex')
 print(res.message)

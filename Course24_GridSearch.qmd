@@ -10,9 +10,6 @@ format:
         number-sections: true
         toc: true
 jupyter: python3
-execute: 
-    eval: true
-    echo: true
 ---
 
 To find a minimum or maximum of a function over an interval, one of the elementary techniques is the **grid search method**.
@@ -67,7 +64,6 @@ $$
 First, let's have a graphical illustration:
 
 ```{python}
-# | label: example 1
 
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -118,7 +114,6 @@ plt.show()
 Next, let's try the newton method we have introduced before:
 
 ```{python}
-# | label: newton solution
 
 def newton(fun, grad, x0, tol=1e-6, maxiter=100, callback=None):
     """
@@ -181,7 +176,6 @@ print(x_bar_list)
 Next, try the grid search method:
 
 ```{python}
-# | label: grid search example 1
 
 def grid_search(fun, bounds=(0, 1), n_grid=10):
     """
@@ -203,7 +197,6 @@ print(
 Finally, let's increase `n_grid` and see how does the increase affect the solution accuracy:
 
 ```{python}
-# | label: increase n_grid
 
 data = {'n': [2**i for i in range(20)]}
 data['err'] = np.empty(shape=len(data['n']))
@@ -226,7 +219,6 @@ plt.show()
 Let's consider the following objective function to be maximized.
 
 ```{python}
-# | label: example 2
 
 def f(x):
     x = np.asarray(x)
@@ -277,7 +269,6 @@ In this case, discretization and grid search may be the only option!
 First, let's try a relatively small `n_grid`.
 
 ```{python}
-# | label: try a small n_grid
 
 bounds, n = (-2,2), 10 
 plt.plot(xd,f(xd),label='function',c='red')
@@ -293,7 +284,6 @@ plt.show()
 Slightly increasing `n_grid`, we obtain
 
 ```{python}
-# | label: try a slightly larger n_grid 
 
 bounds, n = (-2,2), 100
 plt.plot(xd,f(xd),label='function',c='red')
@@ -309,7 +299,6 @@ plt.show()
 Finally, we use a large `n_grid`.
 
 ```{python}
-# | label: final n_grid 
 
 bounds, n = (-2,2), 500
 plt.plot(xd,f(xd),label='function',c='red')

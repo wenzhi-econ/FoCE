@@ -168,7 +168,7 @@ x + 2 y \leq 14.
 \end{aligned}
 \]</span></p>
 <p>To solve this simple example, we will use the <code>scipy.optimize.linprog</code> function provided by the SciPy package (for more information about this function, read its <a href="https://docs.scipy.org/doc/scipy-1.10.0/reference/generated/scipy.optimize.linprog.html#scipy.optimize.linprog">document here</a>.</p>
-<p>::: {#cell-linprog example .cell execution_count=1}</p>
+<div id="b5825719" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> sys</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> linprog</span>
@@ -200,10 +200,10 @@ iteration 3, current solution [6. 4.]
 iteration 3, current solution [6. 4.]</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>C:\Users\wang\AppData\Local\Temp\ipykernel_30376\3102891335.py:18: DeprecationWarning: `method='simplex'` is deprecated and will be removed in SciPy 1.11.0. Please use one of the HiGHS solvers (e.g. `method='highs'`) in new code.
+<pre><code>C:\Users\wang\AppData\Local\Temp\ipykernel_30312\2483677493.py:18: DeprecationWarning: `method='simplex'` is deprecated and will be removed in SciPy 1.11.0. Please use one of the HiGHS solvers (e.g. `method='highs'`) in new code.
   linprog(c=c, A_ub=A, b_ub=b, method='simplex', callback=outf)</code></pre>
 </div>
-<div id="linprog-example" class="cell-output cell-output-display" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>        message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
         success: True
          status: 0
@@ -224,7 +224,7 @@ iteration 3, current solution [6. 4.]</code></pre>
  mip_dual_bound: 0.0
         mip_gap: 0.0</code></pre>
 </div>
-<p>:::</p>
+</div>
 </section>
 <section id="an-economic-application-measuring-illegal-trade" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> An economic application: Measuring illegal trade</h1>
@@ -256,7 +256,7 @@ iteration 3, current solution [6. 4.]</code></pre>
 <section id="visualize-the-setting" class="level3" data-number="2.2.1">
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="visualize-the-setting"><span class="header-section-number">2.2.1</span> Visualize the setting</h3>
 <p>First, let’s read the dataset and have initial data preparation work.</p>
-<div id="load-the-dataset" class="cell" data-execution_count="2">
+<div id="9b1afc83" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a>dt <span class="op">=</span> pd.read_stata(<span class="vs">r'SampleCodes\_static\data\beijin_data.dta'</span>)</span>
@@ -311,7 +311,7 @@ After droping the missing values, this dataset has 241240 observations and 3 var
 </div>
 </div>
 <p>Next, let’s contrast the price distribution before and after the introduction of plates ration.</p>
-<p>::: {#cell-compare distributions .cell execution_count=3}</p>
+<div id="5c6933aa" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a>plt.rcParams[<span class="st">'figure.figsize'</span>] <span class="op">=</span> [<span class="dv">12</span>, <span class="dv">8</span>]</span>
@@ -335,11 +335,11 @@ After droping the missing values, this dataset has 241240 observations and 3 var
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course17_LinearProgramming_files/figure-html/compare-distributions-output-1.png" id="compare-distributions" width="960" height="633" class="figure-img"></p>
+<p><img src="Course17_LinearProgramming_files/figure-html/cell-4-output-1.png" width="960" height="633" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 </section>
 <section id="transfer-it-into-a-linear-programming-problem" class="level3" data-number="2.2.2">
 <h3 data-number="2.2.2" class="anchored" data-anchor-id="transfer-it-into-a-linear-programming-problem"><span class="header-section-number">2.2.2</span> Transfer it into a linear programming problem</h3>
@@ -355,7 +355,7 @@ x_{i j} \geq 0 \text { for all } i, j.
 <p>First, we can discretize the continuous price distribution into a 5-point discrete distribution, so that <span class="math inline">\(m = n = 5\)</span> in the following problem.</p>
 <p>Next, we need to exogenously specify the cost associated from “transporting from the <span class="math inline">\(i\)</span>th point to <span class="math inline">\(j\)</span> th point”. Assume that such transportation has no cost if <span class="math inline">\(i = j\)</span>, and with unit cost if <span class="math inline">\(i \neq j\)</span>.</p>
 <p>Finally, we can calculate the two variables <span class="math inline">\(origin_{ij}\)</span> and <span class="math inline">\(destination_{ij}\)</span> from the data, which are presented below.</p>
-<div id="origin-and-destination" class="cell" data-execution_count="4">
+<div id="30ea0ba3" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># number of bins to represent distribution</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>N <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>dt[<span class="st">'gr'</span>] <span class="op">=</span> pd.qcut(dt.MSRP, q<span class="op">=</span>N, labels<span class="op">=</span><span class="va">False</span>) </span>
@@ -383,7 +383,7 @@ Name: MSRP, dtype: float64</code></pre>
 </div>
 </div>
 <p>Therefore, we can set up the parameters of this linear programming problem now.</p>
-<p>::: {#cell-set up parameters .cell execution_count=5}</p>
+<div id="715aa0b2" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a>costs <span class="op">=</span> np.ones((N,N)) <span class="op">-</span> np.eye(N)</span>
 <span id="cb10-2"><a href="#cb10-2"></a>origins <span class="op">=</span> np.array(d10)</span>
 <span id="cb10-3"><a href="#cb10-3"></a>destinations <span class="op">=</span> np.array(d11)</span>
@@ -394,13 +394,13 @@ Name: MSRP, dtype: float64</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course17_LinearProgramming_files/figure-html/set-up-parameters-output-1.png" id="set-up-parameters" width="407" height="416" class="figure-img"></p>
+<p><img src="Course17_LinearProgramming_files/figure-html/cell-6-output-1.png" width="407" height="416" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 <p>Then, set up the problem using the arrays that can be directly passed to the <code>sicpy.optimize.linporg</code> function.</p>
-<div id="cell-arguments" class="cell" data-execution_count="6">
+<div id="707c3c48" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>C <span class="op">=</span> costs.reshape(N<span class="op">*</span>N)</span>
 <span id="cb11-2"><a href="#cb11-2"></a>A1 <span class="op">=</span> np.kron(np.eye(N),np.ones((<span class="dv">1</span>,N)))  <span class="co"># sums of x for each origin</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a>A2 <span class="op">=</span> np.kron(np.ones((<span class="dv">1</span>,N)),np.eye(N))  <span class="co"># sums of x for each destination</span></span>
@@ -410,13 +410,13 @@ Name: MSRP, dtype: float64</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course17_LinearProgramming_files/figure-html/arguments-output-1.png" id="arguments" width="409" height="195" class="figure-img"></p>
+<p><img src="Course17_LinearProgramming_files/figure-html/cell-7-output-1.png" width="409" height="195" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Finally, we can solve the problem now!</p>
-<p>::: {#cell-solve the problem .cell execution_count=7}</p>
+<div id="8f763740" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a>res <span class="op">=</span> linprog(c<span class="op">=</span>C,A_eq<span class="op">=</span>A[:<span class="op">-</span><span class="dv">1</span>],b_eq<span class="op">=</span>b[:<span class="op">-</span><span class="dv">1</span>],bounds<span class="op">=</span>(<span class="dv">0</span>,<span class="va">None</span>),method<span class="op">=</span><span class="st">'simplex'</span>)</span>
 <span id="cb12-2"><a href="#cb12-2"></a><span class="bu">print</span>(res.message)</span>
 <span id="cb12-3"><a href="#cb12-3"></a>X <span class="op">=</span> res.x.reshape((N,N)) <span class="co"># reshape back to X_ij</span></span>
@@ -434,17 +434,17 @@ Name: MSRP, dtype: float64</code></pre>
 With N=5, the lower bound on black market share is 0.16570.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>C:\Users\wang\AppData\Local\Temp\ipykernel_30376\2899467099.py:1: DeprecationWarning: `method='simplex'` is deprecated and will be removed in SciPy 1.11.0. Please use one of the HiGHS solvers (e.g. `method='highs'`) in new code.
+<pre><code>C:\Users\wang\AppData\Local\Temp\ipykernel_30312\2842564419.py:1: DeprecationWarning: `method='simplex'` is deprecated and will be removed in SciPy 1.11.0. Please use one of the HiGHS solvers (e.g. `method='highs'`) in new code.
   res = linprog(c=C,A_eq=A[:-1],b_eq=b[:-1],bounds=(0,None),method='simplex')</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Course17_LinearProgramming_files/figure-html/solve-the-problem-output-3.png" id="solve-the-problem" width="407" height="416" class="figure-img"></p>
+<p><img src="Course17_LinearProgramming_files/figure-html/cell-8-output-3.png" width="407" height="416" class="figure-img"></p>
 </figure>
 </div>
 </div>
-<p>:::</p>
+</div>
 </section>
 </section>
 </section>
