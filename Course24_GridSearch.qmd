@@ -1,0 +1,323 @@
+---
+title: "Course 24: Grid Search"
+format:
+    html:
+        theme: cosmo
+        code-fold: false 
+        code-line-numbers: true
+        code-copy: true
+        highlight-style: github
+        number-sections: true
+        toc: true
+jupyter: python3
+execute: 
+    eval: true
+    echo: true
+---
+
+To find a minimum or maximum of a function over an interval, one of the elementary techniques is the **grid search method**.
+
+-   Main advantage: **robust**
+
+    -   works with *nasty* functions
+
+    -   derivative free
+
+    -   approximates **global** optimum
+
+-   Main disadvantage: everything else
+
+    -   slow
+
+    -   imprecise
+
+    -   terrible in multivariate problems
+
+-   Why used so much in economics?
+
+    -   objective function may be nasty
+
+    -   **as first step method** in multi-algorithms
+
+The algorithm is as follows.
+
+$$
+f(x) \longrightarrow \max
+$$
+
+1.  Take a starting value $x_0$, define a region of search, i.e, $I = (x_0 - a, x_0 + b)$.
+2.  Impose on $I$ a discrete grid consisting of point $x_i, i \in 1,\dots,n$.
+3.  Compute $f(x_i)$ for all $i$.
+4.  Return the maximum of $f(x_i)$ as the result.
+
+# A Simple Maximization Problem
+
+Consider the following example:
+
+$$
+\max _{x \in \mathbb{R}} f(x)=-x^4+2.5 x^2+x+10.
+$$
+
+The first-order condition leads to the following critical points:
+
+$$
+\begin{aligned}f^{\prime}(x)=-4 x^3+5 x+1 & =0 \\-4 x\left(x^2-1\right)+x+1 & =0 \\(x+1)\left(-4 x^2+4 x+1\right) & =0 \\(x+1)\left(x-\frac{1}{2}-\frac{1}{\sqrt{2}}\right)\left(x-\frac{1}{2}+\frac{1}{\sqrt{2}}\right) & =0\end{aligned}.
+$$
+
+First, let's have a graphical illustration:
+
+```{python}
+# | label: example 1
+
+import numpy as np 
+import matplotlib.pyplot as plt
+
+def func(x):
+    result = -(x**4) + 2.5 * (x**2) + x + 10
+    return result
+
+
+def d1_func(x):
+    result = -4 * (x**3) + 5 * x + 1
+    return result
+
+
+def d2_func(x):
+    result = -12 * (x**2) + 5
+    return result
+
+critical_values = [
+    -1.0,
+    0.5 - 1 / np.sqrt(2),
+    0.5 + 1 / np.sqrt(2),
+]
+
+xd = np.linspace(-3, 3, 10000)
+
+plt.plot(xd, func(xd), label="function", c="red")
+plt.plot(xd, d1_func(xd), label="derivative", c="darkgrey")
+plt.plot(xd, d2_func(xd), label="2nd derivative", c="lightgrey")
+plt.plot([plt.xlim()[0], plt.xlim()[1]], [0, 0], c='black')
+plt.grid(False)
+plt.legend()
+plt.xlim(left=-3.0, right=3.0)
+plt.ylim(bottom=-45, top=25)
+bottom, top = plt.ylim()
+
+for critical_value in critical_values:
+    plt.plot(
+        [critical_value, critical_value],
+        [bottom, top],
+        linestyle=":",
+        c="red",
+    )
+plt.ion()
+plt.show()
+```
+
+Next, let's try the newton method we have introduced before:
+
+```{python}
+# | label: newton solution
+
+def newton(fun, grad, x0, tol=1e-6, maxiter=100, callback=None):
+    """
+    This finds the root of function fun (the first argument) using the
+    newton method, with initial guess x0 and given tolerance and maximum
+    number of iterations.
+
+    Input arguments:
+        fun: function of interest
+        grad: the first derivative of func
+        x0: initial guess
+        tol: tolerance
+        maxiter: maximum number of iterations
+        callback: a function that will be invoked at each iteration if
+        given
+    """
+    for i in range(maxiter):
+        x1 = x0 - fun(x0) / grad(x0)
+        x_bar = (x1 + x0) / 2
+        err = fun(x_bar)
+
+        if callback is not None:
+            callback(
+                cb_arg_fun=fun,
+                cb_arg_grad=grad,
+                cb_arg_x0=x0,
+                cb_arg_x1=x1,
+                cb_arg_x_bar=x_bar,
+                cb_arg_iter=i,
+            )
+
+        if abs(err) < tol:
+            break
+        else:
+            x0 = x1
+    else:
+        raise RuntimeError(
+            f"Failed to converge in {maxiter} iterations."
+        )
+    return x_bar
+
+
+def print_step(
+    cb_arg_fun, cb_arg_grad, cb_arg_x_bar, cb_arg_iter, **kwargs
+):
+    print(
+        f"Iteration {cb_arg_iter+1:<1d}: \nx_bar={cb_arg_x_bar:<1.20f}\nfunction value at x_bar={cb_arg_fun(cb_arg_x_bar):<1.20f}\ngradient at x_bar={cb_arg_grad(cb_arg_x_bar):<1.20f}\n"
+    )
+
+x_bar_list = []
+for initial_guess in [0.5, -0.5, 1.0]:
+    x_bar = newton(
+        fun=d1_func, grad=d2_func, x0=initial_guess, callback=print_step
+    )
+    x_bar_list.append(x_bar)
+
+print(x_bar_list)
+```
+
+Next, try the grid search method:
+
+```{python}
+# | label: grid search example 1
+
+def grid_search(fun, bounds=(0, 1), n_grid=10):
+    """
+    Grid search between bounds over given number of points.
+    """
+    x_grid = np.linspace(*bounds, n_grid)
+    y_grid = fun(x_grid)
+    max_index = np.argmax(y_grid)
+    return x_grid[max_index]
+
+b0, b1 = -2, 2 
+x_bar = grid_search(fun=func, bounds=(b0, b1), n_grid=10)
+closest_cv = critical_values[np.argmin(np.abs(critical_values - x_bar))]
+print(
+    f"Grid search returned {x_bar = :<1.20f},\nwhich is closest to critical point {closest_cv:<1.5f}, difference = {abs(x_bar - closest_cv):<1.3e}."
+)
+```
+
+Finally, let's increase `n_grid` and see how does the increase affect the solution accuracy:
+
+```{python}
+# | label: increase n_grid
+
+data = {'n': [2**i for i in range(20)]}
+data['err'] = np.empty(shape=len(data['n']))
+
+for i, n in enumerate(data["n"]):
+    x_bar_gridn = grid_search(fun=func, bounds=(b0, b1), n_grid=n)
+    closest_cv_gridn = critical_values[
+        np.argmin(np.abs(critical_values - x_bar_gridn))
+    ]
+    data["err"][i] = np.abs(x_bar_gridn - closest_cv_gridn)
+
+plt.plot(data["n"], data["err"], marker="o")
+plt.yscale("log")
+plt.ion()
+plt.show()
+```
+
+# Another Example
+
+Let's consider the following objective function to be maximized.
+
+```{python}
+# | label: example 2
+
+def f(x):
+    x = np.asarray(x)
+    if x.size == 1:
+        x = x[np.newaxis]
+    res = np.empty(shape=x.shape)
+    for i, ix in enumerate(x):
+        if ix <= -1:
+            res[i] = np.exp(ix + 3)
+        elif -1 < ix <= -0.5:
+            res[i] = 10 * ix + 13
+        elif -0.5 < ix <= 0.5:
+            res[i] = 75 * ix**3
+        elif 0.5 < ix <= 1.5:
+            res[i] = 5.0
+        else:
+            res[i] = np.log(ix - 1.5)
+    return res
+
+
+xd = np.linspace(-2,2,1000)
+plt.plot(xd,f(xd),label='function',c='red')
+plt.ylim((-10,10))
+plt.grid(True)
+plt.show()
+```
+
+## Why is this hard
+
+*Any function with cases is usually nasty*
+
+-   Kinks are non-differentiable points, which causes trouble for Newton method.
+-   Discontinuities are troubles for existence of either roots or maximum (think $1/x$ which illustrates both cases).
+-   Multiple local optima are troubles for non-global methods.
+-   Regions where the function is completely flat will likely trigger the stopping criterion, which causes trouble for convergence.
+
+In this case, discretization and grid search may be the only option!
+
+## Examples of having to work with hard cases
+
+-   Economic model may have discontinuities and/or kinks.\
+-   Estimation procedure may require working with piecewise flat and/or discontinuous functions.\
+-   The function at hand may be costly to compute or unclear in nature (or subject of the study).\
+-   Robustness checks over special parameters (categorical variables, assumptions, etc).
+
+## Algorithm results
+
+First, let's try a relatively small `n_grid`.
+
+```{python}
+# | label: try a small n_grid
+
+bounds, n = (-2,2), 10 
+plt.plot(xd,f(xd),label='function',c='red')
+plt.ylim((-10,10))
+plt.grid(True)
+x = np.linspace(*bounds, n)
+plt.scatter(x,f(x),s=200,marker='|',c='k',linewidth=2)
+x_bar = grid_search(f,bounds,n_grid=n)
+plt.scatter(x_bar,f(x_bar),s=500,marker='*',c='w',edgecolor='b',linewidth=2) 
+plt.show()
+```
+
+Slightly increasing `n_grid`, we obtain
+
+```{python}
+# | label: try a slightly larger n_grid 
+
+bounds, n = (-2,2), 100
+plt.plot(xd,f(xd),label='function',c='red')
+plt.ylim((-10,10))
+plt.grid(True)
+x = np.linspace(*bounds, n)
+plt.scatter(x,f(x),s=200,marker='|',c='k',linewidth=2)
+x_bar = grid_search(f,bounds,n_grid=n)
+plt.scatter(x_bar,f(x_bar),s=500,marker='*',c='w',edgecolor='b',linewidth=2) 
+plt.show()
+```
+
+Finally, we use a large `n_grid`.
+
+```{python}
+# | label: final n_grid 
+
+bounds, n = (-2,2), 500
+plt.plot(xd,f(xd),label='function',c='red')
+plt.ylim((-10,10))
+plt.grid(True)
+x = np.linspace(*bounds, n)
+plt.scatter(x,f(x),s=200,marker='|',c='k',linewidth=2)
+x_bar = grid_search(f,bounds,n_grid=n)
+plt.scatter(x_bar,f(x_bar),s=500,marker='*',c='w',edgecolor='b',linewidth=2) 
+plt.show()
+```
