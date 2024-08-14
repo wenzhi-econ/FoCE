@@ -1,0 +1,290 @@
+---
+title: "Course 22: Fixed Point Iterations"
+format:
+    html:
+        theme: cosmo
+        code-fold: false 
+        code-line-numbers: true
+        code-copy: true
+        highlight-style: github
+        number-sections: true
+        toc: true
+jupyter: python3
+execute: 
+    eval: true
+    echo: true
+---
+
+# Fixed Point Iterations
+
+Let's consider a special form of root-finding problem:
+
+$$
+x = F(x).
+$$
+
+That is, we need to find the fixed point of function $F$. Note that, if we define
+
+$$
+g(x) = x - F(x),
+$$
+
+then we can write this problem as a root-finding problem:
+
+$$
+g(x) = 0.
+$$
+
+One algorithm to solve this fixed point problem is by **successive approximations**. That is,
+
+$$
+x_{n+1} = F(x_n),
+$$
+
+until the difference between $x_{n+1}$ and $x_n$ can be ignored given a tolerance level.
+
+This algorithm has the following advantages:
+
+-   It can easily handle multivariate case.
+
+-   If $F$ is a contraction mapping, then this algorithm will always converge to its fixed point.
+
+-   The implementation is relatively simple.
+
+# A Scalar Example
+
+Suppose we need to solve the following equation:
+
+$$
+\frac{1}{2}-\exp \left(-(x-2)^2\right)=0.
+$$
+
+Then we can write it in a fixed point problem form:
+
+$$
+\begin{aligned}& F(x)=x-\exp \left(-(x-2)^2\right)+\frac{1}{2} \\& x_{i+1}=x_i-\exp \left(-\left(x_i-2\right)^2\right)+\frac{1}{2}\end{aligned}.
+$$
+
+First, let's code up this algorithm. Note that even if this is a scalar example, we'd like to allow it to pass a multivariate function.
+
+```{python}
+
+import numpy as np 
+
+def fixed_point_iterations(
+    func, x0, tol=1e-6, maxiter=100, callback=None
+):
+    """
+    This function returns the fixed point of function func, using naive iterations.
+    """
+    for i in range(maxiter):
+        x1 = func(x0)
+        err = x1 - x0
+        if callback is not None:
+            callback(arg_x0=x0, arg_x1=x1, arg_err=err, arg_iter=i)
+        if np.max(np.abs(err)) < tol:
+            break
+        x0 = x1
+    else:
+        raise RuntimeError(
+            f"Failed to converge in {maxiter} iterations."
+        )
+
+    return x0
+```
+
+Now let's run this algorithm to the example of interest:
+
+```{python}
+
+def print_iter_info(arg_iter, arg_x0, arg_x1, arg_err):
+    print(f"Iteration {arg_iter+1}:")
+    print(f"{arg_x0 = :<1.20f}, {arg_x1 = :<1.20f}")
+    print(f"{arg_err = :<1.20f}")
+    print("\n")
+
+def F(x):
+    return x - np.exp(-((x - 2) ** 2)) + 0.5
+
+
+fixed_point_iterations(F, x0=1.0, tol=1e-10, callback=print_iter_info)
+```
+
+Finally, let's use a graphical illustration to see what happened in this example.
+
+```{python}
+
+import matplotlib.pyplot as plt 
+
+a, b = 0, 2
+xd = np.linspace(a, b, 10000000)
+
+plt.plot([a, b], [a, b], c="grey")
+plt.plot(xd, F(xd), c="red")
+
+def plot_step(**kwargs):
+    if plot_step.counter < 10:
+        if plot_step.counter == 0:
+            x, f = kwargs["arg_x0"], F(kwargs["arg_x0"])
+            plt.plot([x, x], [0, f], c="green")
+            plt.plot([x, f], [f, f], c="green")
+        plot_step.counter += 1
+        x, f = kwargs["arg_x1"], F(kwargs["arg_x1"])
+        plt.plot([x, x], [x, f], c="green")
+        plt.plot([x, f], [f, f], c="green")
+
+plot_step.counter = 0
+fixed_point_iterations(F, x0=1.0, tol=1e-10, callback=plot_step)
+print(f"Converged in {plot_step.counter+1} iterations.")
+plt.show()
+```
+
+Finally, I will write down the conditions for convergence in scalar case:
+
+$$
+|F'(x^\star)| < 1
+$$
+
+-   where \$ x\^\star \$ is the solution/root
+-   **stable solution**
+
+Limitations of fixed point iterations:
+
+-   Only stable solutions can be computed with this algorithm.
+-   Starting values matter for convergence!
+-   Also, only linear (slow) convergence to the solution when it does converge.
+
+But, it is so easy to implement!
+
+# Multivariate Example: Platform Market Equilibrium
+
+## Settings
+
+Model
+
+-   There are $m$ different products, indexed by $i$, $i = 1, 2, \ldots, m$.
+
+-   There are $n$ types of customers in the market, indexed by $j$, $j = 1,2, \ldots, n$. Customers are heterogeneous in the respect of their preferences over the products.
+
+-   Let $\pi_j$ denote the fractions of type-$j$ customer in the market, $j=1, \ldots, n$, which are assumed to be known and exogenous. Let the column vector $\Pi$ be a collections of $\pi_j$'s.
+
+-   Type-$j$ customer obtains utility $u_{ij}$ from consuming one unit of product $i$, which is given by
+
+$$
+u_{ij} = c_{ij} + s_{i}.
+$$
+
+-   $c_{ij}$ are valuations of each product by each of the customer type, which are assumed to be known and exogenous.
+
+-   $s_i$ is the share of product $i$ in the market, which is endogenous. The existence of $s_i$ captures the fact that the utility customers gain from a platform depends on the size of the user base.
+
+Choice probabilities:
+
+-   Standard random utility framework with logit choice probabilities.
+
+<!-- -->
+
+-   Let the column vector $\varepsilon$ be a collection of $\varepsilon_i$'s. Assume it follows an iid extreme value type 1 distribution. Therefore, the choice probability of type-$j$ customer choosing product $i$ is:
+
+$$
+P_{i j}=\frac{\exp \left(u_{i j}\right)}{\sum_{k=1}^m \exp \left(u_{k j}\right)}=\frac{\exp \left(u_{i j}-\alpha\right)}{\sum_{k=1}^m \exp \left(u_{k j}-\alpha\right)}, \forall \alpha .
+$$
+
+-   Note that the last step is merely an algebraic computation, but it has important implications in the algorithm, as we may be very likely to suffer from overloading problem!
+
+Market shares:
+
+$$
+s_i = \sum_{j=1}^n \pi_j P_{ij} = P^T \cdot \Pi.
+$$
+
+Fixed point equation:
+
+-   Combining the last three equations, we have
+
+$$
+u_{ij} = c_{ij} + \sum_{t=1}^n \pi_t \frac{\exp(u_{it})}{\sum_{k=1}^m \exp(u_{kt})}.
+$$
+
+-   There are $m \times n$ total equation, in the space of $u_{ij}$.
+
+## Implementation
+
+First, we need to code up a class that represent such a platform economy with different attributes.
+
+```{python}
+
+class PlatformModel:
+    '''Simple platform equilibrium model'''
+    def __init__(self, m=2, n=2, seed=1234):
+        self.m = m 
+        self.n = n
+        self.c = np.random.default_rng(seed=seed).uniform(size=(m,n))
+        self.p = np.random.default_rng(seed=seed).dirichlet(np.ones(n)).reshape((n,1))
+
+    def __repr__(self):
+        return f'Number of platform products: {self.m:d}\nNumber of customer type: {self.n:d}\nPopulation composition: \n{self.p!r}\nFixed components of utilities: \n{self.c!r}'
+    
+    def ccp(self, u):
+        '''
+        This function returns the conditional choice probabilites as a
+        m by n np.ndarray, given a m by n matrix consisting of
+        the deterministic components of utilities.
+
+        Input arguments:
+            u: np.ndarray with shape (m,n)
+        '''
+
+        u_normalized = u - np.max(u, axis=0) 
+        e = np.exp(u_normalized)
+        esum = np.sum(e, axis=0)
+        result = e/esum
+        return result 
+    
+    def shares(self, ccp_matrix):
+        '''
+        This function returns the market share as a m by 1 column vector
+        give a m by n matrix indicating the market share for each product.
+        '''
+        result = np.dot(ccp_matrix, self.p)
+        return result 
+    
+    def fixed_point_func(self, u):
+        '''
+        This function returns a m by n matrix given a m by n matrix
+        representing the input utilities. 
+        '''
+        ccp_matrix = self.ccp(u)
+        shares = self.shares(ccp_matrix)
+        u1 = self.c + shares 
+        return u1
+```
+
+Notice the key method of this class is `fixed_point_func`, which given a `(m,n)` array, will return another `(m,n)` array that represents the last equation in the last section.
+
+Then, I will utilize the `fixed_point_iterations` function in the scalar example, and solve for a stable utility matrix, with the stable market shares and choice probabilities matrix.
+
+```{python}
+
+def printiter(arg_iter, arg_err, arg_x1, **kwargs):
+    print(f'Iteration {arg_iter+1:d}, \nerr = \n{arg_err!r}, \nx_1 = \n{arg_x1!r}\n')
+
+md = PlatformModel(m=3, n=2)
+print(md)
+print("\n")
+
+utilities = fixed_point_iterations(md.fixed_point_func, x0=np.zeros(shape=(md.m,md.n)), callback=printiter, tol=1e-10)
+print(utilities)
+
+md_ccp = md.ccp(utilities)
+print(f'\nConditional probabilities matrix:')
+print(md_ccp)
+print(f'\nMarket share:')
+md_shares = md.shares(md_ccp)
+print(md_shares)
+print(f'\nTest that the utilities matrix calcualted is indeed stable:')
+md_utilities_next = md.fixed_point_func(utilities)
+print(utilities, '\n')
+print(md_utilities_next)
+
+```
