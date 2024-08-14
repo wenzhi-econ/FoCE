@@ -1,5 +1,10 @@
 # Preface {.unnumbered}
 
-This is a Quarto book.
+This website stores my notes on solving simply dynamic programming problems in economics using Python. Theses are based on the course [Foundation of Computational Economics, ANU, 2021](https://github.com/fediskhakov/CompEcon).
 
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
+The notes focus on the following three points:
+1. Create a proper Python object to represent an economics model.
+2. Conduct unit tests when developing model methods to solve the model.
+3. Use type hinting to track down the calculation process, and minimize potential errors in each step.
+
+The notes do not necessarily present the best numerical methods and solution methods to deal with these models. It is more programming-oriented, aiming to improve my Python skills to solve, simulate, and estimate an economics model.

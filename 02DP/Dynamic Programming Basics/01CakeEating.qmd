@@ -1,0 +1,281 @@
+---
+format:
+    html:
+        theme: cosmo
+        embed-resources: true
+        code-fold: false 
+        code-line-numbers: true
+        code-copy: true
+        highlight-style: github
+        number-sections: true
+        toc: true
+        page-layout: full
+        grid:
+            body-width: 1000px
+execute: 
+    eval: true
+    echo: true
+---
+
+<!--
+??????????????????????????????????
+?? Chapter title
+??????????????????????????????????
+-->
+
+# Part I: The Cake Eating Problem
+
+In this note, I hope to be more familiar with creating a Python class to represent an economics model, and to be more familiar with NumPy type hinting to track the calculation process, and to perform unit tests when developing codes.
+
+<!--
+??????????????????????????????????
+?? Problem Setup
+??????????????????????????????????
+-->
+
+## Problem Setup
+
+Suppose that we are presented with a cake of size $W_0$ at time $0$. At each period of time $t = 0, 1, \ldots$, you can eat some of the cake but must save the rest. Let $c_t$ be your consumption in period $t$, and let $u(c_t)$ represent the flow of utility from this consumption. Here, we use $u(c) = \log(c)$, which is real valued, differentiable, strictly increasing, and strictly concave, and $\lim_{c \rightarrow 0^+} u^\prime(c) = +\infty$. Therefore, the problem is
+
+$$
+\begin{aligned}
+    \max_{\{c_t\}_{t=0}^{\infty}} & \sum_{t=0}^{\infty} \beta^t u(c_t) \\
+    \text{s.t.   } & W_{t+1} = W_t - c_t, \\
+    & c_{t}\geq 0,\; W_{t+1} \geq 0, \; t = 0, 1, \ldots; \\
+    \text{given  } & W_0 > 0.
+\end{aligned}
+$$
+
+The Bellman equation associated with this problem is
+
+$$
+V(W_t) = \max_{0 \leq c_t \leq W_t} \left\{u(c_t) + \beta V(\underbrace{W_{t+1}}_{=W_t - c_t} )\right\}
+$$
+
+### Analytical Solution
+
+We start with a guess that
+
+$$
+V(W) = A + B \log(W),
+$$
+
+where $A$ and $B$ are coefficients to be determined. Given this conjecture, we can write the Bellman equation as
+
+$$
+A+B \log (W)=\max _c\left\{\log c+\beta \left(A+B \log (W-c) \right)\right\}.
+$$
+
+The FOC is
+
+$$
+\frac{1}{c}-\frac{\beta B}{W-c}=0 \quad \Rightarrow \quad c=\frac{W}{1+\beta B},\; W-c=\frac{\beta B W}{1+\beta B}.
+$$
+
+Then we have 
+$$
+\begin{aligned}
+A+B \log (W)= & \log (W)+\log \frac{1}{1+\beta B}+\beta A+\beta B \log (W)+\beta B \log \frac{\beta B}{1+\beta B} \\
+\Rightarrow & \left\{\
+\begin{array}{ll}
+    & A=\beta A+\log \frac{1}{1+\beta B}+\beta B \log \frac{\beta B}{1+\beta B} \\
+    & B=1+\beta B 
+\end{array}\right.
+\end{aligned}
+$$
+
+After some algebraic calculation, we can obtain the analytic solution to this simple cake-eating problem:
+
+$$
+\begin{aligned}
+& c^{\star}(W)=(1-\beta) W \\
+& V(W)=\frac{\log (W)}{1-\beta}+\frac{\log (1-\beta)}{1-\beta}+\frac{\beta \log (\beta)}{(1-\beta)^2}
+\end{aligned}
+$$
+
+### A Python Class to Represent the Problem
+
+First, there are two model parameters, $\beta$ and $W_0$. However, these two economics parameters are not enough to represent this problem in a computer, we need other numerical parameters to solve the problem, which are all set to be optional arguments when initializing an instance.
+
+Two things deserve some extra attention. type hinting is used (which is a soft requirement) for two model parameters, since we are very unlikely to pass wrong types to these arguments. However, I use strong `assert` function to check the passing numerical parameters, since this is more likely to be sources of mistakes.
+
+```{python filename="CakeEating.py"}
+import numpy as np
+from typing import Any
+
+class CakeEating:
+    """
+    This class solves the cake-eating problems using different numerical
+    methods.
+
+    Through this script, I hope to be more familiar with creating a
+    Python class to represent an economics model, and to be more
+    familiar with NumPy type hinting to track the calculation process,
+    and to perform unit tests when developing codes.
+    """
+
+    def __init__(
+        self, beta: float = 0.9, w0: float = 100, **kwargs: Any
+    ) -> None:
+        """
+        Initialize an object instance with model parameters, and
+        possibly numerical parameters.
+        """
+        self.beta = beta
+        self.w0 = w0
+
+        if "ngrid_w" in kwargs:
+            assert isinstance(
+                kwargs["ngrid_w"], int
+            ), "ngrid_w should be an integer!"
+            self.ngrid_w = kwargs["ngrid_w"]
+        else:
+            self.ngrid_w = 100
+
+        if "c_min" in kwargs:
+            assert isinstance(kwargs["c_min"], float)
+            self.c_min = kwargs["c_min"]
+        else:
+            self.c_min = 1e-10
+
+        if "tol" in kwargs:
+            assert isinstance(kwargs["tol"], float)
+            self.tol = kwargs["tol"]
+        else:
+            self.tol = 1e-10
+
+    def __repr__(self) -> str:
+        return f"A simple cake-eating problem with beta = {self.beta:.2f} and initial wealth W_0 = {self.w0:.3f}.\nOther numerical parameters are set to {self.ngrid_w = }, {self.c_min = }, {self.tol = }."
+```
+
+### Unit Tests
+
+How can we make sure that our class works just as our expectation, even though only the constructor has been coded up? One important approach is to perform unit tests, which specifically test this unit of codes.
+
+In principle, we can manually check if our constructor gets the same results as our expectations. For example,
+
+```{python}
+# | eval: false
+# | code-fold: true
+
+model1 = CakeEating()
+print(model1)
+model1.beta
+model1.w0
+model1.ngrid_w
+model1.c_min
+model1.tol
+
+model4 = CakeEating(beta = 0.66, ngrid_w=1000, c_min=1e-5)
+model4.beta
+model4.w0
+model4.ngrid_w
+model4.c_min
+model4.tol
+
+# model_wrongNtype = CakeEating(ngrid_w=10.0) 
+#     AssertionError: ngrid_w should be an integer!
+```
+
+Executing the final line will throw out an error message, which is exactly what we want – a strict type checking for numerical parameters. However, a better way to perform these tests is using certain testing framework, which can greatly reduce our burden.
+
+```{.python filename="test_CakeEating.py"}
+# | eval: false
+
+import CakeEating as CE # <1>
+
+import pytest
+
+def test_init_model_pars():
+    model1 = CE.CakeEating()
+    assert model1.beta == 0.90
+    assert model1.w0 == pytest.approx(100.0) # <2>
+
+    model2 = CE.CakeEating(beta=0.66)
+    assert model2.beta == pytest.approx(0.66)
+
+
+def test_init_numerical_types():
+    model3 = CE.CakeEating(ngrid_w=99.0) # <3>
+    assert model3.ngrid_w == 99
+
+# def test_init_numerical_types_elegant():
+#     with pytest.raises(AssertionError):      # <4>
+#         model3 = CE.CakeEating(ngrid_w=99.0)
+#         assert model3.ngrid_w == 99
+
+def test_init_numerical_pars():
+    model3 = CE.CakeEating(ngrid_w=1000, tol=1e-9)
+    assert model3.ngrid_w == 1000
+    assert model3.c_min == 1e-10
+    assert model3.tol == 1e-9
+
+pytest.main() # <5>
+```
+1. If we are separating the model script and the test script into two files, then an extra importation step is needed.
+2. `pytest.approx()` is used to compare two floats.
+3. We are expecting an error message will be thrown out. 
+4. If we run this alternative test with exception capturing, then we will actually pass the test.
+5. Right now, we cannot run this in IPython. Therefore, after saving this file, we need to run the following command in the command line: `pytest "test_CakeEating.py"` to show the results.
+
+<!--
+??????????????????????????????????
+?? On-the-Grid Solution Method
+??????????????????????????????????
+-->
+
+## On-the-Grid Solution Method: Discretize only $W$
+
+### Value Function Iteration: Interpolation is Necessary
+
+Value function iteration means that we start with an arbitrary guess $V_0(W)$. At iteration $i = 1, 2, \ldots$, we compute
+
+$$
+\begin{aligned}
+V_i(W)=T\left(V_{i-1}\right)(W) & =\max _{0 \leq c \leq W}\left\{u(c)+\beta V_{i-1}(W-c)\right\} \\
+c_{i-1}(W) & =\underset{0 \leq c \leq W}{\arg \max }\left\{u(c)+\beta V_{i-1}(W-c)\right\}
+\end{aligned}.
+$$
+
+To put this idea into practice, we first need dto construct a grid of cake-sizes $\overrightarrow{W} \in \mathcal{W} := \{0, \ldots, \overline{W}\}$, and then calculate the following maximization problem in iteration $i$:
+
+$$
+V_i(\overrightarrow{W})=\max _{0 \leq c \leq \overrightarrow{W}}\left\{u(c)+\beta V_{i-1}(\overrightarrow{W}-c)\right\}.
+$$
+
+However, one important complication is that we need to evaluate $V_{i-1}$ {\bf \emph{off-the-grids}}, that is, there is no guarantee that $\overrightarrow{W}-c \in \mathcal{W}$. Therefore, we need to exploit some interpolation or function approximation techniques.
+
+### Assume $c$ Can ONLY Take Gaps between Gridpoints as Values
+
+We can re-organize the Bellman equation as
+
+$$
+V_i(\overrightarrow{W})=\max _{0 \leq \overrightarrow{W}^{\prime} \leq \overrightarrow{W}}\left\{u\left(\overrightarrow{W}-\overrightarrow{W}^{\prime}\right)+\beta V_{i-1}\left(\overrightarrow{W}^{\prime}\right)\right\}.
+$$
+
+By choosing $\overrightarrow{W}, \overrightarrow{W}^{\prime} \in \mathcal{W}$, the last-iteration value function $V_{i-1}$ is always evaluated on the grid, thus avoiding interpolation.
+
+### Coding up the On-the-Grid Solution
+
+
+<!--
+??????????????????????????????????
+?? Discretization Solution Method
+??????????????????????????????????
+-->
+
+##  Discretization Solution Method: Discretize both $W$ and $c$
+
+### Algorithm: Interpolation + Discretized $c$
+
+To improve accuracy, we can go back to the original Bellman equation,
+
+$$        
+V(W_t) = \max_{0 \leq c_t \leq W_t} \left\{u(c_t) + \beta V(\underbrace{W_{t+1}}_{=W_t - c_t} )\right\},
+$$
+
+and we treat $c_t$ as our direct choice variable.
+
+There are two choices if we wish to discretize the $c$ grid, given a value of the state variable $W$. Either we can use a fixed $c$ grid, regardless of the current state variable value, or we can use an adapted $c$ grid, considering the construct the grid with bounds $[0,W]$, so that the $c$ grid is actually a function of the value of the state variable. In the following python codes, this choice is controlled by the `adapted_c_grid` attribute.
+
+Again, there is no guarantee that $W_t - c_t$ lies on the grid $\overrightarrow{W}$. To address this problem, we use a simple interpolation function `scipy.interpolate.interp1d`. I won't take the credibility of the interpolation method seriously in this note, as the main focus is to develop good-quality and reader-friendly Python codes.
