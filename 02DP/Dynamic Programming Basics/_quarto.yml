@@ -1,0 +1,20 @@
+project:
+  type: book
+  output-dir: "../../docs"
+
+book:
+  title: "Dynamic Programming Basics"
+  subtitle: "Organized from Course Foundation of Computational Economics, ANU, 2021"
+  author: "Wenzhi Wang"
+  date: today
+  chapters:
+    - index.qmd
+    - 02CakeEating.qmd
+    - 03LifeCycle.qmd
+
+format:
+  html:
+    theme: cosmo
+
+
+
