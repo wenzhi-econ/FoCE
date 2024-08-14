@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Wenzhi Wang">
-<meta name="dcterms.date" content="2024-08-13">
 
-<title>Dynamic Programming Basics</title>
+<title>2&nbsp; Course 35: Stochastic LifeCycle Consumption-Savings Model: Discretized Choice Variable – Dynamic Programming Basics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -32,7 +64,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./02CakeEating.html" rel="next">
+<link href="./02CakeEating.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -70,6 +102,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -82,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03LifeCycle.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Course 35: Stochastic LifeCycle Consumption-Savings Model: Discretized Choice Variable</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -92,7 +153,7 @@ ul.task-list li input[type="checkbox"] {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -109,7 +170,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -121,7 +182,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03LifeCycle.html" class="sidebar-item-text sidebar-link">
+  <a href="./03LifeCycle.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Course 35: Stochastic LifeCycle Consumption-Savings Model: Discretized Choice Variable</span></span></a>
   </div>
 </li>
@@ -135,36 +196,27 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a></li>
+  <li><a href="#stochastic-lifecycle-consumption-savings-model" id="toc-stochastic-lifecycle-consumption-savings-model" class="nav-link active" data-scroll-target="#stochastic-lifecycle-consumption-savings-model"><span class="header-section-number">3</span> Stochastic LifeCycle Consumption-Savings Model</a>
+  <ul class="collapse">
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model"><span class="header-section-number">3.1</span> Model</a></li>
+  <li><a href="#numerical-integration" id="toc-numerical-integration" class="nav-link" data-scroll-target="#numerical-integration"><span class="header-section-number">3.2</span> Numerical integration</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-body" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Dynamic Programming Basics</h1>
-<p class="subtitle lead">Organized from Course Foundation of Computational Economics, ANU, 2021</p>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Course 35: Stochastic LifeCycle Consumption-Savings Model: Discretized Choice Variable</span></h1>
 </div>
 
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-body">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Wenzhi Wang </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">August 13, 2024</p>
-    </div>
-  </div>
   
     
   </div>
@@ -174,12 +226,181 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This is a Quarto book.</p>
-<p>To learn more about Quarto books visit <a href="https://quarto.org/docs/books" class="uri">https://quarto.org/docs/books</a>.</p>
+<section id="stochastic-lifecycle-consumption-savings-model" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Stochastic LifeCycle Consumption-Savings Model</h1>
+<section id="model" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="model"><span class="header-section-number">3.1</span> Model</h2>
+<p>The Bellman equation is as follows:</p>
+<p><span class="math display">\[\begin{equation}
+V(M)=\max _{0 \leq c \leq M}\{u(c)+\beta \mathbb{E}_{\widetilde{R}, \widetilde{y}} V(\underbrace{\widetilde{R}(M-c)+\widetilde{y}}_{=M^{\prime}})\}
+\end{equation}\]</span></p>
+<ul>
+<li><p>Assume that <span class="math inline">\(\widetilde{R}\)</span> is fixed.</p></li>
+<li><p>Stochastic income <span class="math inline">\(\widetilde{y}\)</span> follows a log normal distribution with <span class="math inline">\(\mu=\)</span> and <span class="math inline">\(\sigma\)</span> to be specified. Then we know that <span class="math inline">\(\widetilde{y} &gt; 0\)</span> and <span class="math inline">\(\mathbb{E}(\widetilde{y}) = \exp(\sigma^2/2)\)</span>.</p></li>
+<li><p>For backward compatibility with the cake-eating example, we assume <span class="math inline">\(\widetilde{y}=0\)</span> as a special case.</p></li>
+</ul>
+</section>
+<section id="numerical-integration" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="numerical-integration"><span class="header-section-number">3.2</span> Numerical integration</h2>
+<p>The key difficulty here is that we need to calculate the expectation (over different realizations of <span class="math inline">\(\widetilde{y}\)</span>) of the value function.</p>
+<p>To do this, we use the <strong>Gauss-Legendre Quardrature</strong> method. Specifically, we need to select a set of discrete point of <span class="math inline">\(\widetilde{y}\)</span>, along with the weights associated with each point. Then we approximate the integral by the weighted sums of value function evaluated at these <span class="math inline">\(\widetilde{y}\)</span>.</p>
+<p>Again, like in the cake-eating problem, we build up the next-period value function (before taking expectations) with <strong>states in <code>axis=0</code>, choices in <code>axis=1</code></strong>.</p>
+<p>But here, we need another dimension of array to store the quardrature points of <span class="math inline">\(\widetilde{y}\)</span>. Notice that <strong>we put these quardrature points in <code>axis=2</code></strong>, so that we can utilize a special feature of the <code>np.dot()</code> function.</p>
+<p>See <a href="https://numpy.org/doc/stable/reference/generated/numpy.dot.html#numpy.dot">document here</a> which says that</p>
+<blockquote class="blockquote">
+<p>If <em>a</em> is an N-D array and <em>b</em> is a 1-D array, it is a sum product over the last axis of <em>a</em> and <em>b</em>.</p>
+</blockquote>
+<p>To see this, we can have the following test:</p>
+<div id="e5d8f6b6" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a>a <span class="op">=</span> np.zeros((<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>))</span>
+<span id="cb1-5"><a href="#cb1-5"></a>a[:,:,<span class="dv">1</span>] <span class="op">=</span> np.ones((<span class="dv">3</span>,<span class="dv">4</span>))</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="bu">print</span>(<span class="st">'a = '</span>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="bu">print</span>(a)</span>
+<span id="cb1-8"><a href="#cb1-8"></a>b <span class="op">=</span> np.array([<span class="fl">0.75</span>, <span class="fl">0.25</span>])</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="ch">\n</span><span class="ss">b = '</span>)</span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="bu">print</span>(b)</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="ch">\n</span><span class="ss">np.dot(a, b) = '</span>)</span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="bu">print</span>(np.dot(a, b))</span>
+<span id="cb1-13"><a href="#cb1-13"></a></span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="bu">print</span>()</span>
+<span id="cb1-15"><a href="#cb1-15"></a>c <span class="op">=</span> a.copy()</span>
+<span id="cb1-16"><a href="#cb1-16"></a>c[:,<span class="dv">0</span>,:] <span class="op">=</span> np.ones((<span class="dv">3</span>,<span class="dv">2</span>))</span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="bu">print</span>(<span class="st">'c = '</span>)</span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="bu">print</span>(c)</span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="ch">\n</span><span class="ss">b = '</span>)</span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="bu">print</span>(b)</span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="ch">\n</span><span class="ss">np.dot(c, b) = '</span>)</span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="bu">print</span>(np.dot(c, b))</span>
+<span id="cb1-23"><a href="#cb1-23"></a></span>
+<span id="cb1-24"><a href="#cb1-24"></a><span class="bu">print</span>()</span>
+<span id="cb1-25"><a href="#cb1-25"></a>d <span class="op">=</span> a.copy()</span>
+<span id="cb1-26"><a href="#cb1-26"></a>d[:,<span class="dv">0</span>,:] <span class="op">=</span> np.ones((<span class="dv">3</span>,<span class="dv">2</span>))</span>
+<span id="cb1-27"><a href="#cb1-27"></a>d[:,<span class="dv">1</span>,:] <span class="op">=</span> np.zeros((<span class="dv">3</span>,<span class="dv">2</span>))</span>
+<span id="cb1-28"><a href="#cb1-28"></a><span class="bu">print</span>(<span class="st">'d = '</span>)</span>
+<span id="cb1-29"><a href="#cb1-29"></a><span class="bu">print</span>(d)</span>
+<span id="cb1-30"><a href="#cb1-30"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="ch">\n</span><span class="ss">b = '</span>)</span>
+<span id="cb1-31"><a href="#cb1-31"></a><span class="bu">print</span>(b)</span>
+<span id="cb1-32"><a href="#cb1-32"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="ch">\n</span><span class="ss">np.dot(d, b) = '</span>)</span>
+<span id="cb1-33"><a href="#cb1-33"></a><span class="bu">print</span>(np.dot(d, b))</span>
+<span id="cb1-34"><a href="#cb1-34"></a></span>
+<span id="cb1-35"><a href="#cb1-35"></a><span class="bu">print</span>()</span>
+<span id="cb1-36"><a href="#cb1-36"></a>e <span class="op">=</span> a.copy()</span>
+<span id="cb1-37"><a href="#cb1-37"></a>e[:,<span class="dv">0</span>,:] <span class="op">=</span> np.ones((<span class="dv">3</span>,<span class="dv">2</span>))</span>
+<span id="cb1-38"><a href="#cb1-38"></a>e[:,<span class="dv">1</span>,:] <span class="op">=</span> np.zeros((<span class="dv">3</span>,<span class="dv">2</span>))</span>
+<span id="cb1-39"><a href="#cb1-39"></a>e[<span class="dv">0</span>,:,:] <span class="op">=</span> np.zeros((<span class="dv">4</span>,<span class="dv">2</span>))</span>
+<span id="cb1-40"><a href="#cb1-40"></a><span class="bu">print</span>(<span class="st">'e = '</span>)</span>
+<span id="cb1-41"><a href="#cb1-41"></a><span class="bu">print</span>(e)</span>
+<span id="cb1-42"><a href="#cb1-42"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="ch">\n</span><span class="ss">b = '</span>)</span>
+<span id="cb1-43"><a href="#cb1-43"></a><span class="bu">print</span>(b)</span>
+<span id="cb1-44"><a href="#cb1-44"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="ch">\n</span><span class="ss">np.dot(e, b) = '</span>)</span>
+<span id="cb1-45"><a href="#cb1-45"></a><span class="bu">print</span>(np.dot(e, b))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>a = 
+[[[0. 1.]
+  [0. 1.]
+  [0. 1.]
+  [0. 1.]]
+
+ [[0. 1.]
+  [0. 1.]
+  [0. 1.]
+  [0. 1.]]
+
+ [[0. 1.]
+  [0. 1.]
+  [0. 1.]
+  [0. 1.]]]
+
+b = 
+[0.75 0.25]
+
+np.dot(a, b) = 
+[[0.25 0.25 0.25 0.25]
+ [0.25 0.25 0.25 0.25]
+ [0.25 0.25 0.25 0.25]]
+
+c = 
+[[[1. 1.]
+  [0. 1.]
+  [0. 1.]
+  [0. 1.]]
+
+ [[1. 1.]
+  [0. 1.]
+  [0. 1.]
+  [0. 1.]]
+
+ [[1. 1.]
+  [0. 1.]
+  [0. 1.]
+  [0. 1.]]]
+
+b = 
+[0.75 0.25]
+
+np.dot(c, b) = 
+[[1.   0.25 0.25 0.25]
+ [1.   0.25 0.25 0.25]
+ [1.   0.25 0.25 0.25]]
+
+d = 
+[[[1. 1.]
+  [0. 0.]
+  [0. 1.]
+  [0. 1.]]
+
+ [[1. 1.]
+  [0. 0.]
+  [0. 1.]
+  [0. 1.]]
+
+ [[1. 1.]
+  [0. 0.]
+  [0. 1.]
+  [0. 1.]]]
+
+b = 
+[0.75 0.25]
+
+np.dot(d, b) = 
+[[1.   0.   0.25 0.25]
+ [1.   0.   0.25 0.25]
+ [1.   0.   0.25 0.25]]
+
+e = 
+[[[0. 0.]
+  [0. 0.]
+  [0. 0.]
+  [0. 0.]]
+
+ [[1. 1.]
+  [0. 0.]
+  [0. 1.]
+  [0. 1.]]
+
+ [[1. 1.]
+  [0. 0.]
+  [0. 1.]
+  [0. 1.]]]
+
+b = 
+[0.75 0.25]
+
+np.dot(e, b) = 
+[[0.   0.   0.   0.  ]
+ [1.   0.   0.25 0.25]
+ [1.   0.   0.25 0.25]]</code></pre>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -603,13 +824,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<nav class="page-navigation">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
+      <a href="./02CakeEating.html" class="pagination-link" aria-label="Course 30 and 32: Dynamic Programming 1 - Cake Eating Problem">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Course 30 and 32: Dynamic Programming 1 - Cake Eating Problem</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./02CakeEating.html" class="pagination-link" aria-label="Course 30 and 32: Dynamic Programming 1 - Cake Eating Problem">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Course 30 and 32: Dynamic Programming 1 - Cake Eating Problem</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
