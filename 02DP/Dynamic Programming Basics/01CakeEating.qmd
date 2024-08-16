@@ -97,11 +97,23 @@ $$
 
 First, there are two model parameters, $\beta$ and $W_0$. However, these two economics parameters are not enough to represent this problem in a computer, we need other numerical parameters to solve the problem, which are all set to be optional arguments when initializing an instance.
 
-Two things deserve some extra attention. type hinting is used (which is a soft requirement) for two model parameters, since we are very unlikely to pass wrong types to these arguments. However, I use strong `assert` function to check the passing numerical parameters, since this is more likely to be sources of mistakes.
-
 ```{python filename="CakeEating.py"}
 import numpy as np
-from typing import Any
+import matplotlib.pyplot as plt
+from scipy import interpolate
+from cycler import cycler
+
+# && type hinting relevant variables
+from typing import Annotated, Literal, TypeVar, Union #<1>
+import numpy.typing as npt
+
+DType = TypeVar("DType", bound=np.generic)
+ArrayNxN = Annotated[npt.NDArray[DType], Literal["ngridw", "ngridw"]]
+ArrayNxNc = Annotated[npt.NDArray[DType], Literal["ngridw", "ngridc"]]
+ArrayN = Annotated[npt.NDArray[DType], Literal["ngridw"]]
+Collection_float = Union[ArrayN[np.float64], ArrayNxN[np.float64], np.float64]
+Numerical_pars = Union[dict[str, float], dict[str, int]]
+
 
 class CakeEating:
     """
@@ -115,22 +127,61 @@ class CakeEating:
     """
 
     def __init__(
-        self, beta: float = 0.9, w0: float = 100, **kwargs: Any
+        self,
+        beta: float = 0.9,
+        w0: float = 10,
+        **kwargs: Numerical_pars, #<2>
     ) -> None:
         """
         Initialize an object instance with model parameters, and
         possibly numerical parameters.
         """
+
+        # -? model parameters
         self.beta = beta
         self.w0 = w0
 
-        if "ngrid_w" in kwargs:
+        # -? numerical parameters
+        self.kwargs = kwargs #<3>
+        if "ngridw" in kwargs:
             assert isinstance(
-                kwargs["ngrid_w"], int
-            ), "ngrid_w should be an integer!"
-            self.ngrid_w = kwargs["ngrid_w"]
+                kwargs["ngridw"], int
+            ), "ngridw should be an integer!"
+            self.ngridw = kwargs["ngridw"]
         else:
-            self.ngrid_w = 100
+            self.ngridw = 100
+
+        if "ngridc" in kwargs:
+            assert isinstance(
+                kwargs["ngridc"], int
+            ), "ngridc should be an integer!"
+            self.ngridc = kwargs["ngridc"]
+        else:
+            self.ngridc = 200
+
+        if "adapted_grid_c" in kwargs:
+            assert isinstance(
+                kwargs["adapted_grid_c"], bool
+            ), "adapted_grid_c should be a boolen"
+            self.adapted_grid_c = kwargs["adapted_grid_c"]
+        else:
+            self.adapted_grid_c = True
+
+        if "max_iter" in kwargs:
+            assert isinstance(
+                kwargs["max_iter"], int
+            ), "max_iter should be an integer!"
+            self.max_iter = kwargs["max_iter"]
+        else:
+            self.max_iter = 1000
+
+        if "relative_error" in kwargs:
+            assert isinstance(
+                kwargs["relative_error"], bool
+            ), "relative_error should be a boolen"
+            self.relative_error = kwargs["relative_error"]
+        else:
+            self.relative_error = False
 
         if "c_min" in kwargs:
             assert isinstance(kwargs["c_min"], float)
@@ -142,11 +193,20 @@ class CakeEating:
             assert isinstance(kwargs["tol"], float)
             self.tol = kwargs["tol"]
         else:
-            self.tol = 1e-10
+            self.tol = 1e-4
 
     def __repr__(self) -> str:
-        return f"A simple cake-eating problem with beta = {self.beta:.2f} and initial wealth W_0 = {self.w0:.3f}.\nOther numerical parameters are set to {self.ngrid_w = }, {self.c_min = }, {self.tol = }."
+        numerical_parameters = [str((par, self.kwargs[par])) for par in self.kwargs]
+        return (
+            f"A simple cake-eating problem with beta = {self.beta:.2f}, "
+            f"and initial wealth W_0 = {self.w0:.3f}.\n"
+            f"Other non-default numerical parameters are set to "
+            f"{', ' .join(numerical_parameters)}."
+        )
 ```
+1. I use type hinting for the model parameters, as they are often soft requirements, and we are very unlikely to pass wrong types to these arguments.
+2. I collect the numerical parameters as optional arguments, as these parameters depend on which numerical methods we are using, so they can vary case by case. Essentially, an economics model is only represented by the model parameters.
+3. For the numerical parameters, I use strong `assert` statements to check the passing numerical parameters, since this is more likely to be sources of mistakes.
 
 ### Unit Tests
 
@@ -162,24 +222,24 @@ model1 = CakeEating()
 print(model1)
 model1.beta
 model1.w0
-model1.ngrid_w
+model1.ngridw
 model1.c_min
 model1.tol
 
-model4 = CakeEating(beta = 0.66, ngrid_w=1000, c_min=1e-5)
+model4 = CakeEating(beta = 0.66, ngridw=1000, c_min=1e-5)
 model4.beta
 model4.w0
-model4.ngrid_w
+model4.ngridw
 model4.c_min
 model4.tol
 
-# model_wrongNtype = CakeEating(ngrid_w=10.0) 
-#     AssertionError: ngrid_w should be an integer!
+# model_wrongNtype = CakeEating(ngridw=10.0) 
+#     AssertionError: ngridw should be an integer!
 ```
 
 Executing the final line will throw out an error message, which is exactly what we want – a strict type checking for numerical parameters. However, a better way to perform these tests is using certain testing framework, which can greatly reduce our burden.
 
-```{.python filename="test_CakeEating.py"}
+``` {.python filename="test_CakeEating.py"}
 # | eval: false
 
 import CakeEating as CE # <1>
@@ -196,27 +256,28 @@ def test_init_model_pars():
 
 
 def test_init_numerical_types():
-    model3 = CE.CakeEating(ngrid_w=99.0) # <3>
-    assert model3.ngrid_w == 99
+    model3 = CE.CakeEating(ngridw=99.0) # <3>
+    assert model3.ngridw == 99
 
 # def test_init_numerical_types_elegant():
 #     with pytest.raises(AssertionError):      # <4>
-#         model3 = CE.CakeEating(ngrid_w=99.0)
-#         assert model3.ngrid_w == 99
+#         model3 = CE.CakeEating(ngridw=99.0)
+#         assert model3.ngridw == 99
 
 def test_init_numerical_pars():
-    model3 = CE.CakeEating(ngrid_w=1000, tol=1e-9)
-    assert model3.ngrid_w == 1000
+    model3 = CE.CakeEating(ngridw=1000, tol=1e-9)
+    assert model3.ngridw == 1000
     assert model3.c_min == 1e-10
     assert model3.tol == 1e-9
 
 pytest.main() # <5>
 ```
-1. If we are separating the model script and the test script into two files, then an extra importation step is needed.
-2. `pytest.approx()` is used to compare two floats.
-3. We are expecting an error message will be thrown out. 
-4. If we run this alternative test with exception capturing, then we will actually pass the test.
-5. Right now, we cannot run this in IPython. Therefore, after saving this file, we need to run the following command in the command line: `pytest "test_CakeEating.py"` to show the results.
+
+1.  If we are separating the model script and the test script into two files, then an extra importation step is needed.
+2.  `pytest.approx()` is used to compare two floats.
+3.  We are expecting an error message will be thrown out.
+4.  If we run this alternative test with exception capturing, then we will actually pass the test.
+5.  Right now, we cannot run this in IPython. Therefore, after saving this file, we need to run the following command in the command line: `pytest "test_CakeEating.py"` to show the results.
 
 <!--
 ??????????????????????????????????
@@ -243,7 +304,7 @@ $$
 V_i(\overrightarrow{W})=\max _{0 \leq c \leq \overrightarrow{W}}\left\{u(c)+\beta V_{i-1}(\overrightarrow{W}-c)\right\}.
 $$
 
-However, one important complication is that we need to evaluate $V_{i-1}$ {\bf \emph{off-the-grids}}, that is, there is no guarantee that $\overrightarrow{W}-c \in \mathcal{W}$. Therefore, we need to exploit some interpolation or function approximation techniques.
+However, one important complication is that we need to evaluate $V_{i-1}$ ***off-the-grids***, that is, there is no guarantee that $\overrightarrow{W}-c \in \mathcal{W}$. Therefore, we need to exploit some interpolation or function approximation techniques.
 
 ### Assume $c$ Can ONLY Take Gaps between Gridpoints as Values
 
@@ -253,9 +314,303 @@ $$
 V_i(\overrightarrow{W})=\max _{0 \leq \overrightarrow{W}^{\prime} \leq \overrightarrow{W}}\left\{u\left(\overrightarrow{W}-\overrightarrow{W}^{\prime}\right)+\beta V_{i-1}\left(\overrightarrow{W}^{\prime}\right)\right\}.
 $$
 
-By choosing $\overrightarrow{W}, \overrightarrow{W}^{\prime} \in \mathcal{W}$, the last-iteration value function $V_{i-1}$ is always evaluated on the grid, thus avoiding interpolation.
+By choosing $\overrightarrow{W}, \overrightarrow{W}^{\prime} \in \mathcal{W}$, the last-iteration value function $V_{i-1}$ is always evaluated on the grid, thus avoiding interpolation. However, noting that this re-arrangement has strong numerical implications: since we require $\overrightarrow{W}^{\prime} \in \mathcal{W}$, this implies that the consumption take only take discrete values that are gaps between gridpoints in the $\mathcal{W}$ grid.
 
 ### Coding up the On-the-Grid Solution
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import interpolate
+from cycler import cycler
+
+# && type hinting relevant variables
+from typing import Annotated, Literal, TypeVar, Union
+import numpy.typing as npt
+
+DType = TypeVar("DType", bound=np.generic)
+
+ArrayNxN = Annotated[npt.NDArray[DType], Literal["ngridw", "ngridw"]]
+ArrayNxNc = Annotated[npt.NDArray[DType], Literal["ngridw", "ngridc"]]
+ArrayN = Annotated[npt.NDArray[DType], Literal["ngridw"]]
+Collection_float = Union[ArrayN[np.float64], ArrayNxN[np.float64], np.float64]
+Numerical_pars = Union[dict[str, float], dict[str, int]]
+
+
+class CakeEating:
+    """
+    This class solves the cake-eating problems using different numerical
+    methods.
+
+    Through this script, I hope to be more familiar with creating a
+    Python class to represent an economics model, and to be more
+    familiar with NumPy type hinting to track the calculation process,
+    and to perform unit tests when developing codes.
+    """
+
+    def __init__(
+        self,
+        beta: float = 0.9,
+        w0: float = 10,
+        **kwargs: Numerical_pars,
+    ) -> None:
+        """
+        Initialize an object instance with model parameters, and
+        possibly numerical parameters.
+        """
+
+        # -? model parameters
+        self.beta = beta
+        self.w0 = w0
+
+        # -? numerical parameters
+        self.kwargs = kwargs
+        if "ngridw" in kwargs:
+            assert isinstance(
+                kwargs["ngridw"], int
+            ), "ngridw should be an integer!"
+            self.ngridw = kwargs["ngridw"]
+        else:
+            self.ngridw = 100
+
+        if "ngridc" in kwargs:
+            assert isinstance(
+                kwargs["ngridc"], int
+            ), "ngridc should be an integer!"
+            self.ngridc = kwargs["ngridc"]
+        else:
+            self.ngridc = 200
+
+        if "adapted_grid_c" in kwargs:
+            assert isinstance(
+                kwargs["adapted_grid_c"], bool
+            ), "adapted_grid_c should be a boolen"
+            self.adapted_grid_c = kwargs["adapted_grid_c"]
+        else:
+            self.adapted_grid_c = True
+
+        if "max_iter" in kwargs:
+            assert isinstance(
+                kwargs["max_iter"], int
+            ), "max_iter should be an integer!"
+            self.max_iter = kwargs["max_iter"]
+        else:
+            self.max_iter = 1000
+
+        if "relative_error" in kwargs:
+            assert isinstance(
+                kwargs["relative_error"], bool
+            ), "relative_error should be a boolen"
+            self.relative_error = kwargs["relative_error"]
+        else:
+            self.relative_error = False
+
+        if "c_min" in kwargs:
+            assert isinstance(kwargs["c_min"], float)
+            self.c_min = kwargs["c_min"]
+        else:
+            self.c_min = 1e-10
+
+        if "tol" in kwargs:
+            assert isinstance(kwargs["tol"], float)
+            self.tol = kwargs["tol"]
+        else:
+            self.tol = 1e-4
+
+    def __repr__(self) -> str:
+        numerical_parameters = [str((par, self.kwargs[par])) for par in self.kwargs]
+        return (
+            f"A simple cake-eating problem with beta = {self.beta:.2f}, "
+            f"and initial wealth W_0 = {self.w0:.3f}.\n"
+            f"Other non-default numerical parameters are set to "
+            f"{', ' .join(numerical_parameters)}."
+        )
+
+    @property #<1>
+    def grid_w(self) -> ArrayN[np.float64]:
+        return np.linspace(
+            start=self.c_min, stop=self.w0, num=self.ngridw, endpoint=True
+        )
+
+    def utility(self, c: Collection_float):
+        return np.log(c)
+
+    def bellman_ongrid(self, V0: ArrayN[np.float64]):
+        """
+        Given last-iteration value function, this method calculates
+        next-iteration value function using on-the-grid solution method.
+        """
+        #!! step 1: check the shape of last-iteration value function
+        assert V0.shape == (self.ngridw,)
+
+        #!! step 2: construct a consumption array, where
+        #!! arr_c[i, j] == self.grid_w[i] - self.grid_w[j]
+        arr_w_prime: ArrayNxN #<2>
+        arr_w: ArrayNxN
+        arr_w, arr_w_prime = np.meshgrid(
+            self.grid_w, self.grid_w, indexing="ij" #<3>
+        )
+
+        arr_c: ArrayNxN = arr_w - arr_w_prime
+        arr_c[arr_c < 0] = np.nan
+        arr_c[arr_c == 0] = self.c_min
+
+        #!! step 3: construct the next-iteration value function array
+        #!! arr_value_prime[i,j]
+        #!! = log(self.grid_w[i] - self.grid_w[j]) + beta * V0[j]
+        arr_V0: ArrayNxN #<4>
+        _, arr_V0 = np.meshgrid(V0, V0, indexing="ij")
+        arr_value_prime = self.utility(arr_c) + self.beta * arr_V0
+
+        #!! step 4: get the next-iteration value function
+        #!! maximization over j, i.e., across columns
+        V_prime = np.nanmax(arr_value_prime, axis=1)
+
+        #!! step 4: get the consumption function
+        c_index = list(np.nanargmax(arr_value_prime, axis=1))
+        c = arr_c[list(range(self.ngridw)), c_index]
+
+        return V_prime, c
+
+    def solution_ongrid(self, callback=None):
+        """
+        This method solves the cake eating problem using on-the-grid method.
+        """
+        V0 = np.log(self.grid_w)
+
+        for iter in range(self.max_iter):
+            # print(f"Iteration: {iter+1}\n") #<5>
+            V1, c = self.bellman_ongrid(V0)
+            if callback is not None:
+                callback(iter, self.grid_w, V1, c)
+            if self.relative_error:
+                if np.all(np.abs(V1 - V0) / np.abs(V0) < self.tol):
+                    break
+            else:
+                if np.all(abs(V1 - V0) < self.tol):
+                    print(f"Final iteration: {iter:3d}")
+                    break
+            V0 = V1
+        else:
+            raise RuntimeError(
+                f"Failed to converge in {self.max_iter} iterations."
+            )
+        return V1, c
+
+```
+1. The $w$ grid is a property without a setter, so that we will never change the wealth grid by assignment statements like `model.grid_w = np.linsapce(1, 2, 10)`. 
+2. Here, I use type hinting for the results returned by the `np.meshgrid()` function. When developping the method for the first time, it is much better if we use `assert` statements -- not only on the shapes of these two arrays, but possibly on their properties (e.g., each row of `arr_w` has the same entries, while each column of `arr_w_prime` has the same entries).
+3. The use of `np.meshgrid()` in dynamic programming.
+4. Similarly, we can use `assert` statements here.
+5. It is always better to indicate the program is at which iteration. Otherwise, there is no sign of program executions. However, here, to make output clearer, I will comment out this line.
+
+### Testing the Numerical Solutions
+
+First, I will present the convergence for an example cate eating problem with $\beta = 0.9$, and $w_0 = 100$. Relevant numerical parameters are set to `ngridw = 1000`, `tol=1e-6`, `relative_error=True`, `max_iter = 1000`, and `c_min = 1e-10`.
+
+```{python}
+model1 = CakeEating(
+    beta=0.9, w0=100, ngridw=1000, tol=1e-6, relative_error=True
+)
+```
+
+To plot the convergence process, I will first set up some figure options, and define a plotting function that will be called in each value function iteration process, which then allows me to visualize the convergence process in each iteration.
+
+```{python}
+plt.rcParams["axes.autolimit_mode"] = "round_numbers"
+plt.rcParams["axes.xmargin"] = 0
+plt.rcParams["axes.ymargin"] = 0
+plt.rcParams["patch.force_edgecolor"] = True
+plt.rcParams["axes.prop_cycle"] = cycler(color="bgrcmyk")
+
+fig1, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+plt.grid(which="both", color="0.65", linestyle="-")
+
+ax1.set_title("Value function convergence with VFI")
+ax1.set_xlabel("Cake size, W")
+ax1.set_ylabel("Value function")
+
+ax2.set_title("Policy function convergence with VFI")
+ax2.set_xlabel("Cake size, W")
+ax2.set_ylabel("Policy function")
+
+def plot_value_convergence(iter, grid, v, c):
+    """Callback function for DP solver"""
+    if iter < 5 or iter % 10 == 0:
+        ax1.plot(grid[1:], v[1:], label=f"iter = {iter+1:3d}", linewidth=1)
+        ax2.plot(grid[1:], c[1:], label=f"iter = {iter+1:3d}", linewidth=1)
+
+model1_V, model1_c = model1.solution_ongrid(callback=plot_value_convergence)
+plt.legend(loc='upper left', bbox_to_anchor=(1.04, 1))
+plt.ion()
+plt.show()
+```
+
+Second, I want to compare the numerical solution with the analytical solution. To do this, I will first define a function that calculate the analytical value function and consumption function for any model parameters. Then I will contrast the numerical solution with the analytical solution.
+
+```{python}
+def analytical_solution(w, model):
+    beta = model.beta
+    value_func = (
+        np.log(w) / (1 - beta)
+        + np.log(1 - beta) / (1 - beta)
+        + beta * np.log(beta) / ((1 - beta) ** 2)
+    )
+    consump_func = (1 - beta) * w
+    return value_func, consump_func
+
+model1_V_true, model1_c_true = analytical_solution(model1.grid_w, model1)
+```
+
+```{python}
+# | code-fold: true
+figV, axV = plt.subplots(figsize=(8, 6))
+axV.set_title(
+    f"Analytical versus numerical value function with {model1.ngridw = } using On-the-Grid method"
+)
+axV.set_xlabel("Cake size, W")
+axV.set_ylabel("Value function")
+
+axV.plot(
+    model1.grid_w[1:],
+    model1_V[1:],
+    c="red",
+    label="numerical VF",
+)
+axV.plot(
+    model1.grid_w[1:],
+    model1_V_true[1:],
+    c="black",
+    label="analytical VF",
+)
+axV.legend()
+plt.ion()
+plt.show()
+
+
+figC, axC = plt.subplots(figsize=(8, 6))
+axC.set_title(
+    f"Analytical versus numerical policy function with {model1.ngridw = } using On-the-Grid method"
+)
+axC.set_xlabel("Cake size, W")
+axC.set_ylabel("Policy function")
+
+axC.plot(
+    model1.grid_w[1:],
+    model1_c[1:],
+    c="red",
+    label="numerical policy function",
+)
+axC.plot(
+    model1.grid_w[1:],
+    model1_c_true[1:],
+    c="black",
+    label="analytical policy function",
+)
+axC.legend()
+plt.ion()
+plt.show()
+```
 
 
 <!--
@@ -264,7 +619,7 @@ By choosing $\overrightarrow{W}, \overrightarrow{W}^{\prime} \in \mathcal{W}$, t
 ??????????????????????????????????
 -->
 
-##  Discretization Solution Method: Discretize both $W$ and $c$
+## Discretization Solution Method: Discretize both $W$ and $c$
 
 ### Algorithm: Interpolation + Discretized $c$
 
@@ -279,3 +634,407 @@ and we treat $c_t$ as our direct choice variable.
 There are two choices if we wish to discretize the $c$ grid, given a value of the state variable $W$. Either we can use a fixed $c$ grid, regardless of the current state variable value, or we can use an adapted $c$ grid, considering the construct the grid with bounds $[0,W]$, so that the $c$ grid is actually a function of the value of the state variable. In the following python codes, this choice is controlled by the `adapted_c_grid` attribute.
 
 Again, there is no guarantee that $W_t - c_t$ lies on the grid $\overrightarrow{W}$. To address this problem, we use a simple interpolation function `scipy.interpolate.interp1d`. I won't take the credibility of the interpolation method seriously in this note, as the main focus is to develop good-quality and reader-friendly Python codes.
+
+### Coding up the DIscretization Method
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import interpolate
+from cycler import cycler
+
+# && type hinting relevant variables
+from typing import Annotated, Literal, TypeVar, Union
+import numpy.typing as npt
+
+DType = TypeVar("DType", bound=np.generic)
+
+ArrayNxN = Annotated[npt.NDArray[DType], Literal["ngridw", "ngridw"]]
+ArrayNxNc = Annotated[npt.NDArray[DType], Literal["ngridw", "ngridc"]]
+ArrayN = Annotated[npt.NDArray[DType], Literal["ngridw"]]
+Collection_float = Union[ArrayN[np.float64], ArrayNxN[np.float64], np.float64]
+Numerical_pars = Union[dict[str, float], dict[str, int]]
+
+
+class CakeEating:
+    """
+    This class solves the cake-eating problems using different numerical
+    methods.
+
+    Through this script, I hope to be more familiar with creating a
+    Python class to represent an economics model, and to be more
+    familiar with NumPy type hinting to track the calculation process,
+    and to perform unit tests when developing codes.
+    """
+
+    def __init__(
+        self,
+        beta: float = 0.9,
+        w0: float = 10,
+        **kwargs: Numerical_pars,
+    ) -> None:
+        """
+        Initialize an object instance with model parameters, and
+        possibly numerical parameters.
+        """
+
+        # -? model parameters
+        self.beta = beta
+        self.w0 = w0
+
+        # -? numerical parameters
+        self.kwargs = kwargs
+        if "ngridw" in kwargs:
+            assert isinstance(
+                kwargs["ngridw"], int
+            ), "ngridw should be an integer!"
+            self.ngridw = kwargs["ngridw"]
+        else:
+            self.ngridw = 100
+
+        if "ngridc" in kwargs:
+            assert isinstance(
+                kwargs["ngridc"], int
+            ), "ngridc should be an integer!"
+            self.ngridc = kwargs["ngridc"]
+        else:
+            self.ngridc = 200
+
+        if "adapted_grid_c" in kwargs:
+            assert isinstance(
+                kwargs["adapted_grid_c"], bool
+            ), "adapted_grid_c should be a boolen"
+            self.adapted_grid_c = kwargs["adapted_grid_c"]
+        else:
+            self.adapted_grid_c = True
+
+        if "max_iter" in kwargs:
+            assert isinstance(
+                kwargs["max_iter"], int
+            ), "max_iter should be an integer!"
+            self.max_iter = kwargs["max_iter"]
+        else:
+            self.max_iter = 1000
+
+        if "relative_error" in kwargs:
+            assert isinstance(
+                kwargs["relative_error"], bool
+            ), "relative_error should be a boolen"
+            self.relative_error = kwargs["relative_error"]
+        else:
+            self.relative_error = False
+
+        if "c_min" in kwargs:
+            assert isinstance(kwargs["c_min"], float)
+            self.c_min = kwargs["c_min"]
+        else:
+            self.c_min = 1e-10
+
+        if "tol" in kwargs:
+            assert isinstance(kwargs["tol"], float)
+            self.tol = kwargs["tol"]
+        else:
+            self.tol = 1e-4
+
+    def __repr__(self) -> str:
+        numerical_parameters = [
+            str((par, self.kwargs[par])) for par in self.kwargs
+        ]
+        return (
+            f"A simple cake-eating problem with beta = {self.beta:.2f}, "
+            f"and initial wealth W_0 = {self.w0:.3f}.\n"
+            f"Other non-default numerical parameters are set to "
+            f"{', ' .join(numerical_parameters)}."
+        )
+
+    @property
+    def grid_w(self) -> ArrayN[np.float64]:
+        return np.linspace(
+            start=self.c_min, stop=self.w0, num=self.ngridw, endpoint=True
+        )
+
+    def utility(self, c: Collection_float):
+        return np.log(c)
+
+    def bellman_ongrid(self, V0: ArrayN[np.float64]):
+        """
+        Given last-iteration value function, this method calculates
+        next-iteration value function using on-the-grid solution method.
+        """
+        #!! step 1: check the shape of last-iteration value function
+        assert V0.shape == (self.ngridw,)
+
+        #!! step 2: construct a consumption array, where
+        #!! arr_c[i, j] == self.grid_w[i] - self.grid_w[j]
+        arr_w_prime: ArrayNxN
+        arr_w: ArrayNxN
+        arr_w, arr_w_prime = np.meshgrid(
+            self.grid_w, self.grid_w, indexing="ij"
+        )
+
+        arr_c: ArrayNxN = arr_w - arr_w_prime
+        arr_c[arr_c < 0] = np.nan
+        arr_c[arr_c == 0] = self.c_min
+
+        #!! step 3: construct the next-iteration value function array
+        #!! arr_value_prime[i,j]
+        #!! = log(self.grid_w[i] - self.grid_w[j]) + beta * V0[j]
+        arr_V0: ArrayNxN
+        _, arr_V0 = np.meshgrid(V0, V0, indexing="ij")
+        arr_value_prime = self.utility(arr_c) + self.beta * arr_V0
+
+        #!! step 4: get the next-iteration value function
+        #!! maximization over j, i.e., across columns
+        V_prime = np.nanmax(arr_value_prime, axis=1)
+
+        #!! step 4: get the consumption function
+        c_index = list(np.nanargmax(arr_value_prime, axis=1))
+        c = arr_c[list(range(self.ngridw)), c_index]
+
+        return V_prime, c
+
+    def solution_ongrid(self, callback=None):
+        """
+        This method solves the cake eating problem using on-the-grid method.
+        """
+        V0 = np.log(self.grid_w)
+
+        for iter in range(self.max_iter):
+            print(f"Iteration: {iter+1}\n")
+            V1, c = self.bellman_ongrid(V0)
+            if callback is not None:
+                callback(iter, self.grid_w, V1, c)
+            if self.relative_error:
+                if np.all(np.abs(V1 - V0) / np.abs(V0) < self.tol):
+                    break
+            else:
+                if np.all(abs(V1 - V0) < self.tol):
+                    break
+            V0 = V1
+        else:
+            raise RuntimeError(
+                f"Failed to converge in {self.max_iter} iterations."
+            )
+        return V1, c
+
+    @property
+    def arr_c(self) -> ArrayNxNc: #<1>
+        """
+        This method returns the consumption array.
+        arr_c[i, :] is the consumption grid when wealth level is self.grid_w[i].
+        """
+        if self.adapted_grid_c:
+            arr_c = np.zeros(shape=(self.ngridw, self.ngridc))
+            for w_index in range(self.ngridw):
+                arr_c[w_index, :] = np.linspace(
+                    start=self.c_min, stop=self.grid_w[w_index], num=self.ngridc
+                )
+        else:
+            grid_c = np.linspace(
+                start=self.c_min, stop=self.w0, num=self.ngridc
+            )
+            _, arr_c = np.meshgrid(self.grid_w, grid_c, indexing="ij")
+
+        assert arr_c.shape == (self.ngridw, self.ngridc)
+        return arr_c #<2>
+
+    def bellman_discretization(self, V0: ArrayN[np.float64]):
+        assert V0.shape == (self.ngridw,)
+
+        #!! arr_w_prime[i, j] = arr_w[i, j] - self.arr_c[i, j]
+        #!! = grid_w[i] - self.arr_c[i, j]
+        arr_w = ArrayNxNc[np.float64] #<3>
+        arr_w = np.tile(self.grid_w.reshape((self.ngridw, 1)), reps=self.ngridc)
+        arr_w_prime = arr_w - self.arr_c 
+        arr_w_prime[arr_w_prime < 0] = np.nan
+        arr_w_prime[arr_w_prime == 0] = self.c_min
+
+        interp = interpolate.interp1d( #<4>
+            self.grid_w,
+            V0,
+            bounds_error=False,
+            fill_value="extrapolate",
+        )
+
+        arr_V1 = self.utility(self.arr_c) + self.beta * interp(arr_w_prime)
+
+        V1 = np.nanmax(arr_V1, axis=1)
+        c_index = list(np.nanargmax(arr_V1, axis=1))
+        c = self.arr_c[list(range(self.ngridw)), c_index].ravel()
+
+        return V1, c
+
+    def solution_discretization(self, callback=None):
+        """
+        This method solves the cake eating problem using on-the-grid method.
+        """
+        V0 = np.log(self.grid_w)
+
+        for iter in range(self.max_iter):
+            # print(f"Iteration: {iter+1}\n")
+            V1, c = self.bellman_discretization(V0)
+            if callback is not None:
+                callback(iter, self.grid_w, V1, c)
+            if self.relative_error:
+                if np.all(np.abs(V1 - V0) / np.abs(V0) < self.tol):
+                    print(f"Final iteration: {iter+1:3d}")
+                    break
+            else:
+                if np.all(abs(V1 - V0) < self.tol):
+                    break
+            V0 = V1
+        else:
+            raise RuntimeError(
+                f"Failed to converge in {self.max_iter} iterations."
+            )
+        return V1, c
+```
+1. When performing the discretization method, we need another consumption grid. However, since we may want an adapted consumption grid, that is, we may want the grid to vary by different wealth level, we will need a consumption array, where the row index indicates the wealth grid index. For each row, there is a consumption grid, which is the same across rows if `adapted_grid_c==False`, and different if `adapted_grid_c==True`.
+2. Similarly, after developping this attribute, we need to test it, using the unit test framework, or simply printing out the resulting consumption arrays.
+3. Now, the shape of the consumption array is `(ngridw, ngridc)`, we also need the wealth array to be of the same shape, and we are implementing this using the `np.tile()` function.
+4. Interpolation is needed in the discretization solution method.
+
+### Testing the Numerical Solutions
+
+First, I will use a relatively fine grids on both wealth and consumption, with the same model parameters as `model1`.
+
+```{python}
+# | code-fold: true 
+model2 = CakeEating(
+    beta=0.9, 
+    w0=100, 
+    ngridw=1000, 
+    ngridc=1000,
+    adapted_grid_c=True,
+    tol=1e-6, 
+    relative_error=True
+)
+
+# -?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?
+# -? test for convergence
+# -?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?
+
+plt.rcParams["axes.autolimit_mode"] = "round_numbers"
+plt.rcParams["axes.xmargin"] = 0
+plt.rcParams["axes.ymargin"] = 0
+plt.rcParams["patch.force_edgecolor"] = True
+plt.rcParams["axes.prop_cycle"] = cycler(color="bgrcmyk")
+
+fig1, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+plt.grid(which="both", color="0.65", linestyle="-")
+
+ax1.set_title("Value function convergence with VFI")
+ax1.set_xlabel("Cake size, W")
+ax1.set_ylabel("Value function")
+
+ax2.set_title("Policy function convergence with VFI")
+ax2.set_xlabel("Cake size, W")
+ax2.set_ylabel("Policy function")
+
+
+def plot_value_convergence(iter, grid, v, c):
+    """Callback function for DP solver"""
+    if iter < 5 or iter % 10 == 0:
+        ax1.plot(grid[1:], v[1:], label=f"iter = {iter+1:3d}", linewidth=1)
+        ax2.plot(grid[1:], c[1:], label=f"iter = {iter+1:3d}", linewidth=1)
+
+
+model2_V, model2_c = model2.solution_discretization(callback=plot_value_convergence)
+plt.legend(loc="upper left", bbox_to_anchor=(1.04, 1))
+plt.ion()
+plt.show()
+
+# -?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?
+# -? compare with numerical solutions
+# -?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?#-?
+
+def analytical_solution(w, model):
+    beta = model.beta
+    value_func = (
+        np.log(w) / (1 - beta)
+        + np.log(1 - beta) / (1 - beta)
+        + beta * np.log(beta) / ((1 - beta) ** 2)
+    )
+    consump_func = (1 - beta) * w
+    return value_func, consump_func
+
+
+model2_V_true, model2_c_true = analytical_solution(model2.grid_w, model2)
+
+
+figV, axV = plt.subplots(figsize=(8, 6))
+axV.set_title(
+    f"Analytical versus numerical value function with {model2.ngridw = } and {model2.ngridc = } using Discretization method"
+)
+axV.set_xlabel("Cake size, W")
+axV.set_ylabel("Value function")
+
+axV.plot(
+    model2.grid_w[1:],
+    model2_V[1:],
+    c="red",
+    label="numerical VF",
+)
+axV.plot(
+    model2.grid_w[1:],
+    model2_V_true[1:],
+    c="black",
+    label="analytical VF",
+)
+axV.legend()
+plt.ion()
+plt.show()
+
+
+figC, axC = plt.subplots(figsize=(8, 6))
+axC.set_title(
+    f"Analytical versus numerical policy function with {model2.ngridw = } and {model2.ngridc = } using Discretization method"
+)
+axC.set_xlabel("Cake size, W")
+axC.set_ylabel("Policy function")
+
+axC.plot(
+    model2.grid_w[1:],
+    model2_c[1:],
+    c="red",
+    label="numerical policy function",
+)
+axC.plot(
+    model2.grid_w[1:],
+    model2_c_true[1:],
+    c="black",
+    label="analytical policy function",
+)
+axC.legend()
+plt.ion()
+plt.show()
+```
+
+With the same size of wealth grid, the numerical solutions using the discretization method are more accurate than the on-the-gird method, with a cost of increasing computational time. You may think the discretization method is good enough. However, the truth is, the resulting consumption rule is still weird -- it is not even monotone. And this is the most severe drawback of these discretization-based numerical solution -- the numerical results may even not share the same monotonicity or concavity properties as the true, analytical solutions. In some economics applications, this could be detrimental for our analysis.
+
+To see this point, we can zoom in, and check a specific region of the resulting policy function:
+```{python}
+figC, axC = plt.subplots(figsize=(8, 6))
+axC.set_title(
+    f"Analytical versus numerical policy function with {model2.ngridw = } and {model2.ngridc = } using Discretization method"
+)
+axC.set_xlabel("Cake size, W")
+axC.set_ylabel("Policy function")
+
+axC.plot(
+    model2.grid_w[500:700],
+    model2_c[500:700],
+    c="red",
+    label="numerical policy function",
+)
+axC.plot(
+    model2.grid_w[500:700],
+    model2_c_true[500:700],
+    c="black",
+    label="analytical policy function",
+)
+axC.legend()
+plt.ion()
+plt.show()
+
+```
